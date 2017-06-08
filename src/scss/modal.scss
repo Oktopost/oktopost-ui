@@ -1,0 +1,88 @@
+@import 'vars';
+@import 'animations';
+
+
+div.oui-modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 100;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow-y: auto;
+	transition: opacity 0.2s;
+
+	div.oui-modal-underlay {
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		position: fixed;
+		z-index: 90;
+		background-color: rgba(0, 31, 45, 0.6);
+	}
+
+	div.wrapper {
+		position: relative;
+		box-sizing: border-box;
+		width: 50%;
+		z-index: 100;
+		background: white;
+		text-align: left;
+		border-radius: 3px;
+		box-shadow: $basicShadow;
+		animation: animateGrow 0.5s;
+		overflow-y: auto;
+
+		div.head {
+			background-color: $colorLightGrey;
+			padding: 15px 25px;
+			display: flex;
+			justify-content: space-between;
+		}
+
+		div.body {
+			padding: 25px;
+		}
+	}
+
+	&.small {
+		div.wrapper {
+			width: 41.66%;
+		}
+	}
+
+	&.big {
+		justify-content: flex-end;
+
+		div.wrapper {
+			width: 66%;
+			height: 100%;
+			animation: fadeInRight 0.5s;
+			border-radius: 0;
+		}
+	}
+
+	&.removing {
+		opacity: 0;
+	}
+
+	a.close {
+		&:link,
+		&:visited {
+		    color: $colorDarkGrey;
+		    cursor: pointer;
+		    transition: 0.2s ease-in-out;
+		    font-size: 1.1333rem;
+		    line-height: 1.1333rem;
+		}
+
+		&:hover {
+			text-decoration: none;
+			color: $colorDarkBlue;
+		}
+	}
+}

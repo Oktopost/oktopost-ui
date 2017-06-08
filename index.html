@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>OktoUI</title>
+
+    <link href="dist/okto-ui.css" media="screen" rel="stylesheet" type="text/css">
+</head>
+<body>
+    
+   <a href="" class="modal">Modal Big</a>
+
+   <div class="small-modal hidden">
+        <div class="head">
+            <h2>Small Modal</h2>
+            <a href="" data-oui-modal-close>X</a>
+        </div>
+        <div class="body">
+            <p>Hello</p>
+        </div>
+   </div>
+   <div class="big-modal hidden">
+        <div class="head">
+            <h2>Big Modal</h2>
+            <a href="" data-oui-modal-close>X</a>
+        </div>
+        <div class="body">
+            <a href="">Open small modal</a>
+        </div>
+   </div>
+
+    <script src="vendor/jquery/dist/jquery.min.js"></script>
+    <script src="vendor/oktopost-namespace/web/namespace.js"></script>
+    <script src="vendor/plankton/plankton-min.js"></script>
+    <script src="vendor/oktopost-duct/duct.js"></script>
+
+    <script src="vendor/oktopost-classy/web/namespace.js"></script>
+    <script src="vendor/oktopost-classy/web/Classify.js"></script>
+    <script src="vendor/oktopost-classy/web/Enum.js"></script>
+    <script src="vendor/oktopost-classy/web/Singleton.js"></script>
+
+    <script src="dist/okto-ui.js"></script>
+    
+    <script>
+        $('a.modal').on('click', function (e) {
+            e.preventDefault();
+
+            var bigContents = $('div.big-modal').html();
+            var bigModal = new OktoUI.components.Modal(bigContents, 'big');
+
+            bigModal.onAfterOpen(function (container) {
+                container.find('div.body a').on('click', function (e) {
+                    e.preventDefault();
+
+                    var smallContents = $('div.small-modal').html();
+                    var smallModal = new OktoUI.components.Modal(smallContents, 'small');
+
+                    smallModal.open();
+                });
+            });
+
+            bigModal.open();
+        });
+    </script>
+
+</body>
+</html>
