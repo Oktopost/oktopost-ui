@@ -7,6 +7,77 @@ namespace('OktoUI.views', function () {
 
 
 	/**
+	 * @class OktoUI.views.DialogView
+	 */
+	function DialogView(dialog, okButtonText, cancelButtonText) 
+	{
+		Classy.classify(this);
+
+		this._dialog 				= dialog;
+		this._modal 				= null; 
+		this._okButtonText 			= okButtonText || 'OK';
+		this._cancelButtonText 		= cancelButtonText || 'Cancel';
+		this._className 			= 'dialog-confirm';
+	};
+
+
+	DialogView.prototype._getButton = function (buttonText, onClick)
+	{
+		return $('<a>')
+			.attr('href', '')
+			.text(buttonText)
+			.on('click', function (e) {
+				e.preventDefault();
+				onClick();
+			});
+	};
+
+	DialogView.prototype._getCancelButton = function ()
+	{
+		return this._getButton(this._cancelButtonText, this._dialog.onCancel);
+	};
+
+	DialogView.prototype._getOkButton = function ()
+	{
+		return this._getButton(this._okButtonText, this._dialog.onConfirm);
+	};
+
+	DialogView.prototype._getContents = function (message)
+	{
+		var p = $('<p>').text(message);
+		var body = $('<div>').addClass('body');
+		var footer = $('<div>').addClass('footer');
+		
+		body.append(p);
+		footer.append(this._getCancelButton(), this._getOkButton());
+
+		return [body, footer];
+	};
+
+
+	DialogView.prototype.removeDialog = function ()
+	{
+		this._modal.close();
+		this._modal = null;
+	};
+
+	DialogView.prototype.showDialog = function (message)
+	{
+		this._modal = new OktoUI.components.Modal(this._getContents(message), this._className);
+		this._modal.onAfterOpen(function (modal) {
+			modal.off();
+		});
+		this._modal.open();
+	};
+
+	
+	this.DialogView = DialogView;
+});
+namespace('OktoUI.views', function () {
+	'use strict';
+
+
+	/**
 	 * @class OktoUI.views.ModalView
 	 */
 	function ModalView(modal, contents, className) 
@@ -95,6 +166,50 @@ namespace('OktoUI.views', function () {
 
 	
 	this.ModalView = ModalView;
+});
+namespace('OktoUI.components', function () {
+	'use strict';
+
+
+	var Event       = duct.Event;
+	var DialogView 	= OktoUI.views.DialogView;
+
+
+	/**
+	 * @class OktoUI.components.Dialog
+	 */
+	function Dialog(okButtonText, cancelButtonText) 
+	{
+		Classy.classify(this);
+
+		this._dialogView 	= new DialogView(this, okButtonText, cancelButtonText);
+
+		this._onCancel 		= new Event('dialog.onCancel');
+		this._onConfirm 	= new Event('dialog.onConfirm');		
+
+		this._onCancel.add(this._dialogView.removeDialog);
+		this._onConfirm.add(this._dialogView.removeDialog);
+	};
+
+	
+	Dialog.prototype.onCancel = function ()
+	{
+		this._onCancel.trigger();
+	};
+
+	Dialog.prototype.onConfirm = function ()
+	{
+		this._onConfirm.trigger();
+	};
+
+	Dialog.prototype.confirm = function (message, onConfirm) 
+	{
+		this._onConfirm.add(onConfirm);
+		this._dialogView.showDialog(message);
+	};
+
+
+	this.Dialog = Dialog;
 });
 namespace('OktoUI.components', function () {
     'use strict';

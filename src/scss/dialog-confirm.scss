@@ -1,0 +1,39 @@
+@import 'vars';
+
+
+div.oui-modal.dialog-confirm {
+
+	div.wrapper {
+		width: 280px;
+
+		div.body {
+			padding: 20px;
+
+			p {
+				margin: 0;
+			}
+		}
+
+		div.footer {
+			display: flex;
+			justify-content: flex-end;
+			padding: 0 20px 20px 20px;
+
+			a {
+				&:link,
+				&:visited {
+					color: $colorBlue;
+					text-transform: uppercase;
+					margin-left: 1rem;
+					font-weight: bold;
+					display: inline-block;
+    				padding: 0 5px;
+				}
+
+				&:hover {
+					color: lighten($colorBlue, 15%);
+				}
+			}
+		}
+	}
+}

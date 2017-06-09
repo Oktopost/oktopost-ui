@@ -10,6 +10,7 @@
 <body>
     
    <a href="" class="modal">Modal Big</a>
+   <a href="" class="dialog">Confirm</a>
 
    <div class="small-modal hidden">
         <div class="head">
@@ -43,6 +44,18 @@
     <script src="dist/okto-ui.js"></script>
     
     <script>
+        
+
+        $('a.dialog').on('click', function (e) {
+            e.preventDefault();
+            
+            var dialog = new OktoUI.components.Dialog('YES', 'NO');
+
+            dialog.confirm('Are you sure?', function () {
+                console.log('YES');
+            });
+        });
+
         $('a.modal').on('click', function (e) {
             e.preventDefault();
 
