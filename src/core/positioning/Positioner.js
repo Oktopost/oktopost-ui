@@ -1,9 +1,9 @@
-namespace('OktoUI.core.positioning', function () {
+namespace('OUI.core.positioning', function () {
 	'use strict';
 
 	
 	/**
-	 * @class OktoUI.core.positioning.Positioner
+	 * @class OUI.core.positioning.Positioner
 	 */
 	var Positioner = function () 
 	{

@@ -1,16 +1,16 @@
-namespace('OktoUI.core.positioning', function () {
+namespace('OUI.core.positioning', function () {
 	'use strict';
 
 	
 	/**
-	 * @class OktoUI.core.positioning.Box
+	 * @class OUI.core.positioning.Box
 	 */
 	var Box = function (point, size) 
 	{
-		/** @type {OktoUI.core.positioning.Point} */
+		/** @type {OUI.core.positioning.Point} */
 		this._point = point;
 
-		/** @type {OktoUI.core.positioning.Point} */
+		/** @type {OUI.core.positioning.Point} */
 		this._size = size;
 
 
