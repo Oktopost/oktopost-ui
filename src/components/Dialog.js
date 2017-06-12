@@ -1,42 +1,65 @@
-namespace('OktoUI.components', function () {
+namespace('OUI.components', function (window) {
 	'use strict';
 
 
-	var Event       = duct.Event;
-	var DialogView 	= OktoUI.views.DialogView;
+	var Event       = window.duct.Event;
+	var DialogView 	= window.OUI.views.DialogView;
+	var IdGenerator = window.OUI.core.view.IdGenerator;
 
 
 	/**
-	 * @class OktoUI.components.Dialog
+	 * @class OUI.components.Dialog
 	 */
 	function Dialog(okButtonText, cancelButtonText) 
 	{
 		Classy.classify(this);
 
+		this._id 			= IdGenerator('oui-dialog');
 		this._dialogView 	= new DialogView(this, okButtonText, cancelButtonText);
 
 		this._onCancel 		= new Event('dialog.onCancel');
-		this._onConfirm 	= new Event('dialog.onConfirm');		
+		this._onConfirm 	= new Event('dialog.onConfirm');
+		this._onOpen 		= new Event('dialog.onOpen');
 
-		this._onCancel.add(this._dialogView.removeDialog);
-		this._onConfirm.add(this._dialogView.removeDialog);
+		this.onOpen(this._dialogView.bindEvents);
+		this.onCancel(this._dialogView.remove);
+		this.onConfirm(this._dialogView.remove);
 	};
 
-	
-	Dialog.prototype.onCancel = function ()
+	Dialog.prototype.getId = function ()
 	{
-		this._onCancel.trigger();
+		return this._id;
 	};
 
-	Dialog.prototype.onConfirm = function ()
+	Dialog.prototype.onOpen = function (callback)
 	{
-		this._onConfirm.trigger();
+		this._onOpen.add(callback);
 	};
 
-	Dialog.prototype.confirm = function (message, onConfirm) 
+	Dialog.prototype.onCancel = function (callback)
 	{
-		this._onConfirm.add(onConfirm);
-		this._dialogView.showDialog(message);
+		this._onCancel.add(callback);
+	};
+
+	Dialog.prototype.onConfirm = function (callback)
+	{
+		this._onConfirm.add(callback);
+	};
+
+	Dialog.prototype.open = function (message) 
+	{
+		this._dialogView.show(message);
+		this._onOpen.trigger(this._dialogView.getContainer());
+	};
+
+	Dialog.prototype.confirm = function () 
+	{
+		this._onConfirm.trigger(this._id);
+	};
+
+	Dialog.prototype.cancel = function () 
+	{
+		this._onCancel.trigger(this._id);
 	};
 
 

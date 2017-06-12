@@ -1,84 +1,208 @@
 (function () {
-	window.OktoUI = new Namespace(window);
-	window.namespace = OktoUI.getCreator();
+	window.OUI = new Namespace(window);
+	window.namespace = OUI.getCreator();
 })();
-namespace('OktoUI.views', function () {
+namespace('OUI.core.view', function (window) {
 	'use strict';
 
 
 	/**
-	 * @class OktoUI.views.DialogView
+	 * @class OUI.core.view.FadeRemove
+	 */
+	function FadeRemove($container, extraClass, delay)
+	{
+		extraClass = extraClass || 'removing';
+		delay = delay || 200;
+
+		$container.addClass(extraClass);
+
+		setTimeout(function () {
+			$container.remove();
+		}, delay);
+	};
+	
+
+	this.FadeRemove = FadeRemove;
+});
+namespace('OUI.core.view', function (window) {
+	'use strict';
+
+
+	/**
+	 * @class OUI.core.view.Hbs
+	 */
+	function Hbs()
+	{
+		Classy.classify(this);
+	};
+
+
+	Hbs.prototype.get = function (name, options)
+	{
+		options = options || {};
+
+		return window.Handlebars['templates'][name].hbs(options);
+	};
+	
+
+	this.Hbs = Hbs;
+});
+namespace('OUI.core.view', function (window) {
+	'use strict';
+
+
+	/**
+	 * @class OUI.core.view.IdGenerator
+	 */
+	function IdGenerator(baseName)
+	{
+		return baseName + '-' + Math.floor(Date.now());
+	};
+	
+
+	this.IdGenerator = IdGenerator;
+});
+namespace('OUI.views', function (window) {
+	'use strict';
+
+
+	var Hbs = window.OUI.core.view.Hbs;
+	var FadeRemove = window.OUI.core.view.FadeRemove;
+
+
+	/**
+	 * @class OUI.views.DialogView
 	 */
 	function DialogView(dialog, okButtonText, cancelButtonText) 
 	{
 		Classy.classify(this);
 
-		this._dialog 				= dialog;
-		this._modal 				= null; 
-		this._okButtonText 			= okButtonText || 'OK';
-		this._cancelButtonText 		= cancelButtonText || 'Cancel';
-		this._className 			= 'dialog-confirm';
+		this._dialog 			= dialog;
+		this._okButtonText 		= okButtonText || 'OK';
+		this._cancelButtonText 	= cancelButtonText || 'Cancel';
+		this._okButton 			= 'a.ok-button';
+		this._cancelButton 		= 'a.cancel-button';
+		this._view 				= new Hbs();
 	};
 
 
-	DialogView.prototype._getButton = function (buttonText, onClick)
+	DialogView.prototype.getContainer = function ()
 	{
-		return $('<a>')
-			.attr('href', '')
-			.text(buttonText)
-			.on('click', function (e) {
-				e.preventDefault();
-				onClick();
-			});
+		return $('#' + this._dialog.getId());
 	};
 
-	DialogView.prototype._getCancelButton = function ()
+	DialogView.prototype.bindEvents = function ()
 	{
-		return this._getButton(this._cancelButtonText, this._dialog.onCancel);
-	};
+		var dialog = this._dialog;
+		var $container = this.getContainer();
 
-	DialogView.prototype._getOkButton = function ()
-	{
-		return this._getButton(this._okButtonText, this._dialog.onConfirm);
-	};
-
-	DialogView.prototype._getContents = function (message)
-	{
-		var p = $('<p>').text(message);
-		var body = $('<div>').addClass('body');
-		var footer = $('<div>').addClass('footer');
-		
-		body.append(p);
-		footer.append(this._getCancelButton(), this._getOkButton());
-
-		return [body, footer];
-	};
-
-
-	DialogView.prototype.removeDialog = function ()
-	{
-		this._modal.close();
-		this._modal = null;
-	};
-
-	DialogView.prototype.showDialog = function (message)
-	{
-		this._modal = new OktoUI.components.Modal(this._getContents(message), this._className);
-		this._modal.onAfterOpen(function (modal) {
-			modal.off();
+		$container.find(this._okButton).on('click', function (e) {
+			e.preventDefault();
+			dialog.confirm();
 		});
-		this._modal.open();
+
+		$container.find(this._cancelButton).on('click', function (e) {
+			e.preventDefault();
+			dialog.cancel();
+		});
+	};
+
+	DialogView.prototype.show = function (message)
+	{
+		$('body').append(this._view.get('dialog', {
+			id: this._dialog.getId(),
+			message: message,
+			okButtonText: this._okButtonText,
+			cancelButtonText: this._cancelButtonText
+		}));
+	};
+
+	DialogView.prototype.remove = function ()
+	{
+		FadeRemove(this.getContainer());
 	};
 
 	
 	this.DialogView = DialogView;
 });
-namespace('OktoUI.views', function () {
+namespace('OUI.views', function (window) {
 	'use strict';
 
 
+	var Hbs = window.OUI.core.view.Hbs;
+	var FadeRemove = window.OUI.core.view.FadeRemove;
+
+
+	function MenuView(menu, $toggleElement, contents, extraClass)
+	{
+		Classy.classify(this);
+
+		extraClass = extraClass || '';
+
+		this._menu 			= menu;
+		this._toggleElement = $toggleElement;
+		this._contents 		= contents;
+		this._extraClass 	= extraClass;
+		this._underlay 		= 'div.oui-menu-underlay';
+
+		this._view 			= new Hbs();
+	};
+
+	MenuView.prototype.initEvent = function ()
+	{
+		var menu = this._menu;
+
+		this._toggleElement.on('click', function (e) {
+			e.preventDefault();
+			menu.open();
+		});
+	};
+
+	MenuView.prototype.bindRemove = function ()
+	{
+		var menu = this._menu;
+
+		this.getContainer().on('click', this._underlay, function () {
+			menu.close();
+		});
+	};
+
+	MenuView.prototype.getContainer = function ()
+	{
+		return $('#' + this._menu.getId());
+	};
+
+	MenuView.prototype.remove = function ()
+	{
+		FadeRemove(this.getContainer());
+	};
+
+	MenuView.prototype.show = function ()
+	{
+		$('body').append(this._view.get('menu', {
+			id: this._menu.getId(),
+			contents: this._contents,
+			extraClass: this._extraClass
+		}));
+
+		this.getContainer().find('div.wrapper').offset({
+			top: 10,
+			left: 10
+		});
+	};
+
+
+	this.MenuView = MenuView;
+});
+namespace('OUI.views', function (window) {
+	'use strict';
+
+
+	var Hbs = window.OUI.core.view.Hbs;
+
+
 	/**
-	 * @class OktoUI.views.ModalView
+	 * @class OUI.views.ModalView
 	 */
 	function ModalView(modal, contents, className) 
 	{
@@ -87,33 +211,21 @@ namespace('OktoUI.views', function () {
 		className = className || '';
 
 		this._modal 		= modal;
-		this._underlay  	= 'oui-modal-underlay';
+		this._underlay 		= 'div.oui-modal-underlay';
 		this._closeButton 	= 'a[data-oui-modal-close]';
-		this._baseName  	= 'oui-modal';
-		this._wrapper   	= 'wrapper';
-		this._removeClass 	= 'removing';
-		this._removeDelay 	= 200;
+		
+		this._escapeEvent 	= 'keyup.' + modal.getId();
+
 		this._className		= className;
 		this._contents		= contents;
+
+		this._view 			= new Hbs();
 	};
 	
 
-	ModalView.prototype._createContainer = function () 
-	{
-		return $('<div>')
-			.addClass(this._baseName)
-			.addClass(this._className)
-			.attr('id', this._modal.getId());
-	};
-
-	ModalView.prototype._getEscapeEvent = function ()
-	{
-		return 'keyup.' + this._modal.getId();
-	};
-	
 	ModalView.prototype._close = function ()
 	{
-		$(document).off(this._getEscapeEvent());
+		$(document).off(this._escapeEvent);
 		this._modal.close();
 	};
 
@@ -123,110 +235,204 @@ namespace('OktoUI.views', function () {
 		return $('#' + this._modal.getId());
 	};
 
-	ModalView.prototype.show = function () 
-	{
-		var $modal 		= this._createContainer();
-		var $underlay 	= $('<div>').addClass(this._underlay);
-		var $wrapper 	= $('<div>').addClass(this._wrapper);
-
-		$wrapper.append(this._contents);
-		$modal.append($wrapper, $underlay);
-
-		$('body').append($modal);
-	};
-
 	ModalView.prototype.onOpen = function ()
 	{
-		var view = this;
-		var selectors = this._closeButton + ', div.' + this._underlay;
+		var modalView = this;
+		var selectors = this._closeButton + ',' + this._underlay;
 
-		$(document).on(this._getEscapeEvent(), function (e) 
+		$(document).on(this._escapeEvent, function (e) 
 		{
 			if (e.keyCode === 27) 
-				view._close();
+				modalView._close();
 		});
 
 		this.getContainer().on('click', selectors, function (e) 
 		{
 			e.preventDefault();
-			view._close();
+			modalView._close();
 		});
+	};
+
+	ModalView.prototype.show = function () 
+	{
+		var position = {
+			top: 20,
+			left: 20
+		};
+
+		$('body').append(this._view.get('modal', {
+			id: this._modal.getId(),
+			contents: this._contents,
+			extraClass: this._className,
+			position: position
+		}));
 	};
 
 	ModalView.prototype.remove = function ()
 	{
-		var $container = this.getContainer();
-
-		$container.addClass(this._removeClass);
-
-		setTimeout(function () {
-			$container.remove();
-		}, this._removeDelay);
+		this.getContainer().remove();
 	};
 
 	
 	this.ModalView = ModalView;
 });
-namespace('OktoUI.components', function () {
+namespace('OUI.components', function (window) {
 	'use strict';
 
 
-	var Event       = duct.Event;
-	var DialogView 	= OktoUI.views.DialogView;
+	var Event       = window.duct.Event;
+	var DialogView 	= window.OUI.views.DialogView;
+	var IdGenerator = window.OUI.core.view.IdGenerator;
 
 
 	/**
-	 * @class OktoUI.components.Dialog
+	 * @class OUI.components.Dialog
 	 */
 	function Dialog(okButtonText, cancelButtonText) 
 	{
 		Classy.classify(this);
 
+		this._id 			= IdGenerator('oui-dialog');
 		this._dialogView 	= new DialogView(this, okButtonText, cancelButtonText);
 
 		this._onCancel 		= new Event('dialog.onCancel');
-		this._onConfirm 	= new Event('dialog.onConfirm');		
+		this._onConfirm 	= new Event('dialog.onConfirm');
+		this._onOpen 		= new Event('dialog.onOpen');
 
-		this._onCancel.add(this._dialogView.removeDialog);
-		this._onConfirm.add(this._dialogView.removeDialog);
+		this.onOpen(this._dialogView.bindEvents);
+		this.onCancel(this._dialogView.remove);
+		this.onConfirm(this._dialogView.remove);
 	};
 
-	
-	Dialog.prototype.onCancel = function ()
+	Dialog.prototype.getId = function ()
 	{
-		this._onCancel.trigger();
+		return this._id;
 	};
 
-	Dialog.prototype.onConfirm = function ()
+	Dialog.prototype.onOpen = function (callback)
 	{
-		this._onConfirm.trigger();
+		this._onOpen.add(callback);
 	};
 
-	Dialog.prototype.confirm = function (message, onConfirm) 
+	Dialog.prototype.onCancel = function (callback)
 	{
-		this._onConfirm.add(onConfirm);
-		this._dialogView.showDialog(message);
+		this._onCancel.add(callback);
+	};
+
+	Dialog.prototype.onConfirm = function (callback)
+	{
+		this._onConfirm.add(callback);
+	};
+
+	Dialog.prototype.open = function (message) 
+	{
+		this._dialogView.show(message);
+		this._onOpen.trigger(this._dialogView.getContainer());
+	};
+
+	Dialog.prototype.confirm = function () 
+	{
+		this._onConfirm.trigger(this._id);
+	};
+
+	Dialog.prototype.cancel = function () 
+	{
+		this._onCancel.trigger(this._id);
 	};
 
 
 	this.Dialog = Dialog;
 });
-namespace('OktoUI.components', function () {
+namespace('OUI.components', function (window) {
+	'use strict';
+
+
+	var Event 		= window.duct.Event;
+	var IdGenerator = window.OUI.core.view.IdGenerator;
+	var MenuView 	= window.OUI.views.MenuView;
+
+
+	/**
+	 * @class OUI.components.Menu
+	 */
+	function Menu($toggleElement, contents, extraClass)
+	{
+		Classy.classify(this);
+
+		this._id 			= IdGenerator('oui-menu');
+		this._menuView 		= new MenuView(this, $toggleElement, contents, extraClass);
+		
+		this._onBeforeOpen 	= new Event('menu.onBeforeOpen');
+		this._onAfterOpen 	= new Event('menu.onAfterOpen');
+		this._onBeforeClose = new Event('menu.onBeforeClose');
+		this._onAfterClose 	= new Event('menu.onAfterClose');
+
+		this._menuView.initEvent();
+
+		this.onAfterOpen(this._menuView.bindRemove);
+	};
+
+	
+	Menu.prototype.getId = function ()
+	{
+		return this._id;
+	};
+
+	Menu.prototype.onAfterOpen = function (callback)
+	{
+		this._onAfterOpen.add(callback);
+	};
+
+	Menu.prototype.onAfterClose = function (callback)
+	{
+		this._onAfterClose.add(callback);
+	};
+
+	Menu.prototype.onBeforeClose = function (callback)
+	{
+		this._onBeforeClose.add(callback);
+	};
+
+	Menu.prototype.onBeforeOpen = function (callback)
+	{
+		this._onBeforeOpen.add(callback);
+	};
+
+	Menu.prototype.open = function ()
+	{
+		this._onBeforeOpen.trigger(this._id);
+		this._menuView.show();
+		this._onAfterOpen.trigger(this._menuView.getContainer());
+	};
+
+	Menu.prototype.close = function ()
+	{
+		this._onBeforeClose.trigger(this._menuView.getContainer());
+		this._menuView.remove();
+		this._onAfterClose.trigger(this._id);
+	};
+
+
+	this.Menu = Menu;
+});
+namespace('OUI.components', function (window) {
     'use strict';
 
 
-    var Event       = duct.Event;
-    var ModalView   = OktoUI.views.ModalView;
+    var Event       = window.duct.Event;
+    var ModalView   = window.OUI.views.ModalView;
+    var IdGenerator = window.OUI.core.view.IdGenerator;
 
 
     /**
-     * @class OktoUI.components.Modal
+     * @class OUI.components.Modal
      */
     function Modal(contents, className) 
     {
         Classy.classify(this);
 
-        this._id            = 'oui-modal-' + Math.floor(Date.now());
+        this._id            = IdGenerator('oui-modal');
+        
         this._modalView     = new ModalView(this, contents, className);
 
         this._onBeforeOpen 	= new Event('modal.beforeOpen');
@@ -234,7 +440,7 @@ namespace('OktoUI.components', function () {
         this._onBeforeClose = new Event('modal.beforeClose');
         this._onAfterClose 	= new Event('modal.afterClose');
 
-        this._onAfterOpen.add(this._modalView.onOpen);
+        this.onAfterOpen(this._modalView.onOpen);
     };
 
     Modal.prototype.getId = function ()

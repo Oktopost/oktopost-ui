@@ -1,4 +1,4 @@
 (function () {
-	window.OktoUI = new Namespace(window);
-	window.namespace = OktoUI.getCreator();
+	window.OUI = new Namespace(window);
+	window.namespace = OUI.getCreator();
 })();

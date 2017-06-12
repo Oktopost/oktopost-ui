@@ -1,19 +1,21 @@
-namespace('OktoUI.components', function () {
+namespace('OUI.components', function (window) {
     'use strict';
 
 
-    var Event       = duct.Event;
-    var ModalView   = OktoUI.views.ModalView;
+    var Event       = window.duct.Event;
+    var ModalView   = window.OUI.views.ModalView;
+    var IdGenerator = window.OUI.core.view.IdGenerator;
 
 
     /**
-     * @class OktoUI.components.Modal
+     * @class OUI.components.Modal
      */
     function Modal(contents, className) 
     {
         Classy.classify(this);
 
-        this._id            = 'oui-modal-' + Math.floor(Date.now());
+        this._id            = IdGenerator('oui-modal');
+        
         this._modalView     = new ModalView(this, contents, className);
 
         this._onBeforeOpen 	= new Event('modal.beforeOpen');
@@ -21,7 +23,7 @@ namespace('OktoUI.components', function () {
         this._onBeforeClose = new Event('modal.beforeClose');
         this._onAfterClose 	= new Event('modal.afterClose');
 
-        this._onAfterOpen.add(this._modalView.onOpen);
+        this.onAfterOpen(this._modalView.onOpen);
     };
 
     Modal.prototype.getId = function ()

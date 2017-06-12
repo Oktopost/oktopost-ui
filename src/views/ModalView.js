@@ -1,9 +1,12 @@
-namespace('OktoUI.views', function () {
+namespace('OUI.views', function (window) {
 	'use strict';
 
 
+	var Hbs = window.OUI.core.view.Hbs;
+
+
 	/**
-	 * @class OktoUI.views.ModalView
+	 * @class OUI.views.ModalView
 	 */
 	function ModalView(modal, contents, className) 
 	{
@@ -12,33 +15,21 @@ namespace('OktoUI.views', function () {
 		className = className || '';
 
 		this._modal 		= modal;
-		this._underlay  	= 'oui-modal-underlay';
+		this._underlay 		= 'div.oui-modal-underlay';
 		this._closeButton 	= 'a[data-oui-modal-close]';
-		this._baseName  	= 'oui-modal';
-		this._wrapper   	= 'wrapper';
-		this._removeClass 	= 'removing';
-		this._removeDelay 	= 200;
+		
+		this._escapeEvent 	= 'keyup.' + modal.getId();
+
 		this._className		= className;
 		this._contents		= contents;
+
+		this._view 			= new Hbs();
 	};
 	
 
-	ModalView.prototype._createContainer = function () 
-	{
-		return $('<div>')
-			.addClass(this._baseName)
-			.addClass(this._className)
-			.attr('id', this._modal.getId());
-	};
-
-	ModalView.prototype._getEscapeEvent = function ()
-	{
-		return 'keyup.' + this._modal.getId();
-	};
-	
 	ModalView.prototype._close = function ()
 	{
-		$(document).off(this._getEscapeEvent());
+		$(document).off(this._escapeEvent);
 		this._modal.close();
 	};
 
@@ -48,45 +39,42 @@ namespace('OktoUI.views', function () {
 		return $('#' + this._modal.getId());
 	};
 
-	ModalView.prototype.show = function () 
-	{
-		var $modal 		= this._createContainer();
-		var $underlay 	= $('<div>').addClass(this._underlay);
-		var $wrapper 	= $('<div>').addClass(this._wrapper);
-
-		$wrapper.append(this._contents);
-		$modal.append($wrapper, $underlay);
-
-		$('body').append($modal);
-	};
-
 	ModalView.prototype.onOpen = function ()
 	{
-		var view = this;
-		var selectors = this._closeButton + ', div.' + this._underlay;
+		var modalView = this;
+		var selectors = this._closeButton + ',' + this._underlay;
 
-		$(document).on(this._getEscapeEvent(), function (e) 
+		$(document).on(this._escapeEvent, function (e) 
 		{
 			if (e.keyCode === 27) 
-				view._close();
+				modalView._close();
 		});
 
 		this.getContainer().on('click', selectors, function (e) 
 		{
 			e.preventDefault();
-			view._close();
+			modalView._close();
 		});
+	};
+
+	ModalView.prototype.show = function () 
+	{
+		var position = {
+			top: 20,
+			left: 20
+		};
+
+		$('body').append(this._view.get('modal', {
+			id: this._modal.getId(),
+			contents: this._contents,
+			extraClass: this._className,
+			position: position
+		}));
 	};
 
 	ModalView.prototype.remove = function ()
 	{
-		var $container = this.getContainer();
-
-		$container.addClass(this._removeClass);
-
-		setTimeout(function () {
-			$container.remove();
-		}, this._removeDelay);
+		this.getContainer().remove();
 	};
 
 	
