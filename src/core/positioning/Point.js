@@ -6,6 +6,8 @@ namespace('OUI.core.positioning', function () {
 	 */
 	var Point = function (x, y) 
 	{	
+		Classy.classify(this);
+		
 		this.x = x;
 		this.y = y;
 	};

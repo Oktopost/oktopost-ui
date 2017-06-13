@@ -7,48 +7,48 @@ namespace('OUI.core.positioning', function () {
 	 */
 	var Box = function (point, size) 
 	{
+		Classy.classify(this);
+		
 		/** @type {OUI.core.positioning.Point} */
 		this._point = point;
 
 		/** @type {OUI.core.positioning.Point} */
 		this._size = size;
-
-
-		this._intersectHorizontal = function (x, w)
+	};	
+	
+	Box.prototype._intersectHorizontal = function (x, w)
 		{
 			return !(this.x()+this.w() < x || x+w < this.x());
 		};
 
-		this._intersectVertical = function (y, h)
+	Box.prototype._intersectVertical = function (y, h)
 		{
 			return !(this.y()+this.h() < y || y+h < this.y());
 		};
-
 		
-		this.x = function () 
+	Box.prototype.x = function ()
 		{
 			return this._point.x;	
 		};
 
-		this.y = function () 
+	Box.prototype.y = function ()
 		{
 			return this._point.y;	
 		};
 
-		this.w = function () 
+	Box.prototype.w = function ()
 		{
 			return this._size.x;	
 		};
 		
-		this.h = function () 
+	Box.prototype.h = function ()
 		{
 			return this._size.y;	
 		};
-	};	
 	
 	Box.prototype.intersect = function (box) 
 	{
-		return this._intersectHorizontal(box.x(), box.w()) && this._intersectVertical(box.y(), box.h());
+		return this._intersectHorizontal(box.x(), box.w()) || this._intersectVertical(box.y(), box.h());
 	};
 	
 	
