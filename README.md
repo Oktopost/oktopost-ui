@@ -16,6 +16,7 @@ Place the following files in your HTML template:
 1. [Modal Windows](docs/MODAL.md)
 2. [Popup Menus](docs/MENU.md)
 3. [Dialogs](docs/DIALOG.md)
+4. [Toast](docs/TOAST.md)
 
 ## Namespace
 ```

@@ -38,3 +38,13 @@ this["Handlebars"]["templates"]["modal"]["hbs"] = Handlebars.template({"compiler
     + ((stack1 = ((helper = (helper = helpers.contents || (depth0 != null ? depth0.contents : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"contents","hash":{},"data":data}) : helper))) != null ? stack1 : "")
     + "</div>\n	<div class=\"oui-modal-underlay\"></div>\n</div>";
 },"useData":true});
+this["Handlebars"]["templates"]["toast"] = this["Handlebars"]["templates"]["toast"] || {};
+this["Handlebars"]["templates"]["toast"]["hbs"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+    var helper, alias1=helpers.helperMissing, alias2="function", alias3=this.escapeExpression;
+
+  return "<div class=\"oui-toast\" id=\""
+    + alias3(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"id","hash":{},"data":data}) : helper)))
+    + "\">\n	<p>"
+    + alias3(((helper = (helper = helpers.message || (depth0 != null ? depth0.message : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"message","hash":{},"data":data}) : helper)))
+    + "</p>\n	<a href=\"\" data-oui-dismiss class=\"icon-cancel\"></a>\n</div>";
+},"useData":true});

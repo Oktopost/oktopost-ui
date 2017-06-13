@@ -696,6 +696,72 @@ namespace('OUI.views', function (window) {
 	
 	this.ModalView = ModalView;
 });
+namespace('OUI.views', function (window) {
+	'use strict';
+
+
+	var Hbs = window.OUI.core.view.Hbs;
+	var FadeRemove = window.OUI.core.view.FadeRemove;
+
+
+	/**
+	 * @class OUI.views.ToastView
+	 */
+	function ToastView(toast, delay)
+	{
+		Classy.classify(this);
+
+		delay = delay || 5000;
+
+		this._toast 	= toast;
+		this._view 		= new Hbs();
+		this._delay 	= delay;
+
+		this._dismiss 	= 'a[data-oui-dismiss]';
+	};
+
+	ToastView.prototype.bindDismiss = function ()
+	{
+		var toast = this._toast;
+
+		this.getContainer().on('click', this._dismiss, function (e) {
+			e.preventDefault();
+			toast.dismiss();
+		});
+	};
+
+	ToastView.prototype.show = function (message)
+	{
+		this._onAdd.add(callback);
+	};
+
+	ToastView.prototype.getContainer = function ()
+	{
+		return $('#' + this._toast.getId());
+	};
+
+	ToastView.prototype.show = function (message)
+	{
+		var view = this;
+
+		$('body').append(this._view.get('toast', {
+			message: message,
+			id: this._toast.getId()
+		}));
+
+		setTimeout(function () {
+			FadeRemove(view.getContainer());
+		}, this._delay);
+	};
+
+	ToastView.prototype.remove = function ()
+	{
+		FadeRemove(this.getContainer());
+	};
+
+
+	this.ToastView = ToastView;
+});
 namespace('OUI.components', function (window) {
 	'use strict';
 
@@ -836,42 +902,42 @@ namespace('OUI.components', function (window) {
 	this.Menu = Menu;
 });
 namespace('OUI.components', function (window) {
-    'use strict';
+	'use strict';
 
 
-    var Event       = window.duct.Event;
-    var ModalView   = window.OUI.views.ModalView;
-    var IdGenerator = window.OUI.core.view.IdGenerator;
+	var Event       = window.duct.Event;
+	var ModalView   = window.OUI.views.ModalView;
+	var IdGenerator = window.OUI.core.view.IdGenerator;
 
 
-    /**
-     * @class OUI.components.Modal
-     */
-    function Modal(contents, className) 
-    {
-        Classy.classify(this);
+	/**
+	 * @class OUI.components.Modal
+	 */
+	function Modal(contents, className) 
+	{
+		Classy.classify(this);
 
-        this._id            = IdGenerator('oui-modal');
-        
-        this._modalView     = new ModalView(this, contents, className);
+		this._id            = IdGenerator('oui-modal');
+		
+		this._modalView     = new ModalView(this, contents, className);
 
-        this._onBeforeOpen 	= new Event('modal.beforeOpen');
-        this._onAfterOpen 	= new Event('modal.afterOpen');
-        this._onBeforeClose = new Event('modal.beforeClose');
-        this._onAfterClose 	= new Event('modal.afterClose');
+		this._onBeforeOpen 	= new Event('modal.beforeOpen');
+		this._onAfterOpen 	= new Event('modal.afterOpen');
+		this._onBeforeClose = new Event('modal.beforeClose');
+		this._onAfterClose 	= new Event('modal.afterClose');
 
-        this.onAfterOpen(this._modalView.onOpen);
-    };
+		this.onAfterOpen(this._modalView.onOpen);
+	};
 
-    Modal.prototype.getId = function ()
-    {
-        return this._id;
-    };
+	Modal.prototype.getId = function ()
+	{
+		return this._id;
+	};
 
-    Modal.prototype.onBeforeOpen = function (callback)
-    {
-    	this._onBeforeOpen.add(callback);
-    };
+	Modal.prototype.onBeforeOpen = function (callback)
+	{
+		this._onBeforeOpen.add(callback);
+	};
 
 	Modal.prototype.onAfterOpen = function (callback)
 	{
@@ -888,20 +954,78 @@ namespace('OUI.components', function (window) {
 		this._onAfterClose.add(callback);
 	};
 
-    Modal.prototype.open = function() 
-    {
+	Modal.prototype.open = function() 
+	{
 		this._onBeforeOpen.trigger(this._id);
-    	this._modalView.show();
-    	this._onAfterOpen.trigger(this._modalView.getContainer());
-    };
+		this._modalView.show();
+		this._onAfterOpen.trigger(this._modalView.getContainer());
+	};
 
-    Modal.prototype.close = function() 
-    {
-    	this._onBeforeClose.trigger(this._modalView.getContainer());
-    	this._modalView.remove();
-    	this._onAfterClose.trigger(this._id);
-    };
+	Modal.prototype.close = function() 
+	{
+		this._onBeforeClose.trigger(this._modalView.getContainer());
+		this._modalView.remove();
+		this._onAfterClose.trigger(this._id);
+	};
 
 
-    this.Modal = Modal;
+	this.Modal = Modal;
+});
+namespace('OUI.components', function (window) {
+	'use strict';
+
+
+	var Event = window.duct.Event;
+	var IdGenerator = window.OUI.core.view.IdGenerator;
+	var ToastView = window.OUI.views.ToastView;
+
+
+	/**
+	 * @class OUI.components.Toast
+	 */
+	function Toast(delay)
+	{
+		Classy.classify(this);
+
+		this._id 		= IdGenerator('oui-toast');
+
+		this._toastView = new ToastView(this, delay);
+				
+		this._onAdd 	= new Event('toast.onAdd');
+		this._onDismiss = new Event('toast.onDismiss');
+
+		this.onAdd(this._toastView.bindDismiss);
+	};
+
+
+	Toast.prototype.getId = function ()
+	{
+		return this._id;
+	};
+
+	Toast.prototype.onAdd = function (callback)
+	{
+		this._onAdd.add(callback);
+	};
+
+	Toast.prototype.onDismiss = function (callback)
+	{
+		this._onDismiss.add(callback);
+	};
+
+
+	Toast.prototype.add = function (message)
+	{
+		this._toastView.show(message);
+		this._onAdd.trigger(this._id);
+	};
+
+	Toast.prototype.dismiss = function ()
+	{
+		this._toastView.remove();
+		this._onDismiss.trigger(this._id);
+	};
+
+
+	this.Toast = Toast;
 });

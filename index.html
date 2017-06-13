@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>OUI</title>
 
+    <link href="font/entypo.css" media="screen" rel="stylesheet" type="text/css">
     <link href="dist/okto-ui.css" media="screen" rel="stylesheet" type="text/css">
 </head>
 <body>
@@ -13,6 +14,8 @@
    <a href="" class="dialog">Confirm</a>
 
    <a href="" class="menu">Toggle Menu</a>
+
+   <a href="" class="toast">Show Message</a>
 
    <div class="my-menu hidden">
         <a href="">My menu</a>
@@ -39,6 +42,8 @@
         </div>
    </div>
 
+   
+
     <script src="vendor/jquery/dist/jquery.min.js"></script>
     <script src="vendor/handlebars/handlebars.runtime.min.js"></script>
     <script src="vendor/oktopost-namespace/web/namespace.js"></script>
@@ -58,6 +63,22 @@
             var Dialog = window.OUI.components.Dialog;
             var Modal = window.OUI.components.Modal;
             var Menu = window.OUI.components.Menu;
+            var Toast = window.OUI.components.Toast;
+
+
+            $('a.toast').on('click', function (e) {
+                e.preventDefault();
+                var message = new Toast(3000);
+
+                message.add('Lorem ipsum dolor sit amet, eos at iusto salutatus pri. Ei vim stet');
+                message.onAdd(function (id) {
+                    console.log('added ' + id);
+                });
+                message.onDismiss(function (id) {
+                    console.log('dismissed ' + id);
+                });
+            });
+            
 
             var myMenu = new Menu($('a.menu'), $('div.my-menu').html(), 'my-menu');
             
