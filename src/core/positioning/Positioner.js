@@ -1,9 +1,12 @@
-namespace('OUI.core.positioning', function () {
+namespace('OUI.core.positioning', function () 
+{
 	'use strict';
-
-	var is = plankton.is;
-	var Box = OUI.core.positioning.Box;
-	var Point = OUI.core.positioning.Point;
+	
+	
+	var is 		= plankton.is;
+	var Box 	= OUI.core.positioning.Box;
+	var Point	= OUI.core.positioning.Point;
+	
 	
 	/**
 	 * @class OUI.core.positioning.Positioner
@@ -21,6 +24,7 @@ namespace('OUI.core.positioning', function () {
 		this.relativePosition = null;
 	};
 	
+	
 	Positioner.prototype._transformTarget = function (area, initialX, initialY) 
 	{
 		initialX = initialX || 0;
@@ -34,19 +38,25 @@ namespace('OUI.core.positioning', function () {
 	
 	Positioner.prototype._prepareArea = function (area) 
 	{
-		if (!area.box.intersect(this.container))
+		if (!area.box.isIntersect(this.container))
 		{
 			return false;
 		}
 		
-		if (area.box.intersectsBorder(this.container))
+		if (area.box.isCrossBorder(this.container))
 		{
-			area.box.subtractIntersect(this.container);
+			area.box.intersect(this.container);
 		}
 		
 		return !(area.box.w() < this.target.w() || area.box.h() < this.target.h());
 	};
-		
+	
+	Positioner.prototype._subtractContainer = function (point) 
+	{
+		return new Point(point.x - this.container.x(), point.y - this.container.y());
+	};
+	
+	
 	Positioner.prototype.tryPutTargetInArea = function (area) 
 	{
 		if (!this._prepareArea(area))
@@ -56,11 +66,11 @@ namespace('OUI.core.positioning', function () {
 		
 		var target = this._transformTarget(area, area.initial.x, area.initial.y);
 		
-		if (target.intersectsBorder(area.box))
+		if (target.isCrossBorder(area.box))
 		{
 			target = this._transformTarget(area);
 			
-			if (target.intersectsBorder(area.box))
+			if (target.isCrossBorder(area.box))
 			{
 				return false;
 			}
@@ -91,11 +101,12 @@ namespace('OUI.core.positioning', function () {
 		
 		if (isAbsolute)
 		{
-			return this.absolutePosition;
+			return this._subtractContainer(this.absolutePosition);
 		}
 		
-		return this.relativePosition;
+		return this._subtractContainer(this.relativePosition);
 	};
+	
 	
 	this.Positioner = Positioner;
 });

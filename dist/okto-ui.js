@@ -2,238 +2,6 @@
 	window.OUI = new Namespace(window);
 	window.namespace = OUI.getCreator();
 })();
-namespace('OUI.core.positioning', function () {
-	'use strict';
-
-	
-	/**
-	 * @class OUI.core.positioning.Box
-	 */
-	var Box = function (point, size) 
-	{
-		Classy.classify(this);
-		
-		/** @type {OUI.core.positioning.Point} */
-		this._point = point;
-
-		/** @type {OUI.core.positioning.Point} */
-		this._size = size;
-	};	
-	
-	Box.prototype._debug = function () 
-	{
-		console.log(this.x(), this.y(), this.w(), this.h());	
-	};
-	
-	Box.prototype._intersectHorizontal = function (x, w)
-	{
-		return !(this.x()+this.w() <= x || x+w <= this.x());
-	};
-
-	Box.prototype._intersectVertical = function (y, h)
-	{
-		return !(this.y()+this.h() <= y || y+h <= this.y());
-	};
-	
-	Box.prototype._intersectHorizontalBorder = function (x, w)
-	{
-		return ((this.x() < x) && (this.x() + this.w() > x))
-			|| (((this.x() + this.w()) > (x + w)) && (this.x() > x));
-	};
-
-	Box.prototype._intersectVerticalBorder = function (y, h)
-	{
-		return ((this.y() < y) && (this.y() + this.h() > y))
-			|| ((this.y() + this.h() > y + h) && (this.y() > y));
-	};
-	
-	Box.prototype._subtractHorizontal = function (x, w) 
-	{
-		if (x > this.x())
-		{
-			var widthSubtract = x - this.x();
-			this._point.x = x;
-			this._size.x -= widthSubtract > 0 ? widthSubtract : -widthSubtract; 
-		}
-		
-		if ((x + w) < (this.x() + this.w()))
-		{
-			this._size.x = x + w - this.x();
-		}
-	};
-	
-	Box.prototype._subtractVertical = function (y, h) 
-	{
-		if (y > this.y())
-		{
-			var heightSubtract = y - this.y();
-			this._point.y = y;
-			this._size.y -= heightSubtract > 0 ? heightSubtract : -heightSubtract; 
-		}
-		
-		if ((y + h) < (this.y() + this.h()))
-		{
-			this._size.y = y + h - this.y();
-		}
-	};
-		
-	Box.prototype.x = function ()
-	{
-		return this._point.x;	
-	};
-
-	Box.prototype.y = function ()
-	{
-		return this._point.y;	
-	};
-
-	Box.prototype.w = function ()
-	{
-		return this._size.x;	
-	};
-		
-	Box.prototype.h = function ()
-	{
-		return this._size.y;	
-	};
-	
-	Box.prototype.intersect = function (box) 
-	{
-		return this._intersectHorizontal(box.x(), box.w()) && this._intersectVertical(box.y(), box.h());
-	};
-	
-	Box.prototype.intersectsBorder = function (box) 
-	{
-		return this._intersectHorizontalBorder(box.x(), box.w()) || this._intersectVerticalBorder(box.y(), box.h());
-	};
-	
-	Box.prototype.subtractIntersect = function (box) 
-	{
-		this._subtractHorizontal(box.x(), box.w());
-		this._subtractVertical(box.y(), box.h());
-	};
-	
-	
-	this.Box = Box;
-});
-namespace('OUI.core.positioning', function () {
-	'use strict';
-
-	/**
-	 * @class OUI.core.positioning.Point
-	 */
-	var Point = function (x, y) 
-	{	
-		Classy.classify(this);
-		
-		this.x = x;
-		this.y = y;
-	};
-	
-	
-	this.Point = Point;
-});
-namespace('OUI.core.positioning', function () {
-	'use strict';
-
-	var is = plankton.is;
-	var Box = OUI.core.positioning.Box;
-	var Point = OUI.core.positioning.Point;
-	
-	/**
-	 * @class OUI.core.positioning.Positioner
-	 */
-	var Positioner = function (data) 
-	{	
-		Classy.classify(this);
-		
-		this.container = data.container;
-		this.related = data.related;
-		this.target = data.target;
-		this.areas = data.areas;
-		
-		this.absolutePosition = null;
-		this.relativePosition = null;
-	};
-	
-	Positioner.prototype._transformTarget = function (area, initialX, initialY) 
-	{
-		initialX = initialX || 0;
-		initialY = initialY || 0;
-		
-		var newX = area.box.x() + initialX;
-		var newY = area.box.y() + initialY;
-		
-		return new Box(new Point(newX, newY), new Point(this.target.w(), this.target.h()));
-	};
-	
-	Positioner.prototype._prepareArea = function (area) 
-	{
-		if (!area.box.intersect(this.container))
-		{
-			return false;
-		}
-		
-		if (area.box.intersectsBorder(this.container))
-		{
-			area.box.subtractIntersect(this.container);
-		}
-		
-		return !(area.box.w() < this.target.w() || area.box.h() < this.target.h());
-	};
-		
-	Positioner.prototype.tryPutTargetInArea = function (area) 
-	{
-		if (!this._prepareArea(area))
-		{
-			return false;
-		}
-		
-		var target = this._transformTarget(area, area.initial.x, area.initial.y);
-		
-		if (target.intersectsBorder(area.box))
-		{
-			target = this._transformTarget(area);
-			
-			if (target.intersectsBorder(area.box))
-			{
-				return false;
-			}
-		}
-		
-		this.absolutePosition = new Point(target.x(), target.y());
-		this.relativePosition = new Point(target.x() - this.related.x(), target.y() - this.related.y());
-		
-		return true;
-	};
-		
-	Positioner.prototype.getPosition = function (isAbsolute) 
-	{
-		isAbsolute = isAbsolute || false;
-		
-		if (is.empty(this.areas))
-			return false;
-
-		var index;
-		
-		for (index = 0; index < this.areas.length; ++index)
-		{
-			if (this.tryPutTargetInArea(this.areas[index]))
-			{
-				break;
-			}
-		}
-		
-		if (isAbsolute)
-		{
-			return this.absolutePosition;
-		}
-		
-		return this.relativePosition;
-	};
-	
-	this.Positioner = Positioner;
-});
 namespace('OUI.core.view', function (window) {
 	'use strict';
 
@@ -294,12 +62,258 @@ namespace('OUI.core.view', function (window) {
 
 	this.IdGenerator = IdGenerator;
 });
+namespace('OUI.core.positioning', function () {
+	'use strict';
+
+	
+	/**
+	 * @class OUI.core.positioning.Box
+	 */
+	var Box = function (point, size) 
+	{
+		Classy.classify(this);
+		
+		/** @type {OUI.core.positioning.Point} */
+		this._point = point;
+
+		/** @type {OUI.core.positioning.Point} */
+		this._size = size;
+	};	
+	
+	Box.prototype._debug = function () 
+	{
+		console.log(this.x(), this.y(), this.w(), this.h());	
+	};
+	
+	Box.prototype._isIntersectHorizontal = function (x, w)
+	{
+		return !(this.x()+this.w() <= x || x+w <= this.x());
+	};
+
+	Box.prototype._isIntersectVertical = function (y, h)
+	{
+		return !(this.y()+this.h() <= y || y+h <= this.y());
+	};
+	
+	Box.prototype._crossHorizontalBorder = function (x, w)
+	{
+		return ((this.x() < x) && (this.x() + this.w() > x))
+			|| (((this.x() + this.w()) > (x + w)) && (this.x() > x));
+	};
+
+	Box.prototype._crossVerticalBorder = function (y, h)
+	{
+		return ((this.y() < y) && (this.y() + this.h() > y))
+			|| ((this.y() + this.h() > y + h) && (this.y() > y));
+	};
+	
+	Box.prototype._intersectHorizontal = function (x, w) 
+	{
+		if (x > this.x())
+		{
+			var widthSubtract = x - this.x();
+			this._point.x = x;
+			this._size.x -= widthSubtract > 0 ? widthSubtract : -widthSubtract; 
+		}
+		
+		if ((x + w) < (this.x() + this.w()))
+		{
+			this._size.x = x + w - this.x();
+		}
+	};
+	
+	Box.prototype._intersectVertical = function (y, h) 
+	{
+		if (y > this.y())
+		{
+			var heightSubtract = y - this.y();
+			this._point.y = y;
+			this._size.y -= heightSubtract > 0 ? heightSubtract : -heightSubtract; 
+		}
+		
+		if ((y + h) < (this.y() + this.h()))
+		{
+			this._size.y = y + h - this.y();
+		}
+	};
+		
+	
+	Box.prototype.x = function ()
+	{
+		return this._point.x;	
+	};
+
+	Box.prototype.y = function ()
+	{
+		return this._point.y;	
+	};
+
+	Box.prototype.w = function ()
+	{
+		return this._size.x;	
+	};
+		
+	Box.prototype.h = function ()
+	{
+		return this._size.y;	
+	};
+	
+	Box.prototype.isIntersect = function (box) 
+	{
+		return this._isIntersectHorizontal(box.x(), box.w()) && this._isIntersectVertical(box.y(), box.h());
+	};
+	
+	Box.prototype.isCrossBorder = function (box) 
+	{
+		return this._crossHorizontalBorder(box.x(), box.w()) || this._crossVerticalBorder(box.y(), box.h());
+	};
+	
+	Box.prototype.intersect = function (box) 
+	{
+		this._intersectHorizontal(box.x(), box.w());
+		this._intersectVertical(box.y(), box.h());
+	};
+	
+	
+	this.Box = Box;
+});
+namespace('OUI.core.positioning', function () {
+	'use strict';
+
+	/**
+	 * @class OUI.core.positioning.Point
+	 */
+	var Point = function (x, y) 
+	{	
+		Classy.classify(this);
+		
+		this.x = x;
+		this.y = y;
+	};
+	
+	
+	this.Point = Point;
+});
+namespace('OUI.core.positioning', function () 
+{
+	'use strict';
+	
+	
+	var is 		= plankton.is;
+	var Box 	= OUI.core.positioning.Box;
+	var Point	= OUI.core.positioning.Point;
+	
+	
+	/**
+	 * @class OUI.core.positioning.Positioner
+	 */
+	var Positioner = function (data) 
+	{	
+		Classy.classify(this);
+		
+		this.container = data.container;
+		this.related = data.related;
+		this.target = data.target;
+		this.areas = data.areas;
+		
+		this.absolutePosition = null;
+		this.relativePosition = null;
+	};
+	
+	
+	Positioner.prototype._transformTarget = function (area, initialX, initialY) 
+	{
+		initialX = initialX || 0;
+		initialY = initialY || 0;
+		
+		var newX = area.box.x() + initialX;
+		var newY = area.box.y() + initialY;
+		
+		return new Box(new Point(newX, newY), new Point(this.target.w(), this.target.h()));
+	};
+	
+	Positioner.prototype._prepareArea = function (area) 
+	{
+		if (!area.box.isIntersect(this.container))
+		{
+			return false;
+		}
+		
+		if (area.box.isCrossBorder(this.container))
+		{
+			area.box.intersect(this.container);
+		}
+		
+		return !(area.box.w() < this.target.w() || area.box.h() < this.target.h());
+	};
+	
+	Positioner.prototype._subtractContainer = function (point) 
+	{
+		return new Point(point.x - this.container.x(), point.y - this.container.y());
+	};
+	
+	
+	Positioner.prototype.tryPutTargetInArea = function (area) 
+	{
+		if (!this._prepareArea(area))
+		{
+			return false;
+		}
+		
+		var target = this._transformTarget(area, area.initial.x, area.initial.y);
+		
+		if (target.isCrossBorder(area.box))
+		{
+			target = this._transformTarget(area);
+			
+			if (target.isCrossBorder(area.box))
+			{
+				return false;
+			}
+		}
+		
+		this.absolutePosition = new Point(target.x(), target.y());
+		this.relativePosition = new Point(target.x() - this.related.x(), target.y() - this.related.y());
+		
+		return true;
+	};
+		
+	Positioner.prototype.getPosition = function (isAbsolute) 
+	{
+		isAbsolute = isAbsolute || false;
+		
+		if (is.empty(this.areas))
+			return false;
+
+		var index;
+		
+		for (index = 0; index < this.areas.length; ++index)
+		{
+			if (this.tryPutTargetInArea(this.areas[index]))
+			{
+				break;
+			}
+		}
+		
+		if (isAbsolute)
+		{
+			return this._subtractContainer(this.absolutePosition);
+		}
+		
+		return this._subtractContainer(this.relativePosition);
+	};
+	
+	
+	this.Positioner = Positioner;
+});
 namespace('OUI.core.positioning.prepared', function (window) {
 	'use strict';
 
-	var is = plankton.is;
-	var Point = OUI.core.positioning.Point;
-	var Box = OUI.core.positioning.Box;
+	
+	var is 			= plankton.is;
+	var Point 		= OUI.core.positioning.Point;
+	var Box 		= OUI.core.positioning.Box;
+	var Positioner 	= OUI.core.positioning.Positioner;
 	
 	
 	var defaults = {
@@ -308,7 +322,8 @@ namespace('OUI.core.positioning.prepared', function (window) {
 		relatedElement: null,
 		relatedOffset: 0,
 		targetElement: null,
-		targetOffset: 0
+		targetOffset: 0,
+		isAbsolute: false
 	};
 	
 	
@@ -425,18 +440,18 @@ namespace('OUI.core.positioning.prepared', function (window) {
 		
 		var getTargetBox = function () 
 		{
-			return getElementBox(self.settings.targetElement, self.settings.targetOffset);
+			return getElementBox(self.settings.targetElement);
 		};
 		
 		var getSide = function (relatedBox, targetBox, direction) 
 		{
 			if (direction === 1)
 			{
-				var x = relatedBox.x() + relatedBox.w();
+				var x = relatedBox.x() + relatedBox.w() +  self.settings.targetOffset;
 			}
 			else
 			{
-				x = relatedBox.x() - targetBox.w();
+				x = relatedBox.x() - targetBox.w() -  self.settings.targetOffset;
 			}
 			
 			var y = relatedBox.y() - targetBox.h();
@@ -477,7 +492,14 @@ namespace('OUI.core.positioning.prepared', function (window) {
 			}
 		};
 		
-		return getData();
+		var getPosition = function () 
+		{
+			var positioner = new Positioner(getData());
+			
+			return positioner.getPosition(self.settings.isAbsolute);	
+		};
+		
+		return getPosition();
 	}
 
 	this.SidesWithCornersPosition = SidesWithCornersPosition;

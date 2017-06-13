@@ -1,9 +1,11 @@
 namespace('OUI.core.positioning.prepared', function (window) {
 	'use strict';
 
-	var is = plankton.is;
-	var Point = OUI.core.positioning.Point;
-	var Box = OUI.core.positioning.Box;
+	
+	var is 			= plankton.is;
+	var Point 		= OUI.core.positioning.Point;
+	var Box 		= OUI.core.positioning.Box;
+	var Positioner 	= OUI.core.positioning.Positioner;
 	
 	
 	var defaults = {
@@ -12,7 +14,8 @@ namespace('OUI.core.positioning.prepared', function (window) {
 		relatedElement: null,
 		relatedOffset: 0,
 		targetElement: null,
-		targetOffset: 0
+		targetOffset: 0,
+		isAbsolute: false
 	};
 	
 	
@@ -129,18 +132,18 @@ namespace('OUI.core.positioning.prepared', function (window) {
 		
 		var getTargetBox = function () 
 		{
-			return getElementBox(self.settings.targetElement, self.settings.targetOffset);
+			return getElementBox(self.settings.targetElement);
 		};
 		
 		var getSide = function (relatedBox, targetBox, direction) 
 		{
 			if (direction === 1)
 			{
-				var x = relatedBox.x() + relatedBox.w();
+				var x = relatedBox.x() + relatedBox.w() +  self.settings.targetOffset;
 			}
 			else
 			{
-				x = relatedBox.x() - targetBox.w();
+				x = relatedBox.x() - targetBox.w() -  self.settings.targetOffset;
 			}
 			
 			var y = relatedBox.y() - targetBox.h();
@@ -181,7 +184,14 @@ namespace('OUI.core.positioning.prepared', function (window) {
 			}
 		};
 		
-		return getData();
+		var getPosition = function () 
+		{
+			var positioner = new Positioner(getData());
+			
+			return positioner.getPosition(self.settings.isAbsolute);	
+		};
+		
+		return getPosition();
 	}
 
 	this.SidesWithCornersPosition = SidesWithCornersPosition;

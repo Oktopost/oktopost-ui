@@ -41,6 +41,14 @@
             <a href="">Open small modal</a>
         </div>
    </div>
+   
+   <div class="clear:both"></div>
+   
+   <div id="positioner-container" style="background-color: #CCCCCC; width: 590px; height: 140px; margin-top: 150px; position: relative;">
+		<div id="related" style="width:100px; position: absolute; height: 100px; left: 140px; top: 30px; background-color: #5b8c00">
+			related
+		</div>
+   </div>
 
    
 
@@ -125,6 +133,32 @@
 
                 bigModal.open();
             });
+            
+            var SidesWithCornersPosition = window.OUI.core.positioning.prepared.SidesWithCornersPosition;
+			
+			var $target = $('<div />', {
+				text: 'positioned div',
+				style: 'width:100px; height: 100px; background-color: #1DA1F3; position: absolute'
+			});
+			
+			var $container = $('#positioner-container');
+			
+			var options = {
+				container: $container,
+				containerOffset: 0,
+				relatedElement: document.getElementById('related'),
+				relatedOffset: 0,
+				targetElement: $target,
+				targetOffset: 0,
+				isAbsolute: true
+			};
+			
+			var pos = new SidesWithCornersPosition(options);
+
+			$target.css({top: pos.y, left: pos.x});
+			
+			$container.append($target);
+            
         })();        
     </script>
 
