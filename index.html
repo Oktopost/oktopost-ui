@@ -25,6 +25,7 @@
             <a href="" data-oui-modal-close>X</a>
         </div>
         <div class="body">
+            <a href="">Popup menu</a>
             <p>Hello</p>
         </div>
    </div>
@@ -91,7 +92,12 @@
 
                         var smallContents = $('div.small-modal').html();
                         var smallModal = new Modal(smallContents, 'small');
-
+                        smallModal.onAfterOpen(function (smallModalContainer) {
+                            new Menu(
+                                smallModalContainer.find('a'), 
+                                $('div.my-menu').html(), 
+                                'my-menu');
+                        });
                         smallModal.open();
                     });
                 });
