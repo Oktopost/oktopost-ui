@@ -2,66 +2,6 @@
 	window.OUI = new Namespace(window);
 	window.namespace = OUI.getCreator();
 })();
-namespace('OUI.core.view', function (window) {
-	'use strict';
-
-
-	/**
-	 * @class OUI.core.view.FadeRemove
-	 */
-	function FadeRemove($container, extraClass, delay)
-	{
-		extraClass = extraClass || 'removing';
-		delay = delay || 200;
-
-		$container.addClass(extraClass);
-
-		setTimeout(function () {
-			$container.remove();
-		}, delay);
-	};
-	
-
-	this.FadeRemove = FadeRemove;
-});
-namespace('OUI.core.view', function (window) {
-	'use strict';
-
-
-	/**
-	 * @class OUI.core.view.Hbs
-	 */
-	function Hbs()
-	{
-		Classy.classify(this);
-	};
-
-
-	Hbs.prototype.get = function (name, options)
-	{
-		options = options || {};
-
-		return window.Handlebars['templates'][name].hbs(options);
-	};
-	
-
-	this.Hbs = Hbs;
-});
-namespace('OUI.core.view', function (window) {
-	'use strict';
-
-
-	/**
-	 * @class OUI.core.view.IdGenerator
-	 */
-	function IdGenerator(baseName)
-	{
-		return baseName + '-' + Math.floor(Date.now());
-	};
-	
-
-	this.IdGenerator = IdGenerator;
-});
 namespace('OUI.core.positioning', function () {
 	'use strict';
 
@@ -305,6 +245,66 @@ namespace('OUI.core.positioning', function ()
 	
 	
 	this.Positioner = Positioner;
+});
+namespace('OUI.core.view', function (window) {
+	'use strict';
+
+
+	/**
+	 * @class OUI.core.view.FadeRemove
+	 */
+	function FadeRemove($container, extraClass, delay)
+	{
+		extraClass = extraClass || 'removing';
+		delay = delay || 200;
+
+		$container.addClass(extraClass);
+
+		setTimeout(function () {
+			$container.remove();
+		}, delay);
+	};
+	
+
+	this.FadeRemove = FadeRemove;
+});
+namespace('OUI.core.view', function (window) {
+	'use strict';
+
+
+	/**
+	 * @class OUI.core.view.Hbs
+	 */
+	function Hbs()
+	{
+		Classy.classify(this);
+	};
+
+
+	Hbs.prototype.get = function (name, options)
+	{
+		options = options || {};
+
+		return window.Handlebars['templates'][name].hbs(options);
+	};
+	
+
+	this.Hbs = Hbs;
+});
+namespace('OUI.core.view', function (window) {
+	'use strict';
+
+
+	/**
+	 * @class OUI.core.view.IdGenerator
+	 */
+	function IdGenerator(baseName)
+	{
+		return baseName + '-' + Math.floor(Date.now());
+	};
+	
+
+	this.IdGenerator = IdGenerator;
 });
 namespace('OUI.core.positioning.prepared', function (window) {
 	'use strict';
