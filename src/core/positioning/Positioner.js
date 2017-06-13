@@ -23,6 +23,9 @@ namespace('OUI.core.positioning', function () {
 	
 	Positioner.prototype._transformTarget = function (area, initialX, initialY) 
 	{
+		initialX = initialX || 0;
+		initialY = initialY || 0;
+		
 		var newX = area.box.x() + initialX;
 		var newY = area.box.y() + initialY;
 		
@@ -41,12 +44,7 @@ namespace('OUI.core.positioning', function () {
 			area.box.subtractIntersect(this.container);
 		}
 		
-		if (area.box.w() < this.target.w() || area.box.h() < this.target.h())
-		{
-			return false;
-		}
-		
-		return true;
+		return !(area.box.w() < this.target.w() || area.box.h() < this.target.h());
 	};
 		
 	Positioner.prototype.tryPutTargetInArea = function (area) 
@@ -60,7 +58,7 @@ namespace('OUI.core.positioning', function () {
 		
 		if (target.intersectsBorder(area.box))
 		{
-			target = this._transformTarget(area, 0, 0);
+			target = this._transformTarget(area);
 			
 			if (target.intersectsBorder(area.box))
 			{
@@ -70,6 +68,8 @@ namespace('OUI.core.positioning', function () {
 		
 		this.absolutePosition = new Point(target.x(), target.y());
 		this.relativePosition = new Point(target.x() - this.related.x(), target.y() - this.related.y());
+		
+		return true;
 	};
 		
 	Positioner.prototype.getPosition = function (isAbsolute) 
@@ -83,7 +83,10 @@ namespace('OUI.core.positioning', function () {
 		
 		for (index = 0; index < this.areas.length; ++index)
 		{
-			this.tryPutTargetInArea(this.areas[index]);	
+			if (this.tryPutTargetInArea(this.areas[index]))
+			{
+				break;
+			}
 		}
 		
 		if (isAbsolute)

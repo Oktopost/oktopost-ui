@@ -35,21 +35,21 @@ namespace('OUI.core.positioning', function () {
 	{
 		return ((this.x() < x) && (this.x() + this.w() > x))
 			|| (((this.x() + this.w()) > (x + w)) && (this.x() > x));
-		// return !(this.x()+this.w() < x || x+w < this.x());
 	};
 
 	Box.prototype._intersectVerticalBorder = function (y, h)
 	{
 		return ((this.y() < y) && (this.y() + this.h() > y))
 			|| ((this.y() + this.h() > y + h) && (this.y() > y));
-		// return !(this.y()+this.h() < y || y+h < this.y());
 	};
 	
 	Box.prototype._subtractHorizontal = function (x, w) 
 	{
 		if (x > this.x())
 		{
+			var widthSubtract = x - this.x();
 			this._point.x = x;
+			this._size.x -= widthSubtract > 0 ? widthSubtract : -widthSubtract; 
 		}
 		
 		if ((x + w) < (this.x() + this.w()))
@@ -62,7 +62,9 @@ namespace('OUI.core.positioning', function () {
 	{
 		if (y > this.y())
 		{
+			var heightSubtract = y - this.y();
 			this._point.y = y;
+			this._size.y -= heightSubtract > 0 ? heightSubtract : -heightSubtract; 
 		}
 		
 		if ((y + h) < (this.y() + this.h()))

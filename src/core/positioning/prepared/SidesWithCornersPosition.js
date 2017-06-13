@@ -51,7 +51,7 @@ namespace('OUI.core.positioning.prepared', function (window) {
 		{
 			var leftWithOffset = position.left - offset;
 			var topWithOffset = position.top - offset;
-			
+
 			return {
 				left: leftWithOffset > 0 ? leftWithOffset : 0,
 				top: topWithOffset > 0 ? topWithOffset : 0
@@ -78,8 +78,8 @@ namespace('OUI.core.positioning.prepared', function (window) {
 			}
 			
 			return {
-				width: el.width() + offset, 
-				height: el.height() + offset
+				width: el.width() + offset * 2, 
+				height: el.height() + offset * 2
 			};
 		};
 		
@@ -93,6 +93,7 @@ namespace('OUI.core.positioning.prepared', function (window) {
 			}
 			
 			var position = getPositionWithOffset(el, offset);
+
 			var size = getSizeWithOffset(el, offset);
 			
 			return prepareBox(position.left, position.top, size.width, size.height);
@@ -133,15 +134,23 @@ namespace('OUI.core.positioning.prepared', function (window) {
 		
 		var getSide = function (relatedBox, targetBox, direction) 
 		{
-			var x = relatedBox.x() + (relatedBox.w() * direction);
+			if (direction === 1)
+			{
+				var x = relatedBox.x() + relatedBox.w();
+			}
+			else
+			{
+				x = relatedBox.x() - targetBox.w();
+			}
+			
 			var y = relatedBox.y() - targetBox.h();
 
 			var w = targetBox.w();
 			var h = relatedBox.h() + (targetBox.h() * 2);
-			
+
 			return {
 				box: prepareBox(x, y, w, h),
-				initial: preparePoint(x, y)
+				initial: preparePoint(0, 0)
 			}
 		};
 		

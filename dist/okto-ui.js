@@ -39,21 +39,21 @@ namespace('OUI.core.positioning', function () {
 	{
 		return ((this.x() < x) && (this.x() + this.w() > x))
 			|| (((this.x() + this.w()) > (x + w)) && (this.x() > x));
-		// return !(this.x()+this.w() < x || x+w < this.x());
 	};
 
 	Box.prototype._intersectVerticalBorder = function (y, h)
 	{
 		return ((this.y() < y) && (this.y() + this.h() > y))
 			|| ((this.y() + this.h() > y + h) && (this.y() > y));
-		// return !(this.y()+this.h() < y || y+h < this.y());
 	};
 	
 	Box.prototype._subtractHorizontal = function (x, w) 
 	{
 		if (x > this.x())
 		{
+			var widthSubtract = x - this.x();
 			this._point.x = x;
+			this._size.x -= widthSubtract > 0 ? widthSubtract : -widthSubtract; 
 		}
 		
 		if ((x + w) < (this.x() + this.w()))
@@ -66,7 +66,9 @@ namespace('OUI.core.positioning', function () {
 	{
 		if (y > this.y())
 		{
+			var heightSubtract = y - this.y();
 			this._point.y = y;
+			this._size.y -= heightSubtract > 0 ? heightSubtract : -heightSubtract; 
 		}
 		
 		if ((y + h) < (this.y() + this.h()))
@@ -156,6 +158,9 @@ namespace('OUI.core.positioning', function () {
 	
 	Positioner.prototype._transformTarget = function (area, initialX, initialY) 
 	{
+		initialX = initialX || 0;
+		initialY = initialY || 0;
+		
 		var newX = area.box.x() + initialX;
 		var newY = area.box.y() + initialY;
 		
@@ -174,12 +179,7 @@ namespace('OUI.core.positioning', function () {
 			area.box.subtractIntersect(this.container);
 		}
 		
-		if (area.box.w() < this.target.w() || area.box.h() < this.target.h())
-		{
-			return false;
-		}
-		
-		return true;
+		return !(area.box.w() < this.target.w() || area.box.h() < this.target.h());
 	};
 		
 	Positioner.prototype.tryPutTargetInArea = function (area) 
@@ -193,7 +193,7 @@ namespace('OUI.core.positioning', function () {
 		
 		if (target.intersectsBorder(area.box))
 		{
-			target = this._transformTarget(area, 0, 0);
+			target = this._transformTarget(area);
 			
 			if (target.intersectsBorder(area.box))
 			{
@@ -203,6 +203,8 @@ namespace('OUI.core.positioning', function () {
 		
 		this.absolutePosition = new Point(target.x(), target.y());
 		this.relativePosition = new Point(target.x() - this.related.x(), target.y() - this.related.y());
+		
+		return true;
 	};
 		
 	Positioner.prototype.getPosition = function (isAbsolute) 
@@ -216,7 +218,10 @@ namespace('OUI.core.positioning', function () {
 		
 		for (index = 0; index < this.areas.length; ++index)
 		{
-			this.tryPutTargetInArea(this.areas[index]);	
+			if (this.tryPutTargetInArea(this.areas[index]))
+			{
+				break;
+			}
 		}
 		
 		if (isAbsolute)
@@ -342,7 +347,7 @@ namespace('OUI.core.positioning.prepared', function (window) {
 		{
 			var leftWithOffset = position.left - offset;
 			var topWithOffset = position.top - offset;
-			
+
 			return {
 				left: leftWithOffset > 0 ? leftWithOffset : 0,
 				top: topWithOffset > 0 ? topWithOffset : 0
@@ -369,8 +374,8 @@ namespace('OUI.core.positioning.prepared', function (window) {
 			}
 			
 			return {
-				width: el.width() + offset, 
-				height: el.height() + offset
+				width: el.width() + offset * 2, 
+				height: el.height() + offset * 2
 			};
 		};
 		
@@ -384,6 +389,7 @@ namespace('OUI.core.positioning.prepared', function (window) {
 			}
 			
 			var position = getPositionWithOffset(el, offset);
+
 			var size = getSizeWithOffset(el, offset);
 			
 			return prepareBox(position.left, position.top, size.width, size.height);
@@ -424,15 +430,23 @@ namespace('OUI.core.positioning.prepared', function (window) {
 		
 		var getSide = function (relatedBox, targetBox, direction) 
 		{
-			var x = relatedBox.x() + (relatedBox.w() * direction);
+			if (direction === 1)
+			{
+				var x = relatedBox.x() + relatedBox.w();
+			}
+			else
+			{
+				x = relatedBox.x() - targetBox.w();
+			}
+			
 			var y = relatedBox.y() - targetBox.h();
 
 			var w = targetBox.w();
 			var h = relatedBox.h() + (targetBox.h() * 2);
-			
+
 			return {
 				box: prepareBox(x, y, w, h),
-				initial: preparePoint(x, y)
+				initial: preparePoint(0, 0)
 			}
 		};
 		
