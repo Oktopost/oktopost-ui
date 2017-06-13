@@ -1,9 +1,9 @@
-namespace('OktoUI.core.positioning.prepared', function () {
+namespace('OUI.core.positioning.prepared', function () {
 	'use strict';
 
 
-	var Point = OktoUI.core.positioning.Point;
-	var Box = OktoUI.core.positioning.Box;
+	var Point = OUI.core.positioning.Point;
+	var Box = OUI.core.positioning.Box;
 	
 	
 	var defaults = {
@@ -17,7 +17,7 @@ namespace('OktoUI.core.positioning.prepared', function () {
 	
 	
 	/**
-	 * @class OktoUI.core.positioning.prepared.SidesWithCornersPosition
+	 * @class OUI.core.positioning.prepared.SidesWithCornersPosition
 	 */
 	var SidesWithCornersPosition = function (options)
 	{
