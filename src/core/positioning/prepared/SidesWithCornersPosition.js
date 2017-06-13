@@ -1,13 +1,13 @@
-namespace('OUI.core.positioning.prepared', function () {
+namespace('OUI.core.positioning.prepared', function (window) {
 	'use strict';
 
-
+	var is = plankton.is;
 	var Point = OUI.core.positioning.Point;
 	var Box = OUI.core.positioning.Box;
 	
 	
 	var defaults = {
-		container: $('window'),
+		container: window,
 		containerOffset: 0,
 		relatedElement: null,
 		relatedOffset: 0,
@@ -19,23 +19,83 @@ namespace('OUI.core.positioning.prepared', function () {
 	/**
 	 * @class OUI.core.positioning.prepared.SidesWithCornersPosition
 	 */
-	var SidesWithCornersPosition = function (options)
+	function SidesWithCornersPosition(options)
 	{
-		Classy.classify(this);
-		
 		var self = this;
 		
 		self.settings = $.extend(true, {}, defaults, options);
+		
+		var prepareElement = function (el) 
+		{
+			if (el instanceof HTMLElement)
+			{
+				return $(el);
+			}
+			
+			return el;
+		};
+		
+		self.settings.container = prepareElement(self.settings.container);
+		self.settings.relatedElement = prepareElement(self.settings.relatedElement);
+		self.settings.targetElement = prepareElement(self.settings.targetElement);
+		
+			
+		var settingsIsValid = function () 
+		{		
+			return (is.object(self.settings.container) || $.isWindow(self.settings.container)) 
+				&& (is.object(self.settings.relatedElement))
+				&& (is.object(self.settings.targetElement));
+		};
+		
+		var applyOffset = function (position, offset) 
+		{
+			var leftWithOffset = position.left - offset;
+			var topWithOffset = position.top - offset;
+			
+			return {
+				left: leftWithOffset > 0 ? leftWithOffset : 0,
+				top: topWithOffset > 0 ? topWithOffset : 0
+			};
+		};
+		
+		var getPositionWithOffset = function (el, offset) 
+		{
+			var position = {left: 0, top: 0};
+			
+			if (!$.isWindow(el))
+			{
+				position = el.position();	
+			}
+			
+			return applyOffset(position, offset);
+		};
+		
+		var getSizeWithOffset = function (el, offset) 
+		{
+			if ($.isWindow(el))
+			{
+				el = $(el);
+			}
+			
+			return {
+				width: el.width() + offset, 
+				height: el.height() + offset
+			};
+		};
 		
 		var getElementBox = function (el, offset) 
 		{
 			offset = offset || 0;
 			
-			var position = el.position();
-			var width = el.width();
-			var height = el.height();
+			if (el instanceof HTMLElement)
+			{
+				el = $(el);
+			}
 			
-			return prepareBox(position.left - offset, position.top - offset, width + offset, height + offset);
+			var position = getPositionWithOffset(el, offset);
+			var size = getSizeWithOffset(el, offset);
+			
+			return prepareBox(position.left, position.top, size.width, size.height);
 		};
 		
 		var preparePoint = function (x, y) 
@@ -71,11 +131,6 @@ namespace('OUI.core.positioning.prepared', function () {
 			return getElementBox(self.settings.targetElement, self.settings.targetOffset);
 		};
 		
-		var getLeftSide = function () 
-		{
-			
-		};
-		
 		var getSide = function (relatedBox, targetBox, direction) 
 		{
 			var x = relatedBox.x() + (relatedBox.w() * direction);
@@ -85,7 +140,7 @@ namespace('OUI.core.positioning.prepared', function () {
 			var h = relatedBox.h() + (targetBox.h() * 2);
 			
 			return {
-				area: prepareBox(x, y, w, h),
+				box: prepareBox(x, y, w, h),
 				initial: preparePoint(x, y)
 			}
 		};
@@ -100,13 +155,25 @@ namespace('OUI.core.positioning.prepared', function () {
 		
 		var getData = function () 
 		{
+			if (!settingsIsValid())
+			{
+				return {};
+			}
+			
 			var containerBox = getContainerBox();
 			var relatedBox = getRelatedBox();
 			var targetBox = getTargetBox();
 			
-			
+			return {
+				container: containerBox,
+				related: relatedBox,
+				target: targetBox,
+				areas : getAreas(relatedBox, targetBox)
+			}
 		};
 		
-	};
+		return getData();
+	}
 
+	this.SidesWithCornersPosition = SidesWithCornersPosition;
 });
