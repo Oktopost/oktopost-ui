@@ -2,6 +2,36 @@
 	window.OUI = new Namespace(window);
 	window.namespace = OUI.getCreator();
 })();
+namespace('OUI.core.view', function (window) 
+{
+	this.fadeRemove = function($container, extraClass, delay)
+	{
+		extraClass = extraClass || 'removing';
+		delay = delay || 200;
+
+		$container.addClass(extraClass);
+
+		setTimeout(function () {
+			$container.remove();
+		}, delay);
+	};
+});
+namespace('OUI.core.view', function (window) 
+{
+	this.hbs = function (name, options)
+	{
+		options = options || {};
+
+		return window.Handlebars['templates'][name].hbs(options);
+	};
+});
+namespace('OUI.core.view', function (window) 
+{
+	this.idGenerator = function (baseName)
+	{
+		return baseName + '-' + Math.random().toString(36).substr(2);
+	};
+});
 namespace('OUI.core.positioning', function () {
 	'use strict';
 
@@ -269,36 +299,6 @@ namespace('OUI.core.positioning', function ()
 	
 	
 	this.Positioner = Positioner;
-});
-namespace('OUI.core.view', function (window) 
-{
-	this.fadeRemove = function($container, extraClass, delay)
-	{
-		extraClass = extraClass || 'removing';
-		delay = delay || 200;
-
-		$container.addClass(extraClass);
-
-		setTimeout(function () {
-			$container.remove();
-		}, delay);
-	};
-});
-namespace('OUI.core.view', function (window) 
-{
-	this.hbs = function (name, options)
-	{
-		options = options || {};
-
-		return window.Handlebars['templates'][name].hbs(options);
-	};
-});
-namespace('OUI.core.view', function (window) 
-{
-	this.idGenerator = function (baseName)
-	{
-		return baseName + '-' + Math.random().toString(36).substr(2);
-	};
 });
 namespace('OUI.core.positioning.enum', function ()
 {
