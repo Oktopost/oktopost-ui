@@ -71,7 +71,7 @@ namespace('OUI.views', function (window)
 			targetElement: $target,
 			targetOffset: 0,
 			isAbsolute: true,
-			initialPosition: TargetPosition.right
+			initialPosition: TargetPosition.center
 		});
 
 		$target.offset({

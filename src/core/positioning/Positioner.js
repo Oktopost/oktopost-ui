@@ -42,13 +42,13 @@ namespace('OUI.core.positioning', function ()
 		return true;
 	};
 	
-	Positioner.prototype._transformTarget = function (area, initialX, initialY) 
+	Positioner.prototype._transformTarget = function (box, initialX, initialY) 
 	{
 		initialX = initialX || 0;
 		initialY = initialY || 0;
 		
-		var newX = area.box.x() + initialX;
-		var newY = area.box.y() + initialY;
+		var newX = box.x() + initialX;
+		var newY = box.y() + initialY;
 		
 		return new Box(new Point(newX, newY), new Point(this.target.w(), this.target.h()));
 	};
@@ -62,7 +62,12 @@ namespace('OUI.core.positioning', function ()
 		
 		if (area.box.isCrossBorder(this.container))
 		{
+			var originalX = area.box.x();
+			var originalY = area.box.y();
+			
 			area.box.intersect(this.container);
+			
+			this._subtractInitial(area, originalX, originalY);
 		}
 		
 		return !(area.box.w() < this.target.w() || area.box.h() < this.target.h());
@@ -73,24 +78,57 @@ namespace('OUI.core.positioning', function ()
 		return new Point(point.x - this.container.x(), point.y - this.container.y());
 	};
 	
+	Positioner.prototype._subtractInitial = function (area, originalX, originalY) 
+	{
+		area.initial.x = area.initial.x + originalX - area.box.x();
+		
+		if (area.initial.x < 0)
+		{
+			area.initial.x = 0;
+		}
+		
+		area.initial.y = area.initial.y + originalY - area.box.y();
+		
+		if (area.initial.y < 0)
+		{
+			area.initial.y = 0;
+		}
+	};
 	
-	Positioner.prototype.tryPutTargetInArea = function (area) 
+	Positioner.prototype._moveX = function (target, box) 
+	{
+		return -(target.x() + target.w() - box.x() - box.w());
+	};
+	
+	Positioner.prototype._moveY = function (target, box) 
+	{
+		return -(target.y() + target.h() - box.y() - box.h());
+	};
+	
+	Positioner.prototype._putInArea = function (box, moveX, moveY, area) 
+	{
+		var target = this._transformTarget(box, moveX, moveY);
+		
+		if (target.isCrossBorder(area.box))
+		{
+			target = this._putInArea(target, this._moveX(target, box), this._moveY(target, box), area);
+		}
+		
+		return target;
+	};
+	
+	Positioner.prototype._tryPutTargetInArea = function (area) 
 	{
 		if (!this._prepareArea(area))
 		{
 			return false;
 		}
 		
-		var target = this._transformTarget(area, area.initial.x, area.initial.y);
+		var target = this._putInArea(area.box, area.initial.x, area.initial.y, area);
 		
-		if (target.isCrossBorder(area.box))
+		if (!is.true(target))
 		{
-			target = this._transformTarget(area);
-			
-			if (target.isCrossBorder(area.box))
-			{
-				return false;
-			}
+			return false;
 		}
 		
 		this.absolutePosition = new Point(target.x(), target.y());
@@ -99,6 +137,7 @@ namespace('OUI.core.positioning', function ()
 		return true;
 	};
 		
+	
 	Positioner.prototype.getPosition = function (isAbsolute) 
 	{
 		isAbsolute = isAbsolute || false;
@@ -112,7 +151,7 @@ namespace('OUI.core.positioning', function ()
 		
 		for (index = 0; index < this.areas.length; ++index)
 		{
-			if (this.tryPutTargetInArea(this.areas[index]))
+			if (this._tryPutTargetInArea(this.areas[index]))
 			{
 				break;
 			}
@@ -120,7 +159,9 @@ namespace('OUI.core.positioning', function ()
 		
 		if (is.null(this.absolutePosition))
 		{
-			return null;
+			console.log('Error: imposible to put target in correct position');
+			
+			return new Point(this.areas[0].box.x(), this.areas[0].box.y());
 		}
 		
 		if (isAbsolute)

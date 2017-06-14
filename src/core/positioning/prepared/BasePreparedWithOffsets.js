@@ -307,7 +307,7 @@ namespace('OUI.core.positioning.prepared', function (window)
 		
 		for (index = 0; index < availableSides.length; ++index)
 		{
-			if (availableSides[index] === defaultArea)
+			if (availableSides[index] === this.settings.initialSide)
 			{
 				continue;
 			}
@@ -322,9 +322,7 @@ namespace('OUI.core.positioning.prepared', function (window)
 		
 		return areas;
 	};	
-
 	
-
 
 	BasePreparedWithOffsets.prototype.getData = function () 
 	{
