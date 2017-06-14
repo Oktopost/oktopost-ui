@@ -58,11 +58,11 @@ namespace('OUI.views', function (window) {
 			contents: this._contents,
 			extraClass: this._extraClass
 		}));
-
+		
 		var $container 	= this.getContainer();
 		var $target 	= $container.find('div.wrapper');
 		var $related 	= this._toggleElement;
-
+		
 		var position = new SidesWithCornersPosition({
 			container: $container,
 			containerOffset: 0,

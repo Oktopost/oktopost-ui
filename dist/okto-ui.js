@@ -375,7 +375,7 @@ namespace('OUI.core.positioning.prepared', function (window) {
 			
 			if (!$.isWindow(el))
 			{
-				position = el.position();	
+				position = el.offset();	
 			}
 			
 			return applyOffset(position, offset);
@@ -483,7 +483,7 @@ namespace('OUI.core.positioning.prepared', function (window) {
 			var containerBox = getContainerBox();
 			var relatedBox = getRelatedBox();
 			var targetBox = getTargetBox();
-			
+
 			return {
 				container: containerBox,
 				related: relatedBox,
@@ -627,11 +627,11 @@ namespace('OUI.views', function (window) {
 			contents: this._contents,
 			extraClass: this._extraClass
 		}));
-
+		
 		var $container 	= this.getContainer();
 		var $target 	= $container.find('div.wrapper');
 		var $related 	= this._toggleElement;
-
+		
 		var position = new SidesWithCornersPosition({
 			container: $container,
 			containerOffset: 0,

@@ -28,7 +28,7 @@
             <a href="" data-oui-modal-close>X</a>
         </div>
         <div class="body">
-            <a href="">Popup menu</a>
+            <a class="popup-toggle" href="#">Popup menu</a>
             <p>Hello</p>
         </div>
    </div>
@@ -123,7 +123,7 @@
                         var smallModal = new Modal(smallContents, 'small');
                         smallModal.onAfterOpen(function (smallModalContainer) {
                             new Menu(
-                                smallModalContainer.find('a'), 
+                                smallModalContainer.find('a.popup-toggle'), 
                                 $('div.my-menu').html(), 
                                 'my-menu');
                         });
@@ -135,14 +135,14 @@
             });
             
             var SidesWithCornersPosition = window.OUI.core.positioning.prepared.SidesWithCornersPosition;
-			
+
 			var $target = $('<div />', {
 				text: 'positioned div',
 				style: 'width:100px; height: 100px; background-color: #1DA1F3; position: absolute'
 			});
-			
+
 			var $container = $('#positioner-container');
-			
+
 			var options = {
 				container: $container,
 				containerOffset: 0,
@@ -152,11 +152,11 @@
 				targetOffset: 0,
 				isAbsolute: true
 			};
-			
+
 			var pos = new SidesWithCornersPosition(options);
 
 			$target.css({top: pos.y, left: pos.x});
-			
+
 			$container.append($target);
             
         })();        

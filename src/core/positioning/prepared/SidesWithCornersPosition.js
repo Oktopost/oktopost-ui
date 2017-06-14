@@ -67,7 +67,7 @@ namespace('OUI.core.positioning.prepared', function (window) {
 			
 			if (!$.isWindow(el))
 			{
-				position = el.position();	
+				position = el.offset();	
 			}
 			
 			return applyOffset(position, offset);
@@ -175,7 +175,7 @@ namespace('OUI.core.positioning.prepared', function (window) {
 			var containerBox = getContainerBox();
 			var relatedBox = getRelatedBox();
 			var targetBox = getTargetBox();
-			
+
 			return {
 				container: containerBox,
 				related: relatedBox,
