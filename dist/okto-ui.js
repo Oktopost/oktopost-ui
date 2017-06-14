@@ -245,9 +245,14 @@ namespace('OUI.core.positioning', function ()
 	{
 		var target = this._transformTarget(box, moveX, moveY);
 		
-		if (target.isCrossBorder(area.box))
+		while (target.isCrossBorder(area.box))
 		{
 			target = this._putInArea(target, this._moveX(target, box), this._moveY(target, box), area);
+			
+			if (target.x() < 0 || target.y() < 0)
+			{
+				return false;
+			}
 		}
 		
 		return target;
@@ -295,8 +300,7 @@ namespace('OUI.core.positioning', function ()
 		
 		if (is.null(this.absolutePosition))
 		{
-			console.log('Error: imposible to put target in correct position');
-			
+			console.log('Error: imposible to put target in correct position');			
 			return new Point(this.areas[0].box.x(), this.areas[0].box.y());
 		}
 		
