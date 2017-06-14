@@ -44,7 +44,7 @@
    
    <div class="clear:both"></div>
    
-   <div id="positioner-container" style="background-color: #CCCCCC; width: 590px; height: 440px; margin-top: 150px; position: relative;">
+   <div id="positioner-container" style="background-color: #CCCCCC; width: 590px; height: 700px; margin-top: 150px; position: relative;">
 		<div id="related" style="width:100px; position: absolute; height: 100px; left: 140px; top: 230px; background-color: #5b8c00">
 			related
 		</div>
@@ -92,7 +92,7 @@
             
             myMenu.onAfterOpen(function (container) {
                 var subMenu = new Menu(
-                    container.find('a'), 
+                    container.find('a.menu'), 
                     $('div.my-menu').html(), 
                     'my-sub-menu');
             });
@@ -135,10 +135,12 @@
             });
             
             var RoundWithCornersPosition = window.OUI.core.positioning.prepared.RoundWithCornersPosition;
-
+            var TargetPosition = window.OUI.core.positioning.enum.TargetPosition;
+            var TargetSide = window.OUI.core.positioning.enum.TargetSide;
+            
 			var $target = $('<div />', {
 				text: 'positioned div',
-				style: 'width:100px; height: 100px; background-color: #1DA1F3; position: absolute'
+				style: 'width:80px; height: 80px; background-color: #1DA1F3; position: absolute'
 			});
 
 			var $container = $('#positioner-container');
@@ -147,10 +149,12 @@
 				container: $container,
 				containerOffset: 0,
 				relatedElement: document.getElementById('related'),
-				relatedOffset: 0,
+				relatedOffset: 5,
 				targetElement: $target,
 				targetOffset: 0,
-				isAbsolute: true
+				isAbsolute: true,
+                initialPosition: TargetPosition.top,
+                initialSide: TargetSide.right
 			};
 
 			var pos = new RoundWithCornersPosition(options);

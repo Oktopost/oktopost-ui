@@ -4,6 +4,8 @@ namespace('OUI.core.positioning.prepared', function (window)
 
 	
 	var BasePreparedWithOffsets = OUI.core.positioning.prepared.BasePreparedWithOffsets;
+	var TargetSide = OUI.core.positioning.enum.TargetSide;
+	var TargetPosition = OUI.core.positioning.enum.TargetPosition;
 	
 	
 	var defaults = {
@@ -13,7 +15,9 @@ namespace('OUI.core.positioning.prepared', function (window)
 		relatedOffset: 0,
 		targetElement: null,
 		targetOffset: 0,
-		isAbsolute: false
+		isAbsolute: false,
+		initialSide: TargetSide.left,
+		initialPosition: TargetPosition.center
 	};
 	
 	
@@ -31,27 +35,14 @@ namespace('OUI.core.positioning.prepared', function (window)
 		BasePreparedWithOffsets.call(self, settings);
 		
 			
-		this._getSide = function (relatedBox, targetBox) 
-		{
-			var x = relatedBox.x() - targetBox.w() -  self.settings.targetOffset;
-
-			var y = relatedBox.y() - targetBox.h();
-
-			var w = targetBox.w();
-			var h = relatedBox.h() + (targetBox.h() * 2);
-
-			return {
-				box: this._prepareBox(x, y, w, h),
-				initial: this._preparePoint(0, 0)
-			}
-		};
+		this.availableSides = [
+			TargetSide.left
+		];
 		
-		this._getAreas = function (relatedBox, targetBox) 
+		this._getAvailableSides = function () 
 		{
-			return [
-				this._getSide(relatedBox, targetBox)
-			];
-		};	
+			return this.availableSides;	
+		};
 			
 		
 		return this.getPosition();
