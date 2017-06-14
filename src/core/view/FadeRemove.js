@@ -1,11 +1,6 @@
-namespace('OUI.core.view', function (window) {
-	'use strict';
-
-
-	/**
-	 * @class OUI.core.view.FadeRemove
-	 */
-	function FadeRemove($container, extraClass, delay)
+namespace('OUI.core.view', function (window) 
+{
+	this.fadeRemove = function($container, extraClass, delay)
 	{
 		extraClass = extraClass || 'removing';
 		delay = delay || 200;
@@ -16,7 +11,4 @@ namespace('OUI.core.view', function (window) {
 			$container.remove();
 		}, delay);
 	};
-	
-
-	this.FadeRemove = FadeRemove;
 });

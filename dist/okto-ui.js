@@ -270,14 +270,9 @@ namespace('OUI.core.positioning', function ()
 	
 	this.Positioner = Positioner;
 });
-namespace('OUI.core.view', function (window) {
-	'use strict';
-
-
-	/**
-	 * @class OUI.core.view.FadeRemove
-	 */
-	function FadeRemove($container, extraClass, delay)
+namespace('OUI.core.view', function (window) 
+{
+	this.fadeRemove = function($container, extraClass, delay)
 	{
 		extraClass = extraClass || 'removing';
 		delay = delay || 200;
@@ -288,47 +283,22 @@ namespace('OUI.core.view', function (window) {
 			$container.remove();
 		}, delay);
 	};
-	
-
-	this.FadeRemove = FadeRemove;
 });
-namespace('OUI.core.view', function (window) {
-	'use strict';
-
-
-	/**
-	 * @class OUI.core.view.Hbs
-	 */
-	function Hbs()
-	{
-		Classy.classify(this);
-	};
-
-
-	Hbs.prototype.get = function (name, options)
+namespace('OUI.core.view', function (window) 
+{
+	this.hbs = function (name, options)
 	{
 		options = options || {};
 
 		return window.Handlebars['templates'][name].hbs(options);
 	};
-	
-
-	this.Hbs = Hbs;
 });
-namespace('OUI.core.view', function (window) {
-	'use strict';
-
-
-	/**
-	 * @class OUI.core.view.IdGenerator
-	 */
-	function IdGenerator(baseName)
+namespace('OUI.core.view', function (window) 
+{
+	this.idGenerator = function (baseName)
 	{
-		return baseName + '-' + Math.floor(Date.now());
+		return baseName + '-' + Math.random().toString(36).substr(2);
 	};
-	
-
-	this.IdGenerator = IdGenerator;
 });
 namespace('OUI.core.positioning.prepared', function (window) 
 {
@@ -1021,12 +991,13 @@ namespace('OUI.core.positioning.prepared', function (window)
 	this.TopWithCornersPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
 	this.TopWithCornersPosition.prototype.constructor = this.TopWithCornersPosition;
 });
-namespace('OUI.views', function (window) {
+namespace('OUI.views', function (window) 
+{
 	'use strict';
 
 
-	var Hbs = window.OUI.core.view.Hbs;
-	var FadeRemove = window.OUI.core.view.FadeRemove;
+	var hbs = window.OUI.core.view.hbs;
+	var fadeRemove = window.OUI.core.view.fadeRemove;
 
 
 	/**
@@ -1041,7 +1012,6 @@ namespace('OUI.views', function (window) {
 		this._cancelButtonText 	= cancelButtonText || 'Cancel';
 		this._okButton 			= 'a.ok-button';
 		this._cancelButton 		= 'a.cancel-button';
-		this._view 				= new Hbs();
 	};
 
 
@@ -1068,7 +1038,7 @@ namespace('OUI.views', function (window) {
 
 	DialogView.prototype.show = function (message)
 	{
-		$('body').append(this._view.get('dialog', {
+		$('body').append(hbs('dialog', {
 			id: this._dialog.getId(),
 			message: message,
 			okButtonText: this._okButtonText,
@@ -1078,17 +1048,18 @@ namespace('OUI.views', function (window) {
 
 	DialogView.prototype.remove = function ()
 	{
-		FadeRemove(this.getContainer());
+		fadeRemove(this.getContainer());
 	};
 
 	
 	this.DialogView = DialogView;
 });
-namespace('OUI.views', function (window) {
+namespace('OUI.views', function (window) 
+{
 	'use strict';
 
 
-	var Hbs 							= window.OUI.core.view.Hbs;
+	var hbs 							= window.OUI.core.view.hbs;
 	var FadeRemove 						= window.OUI.core.view.FadeRemove;
 	var SidesWithCornersPosition 		= window.OUI.core.positioning.prepared.SidesWithCornersPosition;
 	var BottomWithCornersPosition 		= window.OUI.core.positioning.prepared.BottomWithCornersPosition;
@@ -1105,8 +1076,6 @@ namespace('OUI.views', function (window) {
 		this._contents 		= contents;
 		this._extraClass 	= extraClass;
 		this._underlay 		= 'div.oui-menu-underlay';
-
-		this._view 			= new Hbs();
 	};
 
 	MenuView.prototype.initEvent = function ()
@@ -1135,12 +1104,12 @@ namespace('OUI.views', function (window) {
 
 	MenuView.prototype.remove = function ()
 	{
-		FadeRemove(this.getContainer());
+		this.getContainer().remove();
 	};
 
 	MenuView.prototype.show = function ()
 	{
-		$('body').append(this._view.get('menu', {
+		$('body').append(hbs('menu', {
 			id: this._menu.getId(),
 			contents: this._contents,
 			extraClass: this._extraClass
@@ -1169,11 +1138,12 @@ namespace('OUI.views', function (window) {
 
 	this.MenuView = MenuView;
 });
-namespace('OUI.views', function (window) {
+namespace('OUI.views', function (window) 
+{
 	'use strict';
 
 
-	var Hbs = window.OUI.core.view.Hbs;
+	var hbs = window.OUI.core.view.hbs;
 
 
 	/**
@@ -1193,8 +1163,6 @@ namespace('OUI.views', function (window) {
 
 		this._className		= className;
 		this._contents		= contents;
-
-		this._view 			= new Hbs();
 	};
 	
 
@@ -1235,7 +1203,7 @@ namespace('OUI.views', function (window) {
 			left: 20
 		};
 
-		$('body').append(this._view.get('modal', {
+		$('body').append(hbs('modal', {
 			id: this._modal.getId(),
 			contents: this._contents,
 			extraClass: this._className,
@@ -1251,12 +1219,13 @@ namespace('OUI.views', function (window) {
 	
 	this.ModalView = ModalView;
 });
-namespace('OUI.views', function (window) {
+namespace('OUI.views', function (window) 
+{
 	'use strict';
 
 
-	var Hbs = window.OUI.core.view.Hbs;
-	var FadeRemove = window.OUI.core.view.FadeRemove;
+	var hbs 		= window.OUI.core.view.hbs;
+	var fadeRemove 	= window.OUI.core.view.fadeRemove;
 
 
 	/**
@@ -1269,7 +1238,6 @@ namespace('OUI.views', function (window) {
 		delay = delay || 5000;
 
 		this._toast 	= toast;
-		this._view 		= new Hbs();
 		this._delay 	= delay;
 
 		this._dismiss 	= 'a[data-oui-dismiss]';
@@ -1299,31 +1267,33 @@ namespace('OUI.views', function (window) {
 	{
 		var view = this;
 
-		$('body').append(this._view.get('toast', {
+		$('body').append(hbs('toast', {
 			message: message,
 			id: this._toast.getId()
 		}));
 
 		setTimeout(function () {
-			FadeRemove(view.getContainer());
+			fadeRemove(view.getContainer());
 		}, this._delay);
 	};
 
 	ToastView.prototype.remove = function ()
 	{
-		FadeRemove(this.getContainer());
+		fadeRemove(this.getContainer());
 	};
 
 
 	this.ToastView = ToastView;
 });
-namespace('OUI.components', function (window) {
+namespace('OUI.components', function (window) 
+{
 	'use strict';
 
 
 	var Event       = window.duct.Event;
 	var DialogView 	= window.OUI.views.DialogView;
-	var IdGenerator = window.OUI.core.view.IdGenerator;
+
+	var idGenerator = window.OUI.core.view.idGenerator;
 
 
 	/**
@@ -1333,7 +1303,8 @@ namespace('OUI.components', function (window) {
 	{
 		Classy.classify(this);
 
-		this._id 			= IdGenerator('oui-dialog');
+		this._id 			= idGenerator('oui-dialog');
+		
 		this._dialogView 	= new DialogView(this, okButtonText, cancelButtonText);
 
 		this._onCancel 		= new Event('dialog.onCancel');
@@ -1384,13 +1355,15 @@ namespace('OUI.components', function (window) {
 
 	this.Dialog = Dialog;
 });
-namespace('OUI.components', function (window) {
+namespace('OUI.components', function (window) 
+{
 	'use strict';
 
 
-	var Event 		= window.duct.Event;
-	var IdGenerator = window.OUI.core.view.IdGenerator;
+	var Event 		= window.duct.Event;	
 	var MenuView 	= window.OUI.views.MenuView;
+
+	var idGenerator = window.OUI.core.view.idGenerator;
 
 
 	/**
@@ -1400,7 +1373,8 @@ namespace('OUI.components', function (window) {
 	{
 		Classy.classify(this);
 
-		this._id 			= IdGenerator('oui-menu');
+		this._id 			= idGenerator('oui-menu');
+		
 		this._menuView 		= new MenuView(this, $toggleElement, contents, extraClass);
 		
 		this._onBeforeOpen 	= new Event('menu.onBeforeOpen');
@@ -1456,13 +1430,15 @@ namespace('OUI.components', function (window) {
 
 	this.Menu = Menu;
 });
-namespace('OUI.components', function (window) {
+namespace('OUI.components', function (window) 
+{
 	'use strict';
 
 
 	var Event       = window.duct.Event;
 	var ModalView   = window.OUI.views.ModalView;
-	var IdGenerator = window.OUI.core.view.IdGenerator;
+	
+	var idGenerator = window.OUI.core.view.idGenerator;
 
 
 	/**
@@ -1472,7 +1448,7 @@ namespace('OUI.components', function (window) {
 	{
 		Classy.classify(this);
 
-		this._id            = IdGenerator('oui-modal');
+		this._id            = idGenerator('oui-modal');
 		
 		this._modalView     = new ModalView(this, contents, className);
 
@@ -1526,13 +1502,15 @@ namespace('OUI.components', function (window) {
 
 	this.Modal = Modal;
 });
-namespace('OUI.components', function (window) {
+namespace('OUI.components', function (window) 
+{
 	'use strict';
 
 
-	var Event = window.duct.Event;
-	var IdGenerator = window.OUI.core.view.IdGenerator;
+	var Event = window.duct.Event;	
 	var ToastView = window.OUI.views.ToastView;
+
+	var idGenerator = window.OUI.core.view.idGenerator;
 
 
 	/**
@@ -1542,7 +1520,7 @@ namespace('OUI.components', function (window) {
 	{
 		Classy.classify(this);
 
-		this._id 		= IdGenerator('oui-toast');
+		this._id 		= idGenerator('oui-toast');
 
 		this._toastView = new ToastView(this, delay);
 				

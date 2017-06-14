@@ -1,8 +1,9 @@
-namespace('OUI.views', function (window) {
+namespace('OUI.views', function (window) 
+{
 	'use strict';
 
 
-	var Hbs = window.OUI.core.view.Hbs;
+	var hbs = window.OUI.core.view.hbs;
 
 
 	/**
@@ -22,8 +23,6 @@ namespace('OUI.views', function (window) {
 
 		this._className		= className;
 		this._contents		= contents;
-
-		this._view 			= new Hbs();
 	};
 	
 
@@ -64,7 +63,7 @@ namespace('OUI.views', function (window) {
 			left: 20
 		};
 
-		$('body').append(this._view.get('modal', {
+		$('body').append(hbs('modal', {
 			id: this._modal.getId(),
 			contents: this._contents,
 			extraClass: this._className,

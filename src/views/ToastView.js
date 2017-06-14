@@ -1,9 +1,10 @@
-namespace('OUI.views', function (window) {
+namespace('OUI.views', function (window) 
+{
 	'use strict';
 
 
-	var Hbs = window.OUI.core.view.Hbs;
-	var FadeRemove = window.OUI.core.view.FadeRemove;
+	var hbs 		= window.OUI.core.view.hbs;
+	var fadeRemove 	= window.OUI.core.view.fadeRemove;
 
 
 	/**
@@ -16,7 +17,6 @@ namespace('OUI.views', function (window) {
 		delay = delay || 5000;
 
 		this._toast 	= toast;
-		this._view 		= new Hbs();
 		this._delay 	= delay;
 
 		this._dismiss 	= 'a[data-oui-dismiss]';
@@ -46,19 +46,19 @@ namespace('OUI.views', function (window) {
 	{
 		var view = this;
 
-		$('body').append(this._view.get('toast', {
+		$('body').append(hbs('toast', {
 			message: message,
 			id: this._toast.getId()
 		}));
 
 		setTimeout(function () {
-			FadeRemove(view.getContainer());
+			fadeRemove(view.getContainer());
 		}, this._delay);
 	};
 
 	ToastView.prototype.remove = function ()
 	{
-		FadeRemove(this.getContainer());
+		fadeRemove(this.getContainer());
 	};
 
 

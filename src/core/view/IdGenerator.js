@@ -1,15 +1,7 @@
-namespace('OUI.core.view', function (window) {
-	'use strict';
-
-
-	/**
-	 * @class OUI.core.view.IdGenerator
-	 */
-	function IdGenerator(baseName)
+namespace('OUI.core.view', function (window) 
+{
+	this.idGenerator = function (baseName)
 	{
-		return baseName + '-' + Math.floor(Date.now());
+		return baseName + '-' + Math.random().toString(36).substr(2);
 	};
-	
-
-	this.IdGenerator = IdGenerator;
 });

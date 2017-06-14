@@ -1,10 +1,12 @@
-namespace('OUI.components', function (window) {
+namespace('OUI.components', function (window) 
+{
 	'use strict';
 
 
 	var Event       = window.duct.Event;
 	var DialogView 	= window.OUI.views.DialogView;
-	var IdGenerator = window.OUI.core.view.IdGenerator;
+
+	var idGenerator = window.OUI.core.view.idGenerator;
 
 
 	/**
@@ -14,7 +16,8 @@ namespace('OUI.components', function (window) {
 	{
 		Classy.classify(this);
 
-		this._id 			= IdGenerator('oui-dialog');
+		this._id 			= idGenerator('oui-dialog');
+		
 		this._dialogView 	= new DialogView(this, okButtonText, cancelButtonText);
 
 		this._onCancel 		= new Event('dialog.onCancel');

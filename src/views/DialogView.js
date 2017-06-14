@@ -1,9 +1,10 @@
-namespace('OUI.views', function (window) {
+namespace('OUI.views', function (window) 
+{
 	'use strict';
 
 
-	var Hbs = window.OUI.core.view.Hbs;
-	var FadeRemove = window.OUI.core.view.FadeRemove;
+	var hbs = window.OUI.core.view.hbs;
+	var fadeRemove = window.OUI.core.view.fadeRemove;
 
 
 	/**
@@ -18,7 +19,6 @@ namespace('OUI.views', function (window) {
 		this._cancelButtonText 	= cancelButtonText || 'Cancel';
 		this._okButton 			= 'a.ok-button';
 		this._cancelButton 		= 'a.cancel-button';
-		this._view 				= new Hbs();
 	};
 
 
@@ -45,7 +45,7 @@ namespace('OUI.views', function (window) {
 
 	DialogView.prototype.show = function (message)
 	{
-		$('body').append(this._view.get('dialog', {
+		$('body').append(hbs('dialog', {
 			id: this._dialog.getId(),
 			message: message,
 			okButtonText: this._okButtonText,
@@ -55,7 +55,7 @@ namespace('OUI.views', function (window) {
 
 	DialogView.prototype.remove = function ()
 	{
-		FadeRemove(this.getContainer());
+		fadeRemove(this.getContainer());
 	};
 
 	

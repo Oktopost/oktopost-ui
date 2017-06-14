@@ -1,10 +1,12 @@
-namespace('OUI.components', function (window) {
+namespace('OUI.components', function (window) 
+{
 	'use strict';
 
 
-	var Event 		= window.duct.Event;
-	var IdGenerator = window.OUI.core.view.IdGenerator;
+	var Event 		= window.duct.Event;	
 	var MenuView 	= window.OUI.views.MenuView;
+
+	var idGenerator = window.OUI.core.view.idGenerator;
 
 
 	/**
@@ -14,7 +16,8 @@ namespace('OUI.components', function (window) {
 	{
 		Classy.classify(this);
 
-		this._id 			= IdGenerator('oui-menu');
+		this._id 			= idGenerator('oui-menu');
+		
 		this._menuView 		= new MenuView(this, $toggleElement, contents, extraClass);
 		
 		this._onBeforeOpen 	= new Event('menu.onBeforeOpen');

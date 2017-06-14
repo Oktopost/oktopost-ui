@@ -1,8 +1,9 @@
-namespace('OUI.views', function (window) {
+namespace('OUI.views', function (window) 
+{
 	'use strict';
 
 
-	var Hbs 							= window.OUI.core.view.Hbs;
+	var hbs 							= window.OUI.core.view.hbs;
 	var FadeRemove 						= window.OUI.core.view.FadeRemove;
 	var SidesWithCornersPosition 		= window.OUI.core.positioning.prepared.SidesWithCornersPosition;
 	var BottomWithCornersPosition 		= window.OUI.core.positioning.prepared.BottomWithCornersPosition;
@@ -19,8 +20,6 @@ namespace('OUI.views', function (window) {
 		this._contents 		= contents;
 		this._extraClass 	= extraClass;
 		this._underlay 		= 'div.oui-menu-underlay';
-
-		this._view 			= new Hbs();
 	};
 
 	MenuView.prototype.initEvent = function ()
@@ -49,12 +48,12 @@ namespace('OUI.views', function (window) {
 
 	MenuView.prototype.remove = function ()
 	{
-		FadeRemove(this.getContainer());
+		this.getContainer().remove();
 	};
 
 	MenuView.prototype.show = function ()
 	{
-		$('body').append(this._view.get('menu', {
+		$('body').append(hbs('menu', {
 			id: this._menu.getId(),
 			contents: this._contents,
 			extraClass: this._extraClass

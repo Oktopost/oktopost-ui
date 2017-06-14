@@ -18,6 +18,9 @@ Place the following files in your HTML template:
 3. [Dialogs](docs/DIALOG.md)
 4. [Toast](docs/TOAST.md)
 
+## Helpers
+1. [View Helpers](docs/VIEW.md)
+
 ## Namespace
 ```
 window.OUI.components
