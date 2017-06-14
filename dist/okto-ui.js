@@ -493,6 +493,13 @@ namespace('OUI.core.positioning.prepared', function (window)
 	
 	BasePreparedWithOffsets.prototype.getPosition = function () 
 	{
+		var data = this.getData();
+		
+		if (is.object.empty(data))
+		{
+			return false;
+		}
+		
 		var positioner = new Positioner(this.getData());
 
 		return positioner.getPosition(this.settings.isAbsolute);
