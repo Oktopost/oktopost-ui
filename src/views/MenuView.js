@@ -2,9 +2,10 @@ namespace('OUI.views', function (window) {
 	'use strict';
 
 
-	var Hbs 						= window.OUI.core.view.Hbs;
-	var FadeRemove 					= window.OUI.core.view.FadeRemove;
-	var SidesWithCornersPosition 	= window.OUI.core.positioning.prepared.SidesWithCornersPosition;
+	var Hbs 							= window.OUI.core.view.Hbs;
+	var FadeRemove 						= window.OUI.core.view.FadeRemove;
+	var SidesWithCornersPosition 		= window.OUI.core.positioning.prepared.SidesWithCornersPosition;
+	var BottomWithCornersPosition 		= window.OUI.core.positioning.prepared.BottomWithCornersPosition;
 
 
 	function MenuView(menu, $toggleElement, contents, extraClass)
@@ -63,11 +64,11 @@ namespace('OUI.views', function (window) {
 		var $target 	= $container.find('div.wrapper');
 		var $related 	= this._toggleElement;
 		
-		var position = new SidesWithCornersPosition({
+		var position = new TopBottomWithCornersPosition({
 			container: $container,
 			containerOffset: 0,
 			relatedElement: $related,
-			relatedOffset: 15,
+			relatedOffset: 5,
 			targetElement: $target,
 			targetOffset: 0,
 			isAbsolute: true

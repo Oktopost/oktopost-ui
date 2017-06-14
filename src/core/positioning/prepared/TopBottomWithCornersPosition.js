@@ -18,9 +18,9 @@ namespace('OUI.core.positioning.prepared', function (window)
 	
 	
 	/**
-	 * @class OUI.core.positioning.prepared.SidesWithCornersPosition
+	 * @class OUI.core.positioning.prepared.TopBottomWithCornersPosition
 	 */
-	function SidesWithCornersPosition(options)
+	function TopBottomWithCornersPosition(options)
 	{
 		Classy.classify(this);
 		
@@ -35,21 +35,23 @@ namespace('OUI.core.positioning.prepared', function (window)
 		{
 			if (direction === 1)
 			{
-				var x = relatedBox.x() + relatedBox.w() +  self.settings.targetOffset;
+				var y = relatedBox.y() + relatedBox.h() +  self.settings.targetOffset;	
 			}
 			else
 			{
-				x = relatedBox.x() - targetBox.w() -  self.settings.targetOffset;
+				y = relatedBox.y() - targetBox.h() -  self.settings.targetOffset;
 			}
 			
-			var y = relatedBox.y() - targetBox.h();
-
-			var w = targetBox.w();
-			var h = relatedBox.h() + (targetBox.h() * 2);
-
+			var x = relatedBox.x() - targetBox.w();
+	
+			var h = targetBox.h();
+			var w = relatedBox.w() + (targetBox.w() * 2);
+			
+			var initialPoint = this._preparePoint(targetBox.w() + self.settings.relatedOffset , 0);
+	
 			return {
 				box: this._prepareBox(x, y, w, h),
-				initial: this._preparePoint(0, 0)
+				initial: initialPoint
 			}
 		};
 		
@@ -61,14 +63,13 @@ namespace('OUI.core.positioning.prepared', function (window)
 			];
 		};	
 			
-		
 		return this.getPosition();
 	}
 	
 	
-	this.SidesWithCornersPosition = SidesWithCornersPosition;
+	this.TopBottomWithCornersPosition = TopBottomWithCornersPosition;
 	
 	
-	this.SidesWithCornersPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
-	this.SidesWithCornersPosition.prototype.constructor = this.SidesWithCornersPosition;
+	this.TopBottomWithCornersPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
+	this.TopBottomWithCornersPosition.prototype.constructor = this.TopBottomWithCornersPosition;
 });

@@ -99,6 +99,11 @@ namespace('OUI.core.positioning', function ()
 			}
 		}
 		
+		if (is.null(this.absolutePosition))
+		{
+			return null;
+		}
+		
 		if (isAbsolute)
 		{
 			return this._subtractContainer(this.absolutePosition);
