@@ -161,6 +161,23 @@ namespace('OUI.core.positioning', function ()
 	};
 	
 	
+	Positioner.prototype._checkParams = function () 
+	{	
+		if (is.empty(this.areas))
+			return false;
+		
+		if (!is.object(this.related))
+			return false;
+		
+		if (!is.object(this.target))
+			return false;
+		
+		if (!is.object(this.container))
+			return false;
+		
+		return true;
+	};
+	
 	Positioner.prototype._transformTarget = function (area, initialX, initialY) 
 	{
 		initialX = initialX || 0;
@@ -222,8 +239,10 @@ namespace('OUI.core.positioning', function ()
 	{
 		isAbsolute = isAbsolute || false;
 		
-		if (is.empty(this.areas))
+		if (!this._checkParams())
+		{
 			return false;
+		}
 
 		var index;
 		
@@ -311,105 +330,7 @@ namespace('OUI.core.view', function (window) {
 
 	this.IdGenerator = IdGenerator;
 });
-// namespace('OUI.core.positioning.prepared', function (window) 
-// {
-// 	'use strict';
-//
-//
-// 	var BasePreparedWithOffsets = OUI.core.positioning.prepared.base.BasePreparedWithOffsets;
-//
-//
-// 	var defaults = {
-// 		container: window,
-// 		containerOffset: 0,
-// 		relatedElement: null,
-// 		relatedOffset: 0,
-// 		targetElement: null,
-// 		targetOffset: 0,
-// 		isAbsolute: false
-// 	};
-//
-//
-// 	/**
-// 	 * @class OUI.core.positioning.prepared.AroundWithCornersPosition
-// 	 */
-// 	function AroundWithCornersPosition(options)
-// 	{
-// 		Classy.classify(this);
-//
-// 		var self = this;
-//
-// 		var settings = $.extend(true, {}, defaults, options);
-//
-// 		BasePreparedWithOffsets.call(self, settings);
-//
-//
-// 		this._getVerticalSide = function (relatedBox, targetBox, direction) 
-// 		{
-// 			if (direction === 1)
-// 			{
-// 				var y = relatedBox.y() + relatedBox.h() +  self.settings.targetOffset;
-// 			}
-// 			else
-// 			{
-// 				y = relatedBox.y() - targetBox.h() -  self.settings.targetOffset;
-// 			}
-//
-// 			var x = relatedBox.x() - targetBox.w();
-//
-// 			var h = targetBox.h();
-// 			var w = relatedBox.w() + (targetBox.w() * 2);
-//
-// 			return {
-// 				box: this._prepareBox(x, y, w, h),
-// 				initial: this._preparePoint(0 , 0)
-// 			}
-// 		};
-//
-// 		this._getHorizontalSide = function (relatedBox, targetBox, direction) 
-// 		{
-// 			if (direction === 1)
-// 			{
-// 				var x = relatedBox.x() + relatedBox.w() +  self.settings.targetOffset;
-// 			}
-// 			else
-// 			{
-// 				x = relatedBox.x() - targetBox.w() -  self.settings.targetOffset;
-// 			}
-//
-// 			var y = relatedBox.y() - targetBox.h();
-//
-// 			var w = targetBox.w();
-// 			var h = relatedBox.h() + (targetBox.h() * 2);
-//
-// 			return {
-// 				box: this._prepareBox(x, y, w, h),
-// 				initial: this._preparePoint(0, 0)
-// 			}
-// 		};
-//
-// 		this._getAreas = function (relatedBox, targetBox) 
-// 		{
-// 			return [
-// 				this._getVerticalSide(relatedBox, targetBox, 1),
-// 				this._getVerticalSide(relatedBox, targetBox, -1),
-// 				this._getHorizontalSide(relatedBox, targetBox, 1),
-// 				this._getHorizontalSide(relatedBox, targetBox, -1)
-// 			];
-// 		};	
-//
-// 		return this.getPosition();
-// 	}
-//
-//
-// 	this.AroundWithCornersPosition = AroundWithCornersPosition;
-//
-//
-// 	this.AroundWithCornersPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
-// 	this.AroundWithCornersPosition.prototype.constructor = this.AroundWithCornersPosition;
-//	
-// });
-namespace('OUI.core.positioning.prepared.base', function (window) 
+namespace('OUI.core.positioning.prepared', function (window) 
 {
 	'use strict';
 
@@ -432,7 +353,7 @@ namespace('OUI.core.positioning.prepared.base', function (window)
 	
 	
 	/**
-	 * @class OUI.core.positioning.prepared.base.BasePreparedWithOffsets
+	 * @class OUI.core.positioning.prepared.BasePreparedWithOffsets
 	 */
 	function BasePreparedWithOffsets(options)
 	{
@@ -585,7 +506,304 @@ namespace('OUI.core.positioning.prepared', function (window)
 	'use strict';
 
 	
-	var BasePreparedWithOffsets = OUI.core.positioning.prepared.base.BasePreparedWithOffsets;
+	var BasePreparedWithOffsets = OUI.core.positioning.prepared.BasePreparedWithOffsets;
+	
+	
+	var defaults = {
+		container: window,
+		containerOffset: 0,
+		relatedElement: null,
+		relatedOffset: 0,
+		targetElement: null,
+		targetOffset: 0,
+		isAbsolute: false
+	};
+	
+	
+	/**
+	 * @class OUI.core.positioning.prepared.BottomWithCornersPosition
+	 */
+	function BottomWithCornersPosition(options)
+	{
+		Classy.classify(this);
+		
+		var self = this;
+		
+		var settings = $.extend(true, {}, defaults, options);
+
+		BasePreparedWithOffsets.call(self, settings);
+		
+			
+		this._getSide = function (relatedBox, targetBox) 
+		{
+			var y = relatedBox.y() + relatedBox.h() +  self.settings.targetOffset;	
+			
+			var x = relatedBox.x() - targetBox.w();
+	
+			var h = targetBox.h();
+			var w = relatedBox.w() + (targetBox.w() * 2);
+			
+			var initialPoint = this._preparePoint(targetBox.w() + self.settings.relatedOffset , 0);
+	
+			return {
+				box: this._prepareBox(x, y, w, h),
+				initial: initialPoint
+			}
+		};
+		
+		this._getAreas = function (relatedBox, targetBox) 
+		{
+			return [
+				this._getSide(relatedBox, targetBox)
+			];
+		};	
+			
+		return this.getPosition();
+	}
+	
+	
+	this.BottomWithCornersPosition = BottomWithCornersPosition;
+	
+	
+	this.BottomWithCornersPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
+	this.BottomWithCornersPosition.prototype.constructor = this.BottomWithCornersPosition;
+});
+namespace('OUI.core.positioning.prepared', function (window) 
+{
+	'use strict';
+
+	
+	var BasePreparedWithOffsets = OUI.core.positioning.prepared.BasePreparedWithOffsets;
+	
+	
+	var defaults = {
+		container: window,
+		containerOffset: 0,
+		relatedElement: null,
+		relatedOffset: 0,
+		targetElement: null,
+		targetOffset: 0,
+		isAbsolute: false
+	};
+	
+	
+	/**
+	 * @class OUI.core.positioning.prepared.LeftSideWithCornersPosition
+	 */
+	function LeftSideWithCornersPosition(options)
+	{
+		Classy.classify(this);
+		
+		var self = this;
+		
+		var settings = $.extend(true, {}, defaults, options);
+
+		BasePreparedWithOffsets.call(self, settings);
+		
+			
+		this._getSide = function (relatedBox, targetBox) 
+		{
+			var x = relatedBox.x() - targetBox.w() -  self.settings.targetOffset;
+
+			var y = relatedBox.y() - targetBox.h();
+
+			var w = targetBox.w();
+			var h = relatedBox.h() + (targetBox.h() * 2);
+
+			return {
+				box: this._prepareBox(x, y, w, h),
+				initial: this._preparePoint(0, 0)
+			}
+		};
+		
+		this._getAreas = function (relatedBox, targetBox) 
+		{
+			return [
+				this._getSide(relatedBox, targetBox)
+			];
+		};	
+			
+		
+		return this.getPosition();
+	}
+	
+	
+	this.LeftSideWithCornersPosition = LeftSideWithCornersPosition;
+	
+	
+	this.LeftSideWithCornersPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
+	this.LeftSideWithCornersPosition.prototype.constructor = this.LeftSideWithCornersPosition;
+});
+namespace('OUI.core.positioning.prepared', function (window) 
+{
+	'use strict';
+
+	
+	var BasePreparedWithOffsets = OUI.core.positioning.prepared.BasePreparedWithOffsets;
+	
+	
+	var defaults = {
+		container: window,
+		containerOffset: 0,
+		relatedElement: null,
+		relatedOffset: 0,
+		targetElement: null,
+		targetOffset: 0,
+		isAbsolute: false
+	};
+	
+	
+	/**
+	 * @class OUI.core.positioning.prepared.RightSideWithCornersPosition
+	 */
+	function RightSideWithCornersPosition(options)
+	{
+		Classy.classify(this);
+		
+		var self = this;
+		
+		var settings = $.extend(true, {}, defaults, options);
+
+		BasePreparedWithOffsets.call(self, settings);
+		
+			
+		this._getSide = function (relatedBox, targetBox) 
+		{
+			var x = relatedBox.x() + relatedBox.w() +  self.settings.targetOffset;
+			
+			var y = relatedBox.y() - targetBox.h();
+
+			var w = targetBox.w();
+			var h = relatedBox.h() + (targetBox.h() * 2);
+
+			return {
+				box: this._prepareBox(x, y, w, h),
+				initial: this._preparePoint(0, 0)
+			}
+		};
+		
+		this._getAreas = function (relatedBox, targetBox) 
+		{
+			return [
+				this._getSide(relatedBox, targetBox)
+			];
+		};	
+			
+		
+		return this.getPosition();
+	}
+	
+	
+	this.RightSideWithCornersPosition = RightSideWithCornersPosition;
+	
+	
+	this.RightSideWithCornersPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
+	this.RightSideWithCornersPosition.prototype.constructor = this.RightSideWithCornersPosition;
+});
+namespace('OUI.core.positioning.prepared', function (window) 
+{
+	'use strict';
+
+
+	var BasePreparedWithOffsets = OUI.core.positioning.prepared.BasePreparedWithOffsets;
+
+
+	var defaults = {
+		container: window,
+		containerOffset: 0,
+		relatedElement: null,
+		relatedOffset: 0,
+		targetElement: null,
+		targetOffset: 0,
+		isAbsolute: false
+	};
+
+
+	/**
+	 * @class OUI.core.positioning.prepared.RoundWithCornersPosition
+	 */
+	function RoundWithCornersPosition(options)
+	{
+		Classy.classify(this);
+
+		var self = this;
+
+		var settings = $.extend(true, {}, defaults, options);
+
+		BasePreparedWithOffsets.call(self, settings);
+
+
+		this._getVerticalSide = function (relatedBox, targetBox, direction) 
+		{
+			if (direction === 1)
+			{
+				var y = relatedBox.y() + relatedBox.h() +  self.settings.targetOffset;
+			}
+			else
+			{
+				y = relatedBox.y() - targetBox.h() -  self.settings.targetOffset;
+			}
+
+			var x = relatedBox.x() - targetBox.w();
+
+			var h = targetBox.h();
+			var w = relatedBox.w() + (targetBox.w() * 2);
+
+			return {
+				box: this._prepareBox(x, y, w, h),
+				initial: this._preparePoint(0 , 0)
+			}
+		};
+
+		this._getHorizontalSide = function (relatedBox, targetBox, direction) 
+		{
+			if (direction === 1)
+			{
+				var x = relatedBox.x() + relatedBox.w() +  self.settings.targetOffset;
+			}
+			else
+			{
+				x = relatedBox.x() - targetBox.w() -  self.settings.targetOffset;
+			}
+
+			var y = relatedBox.y() - targetBox.h();
+
+			var w = targetBox.w();
+			var h = relatedBox.h() + (targetBox.h() * 2);
+
+			return {
+				box: this._prepareBox(x, y, w, h),
+				initial: this._preparePoint(0, 0)
+			}
+		};
+
+		this._getAreas = function (relatedBox, targetBox) 
+		{
+			return [
+				this._getVerticalSide(relatedBox, targetBox, 1),
+				this._getVerticalSide(relatedBox, targetBox, -1),
+				this._getHorizontalSide(relatedBox, targetBox, 1),
+				this._getHorizontalSide(relatedBox, targetBox, -1)
+			];
+		};	
+
+		return this.getPosition();
+	}
+
+
+	this.RoundWithCornersPosition = RoundWithCornersPosition;
+
+
+	this.RoundWithCornersPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
+	this.RoundWithCornersPosition.prototype.constructor = this.RoundWithCornersPosition;
+
+});
+namespace('OUI.core.positioning.prepared', function (window) 
+{
+	'use strict';
+
+	
+	var BasePreparedWithOffsets = OUI.core.positioning.prepared.BasePreparedWithOffsets;
 	
 	
 	var defaults = {
@@ -659,7 +877,7 @@ namespace('OUI.core.positioning.prepared', function (window)
 	'use strict';
 
 	
-	var BasePreparedWithOffsets = OUI.core.positioning.prepared.base.BasePreparedWithOffsets;
+	var BasePreparedWithOffsets = OUI.core.positioning.prepared.BasePreparedWithOffsets;
 	
 	
 	var defaults = {
@@ -728,6 +946,73 @@ namespace('OUI.core.positioning.prepared', function (window)
 	
 	this.TopBottomWithCornersPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
 	this.TopBottomWithCornersPosition.prototype.constructor = this.TopBottomWithCornersPosition;
+});
+namespace('OUI.core.positioning.prepared', function (window) 
+{
+	'use strict';
+
+	
+	var BasePreparedWithOffsets = OUI.core.positioning.prepared.BasePreparedWithOffsets;
+	
+	
+	var defaults = {
+		container: window,
+		containerOffset: 0,
+		relatedElement: null,
+		relatedOffset: 0,
+		targetElement: null,
+		targetOffset: 0,
+		isAbsolute: false
+	};
+	
+	
+	/**
+	 * @class OUI.core.positioning.prepared.TopWithCornersPosition
+	 */
+	function TopWithCornersPosition(options)
+	{
+		Classy.classify(this);
+		
+		var self = this;
+		
+		var settings = $.extend(true, {}, defaults, options);
+
+		BasePreparedWithOffsets.call(self, settings);
+		
+			
+		this._getSide = function (relatedBox, targetBox) 
+		{
+			var y = relatedBox.y() - targetBox.h() -  self.settings.targetOffset;
+
+			var x = relatedBox.x() - targetBox.w();
+	
+			var h = targetBox.h();
+			var w = relatedBox.w() + (targetBox.w() * 2);
+			
+			var initialPoint = this._preparePoint(targetBox.w() + self.settings.relatedOffset , 0);
+	
+			return {
+				box: this._prepareBox(x, y, w, h),
+				initial: initialPoint
+			}
+		};
+		
+		this._getAreas = function (relatedBox, targetBox) 
+		{
+			return [
+				this._getSide(relatedBox, targetBox)
+			];
+		};	
+			
+		return this.getPosition();
+	}
+	
+	
+	this.TopWithCornersPosition = TopWithCornersPosition;
+	
+	
+	this.TopWithCornersPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
+	this.TopWithCornersPosition.prototype.constructor = this.TopWithCornersPosition;
 });
 namespace('OUI.views', function (window) {
 	'use strict';
@@ -799,7 +1084,7 @@ namespace('OUI.views', function (window) {
 	var Hbs 							= window.OUI.core.view.Hbs;
 	var FadeRemove 						= window.OUI.core.view.FadeRemove;
 	var SidesWithCornersPosition 		= window.OUI.core.positioning.prepared.SidesWithCornersPosition;
-	var TopBottomWithCornersPosition 	= window.OUI.core.positioning.prepared.TopBottomWithCornersPosition;
+	var BottomWithCornersPosition 		= window.OUI.core.positioning.prepared.BottomWithCornersPosition;
 
 
 	function MenuView(menu, $toggleElement, contents, extraClass)

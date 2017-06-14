@@ -3,7 +3,7 @@ namespace('OUI.core.positioning.prepared', function (window)
 	'use strict';
 
 
-	var BasePreparedWithOffsets = OUI.core.positioning.BasePreparedWithOffsets;
+	var BasePreparedWithOffsets = OUI.core.positioning.prepared.BasePreparedWithOffsets;
 
 
 	var defaults = {
@@ -18,9 +18,9 @@ namespace('OUI.core.positioning.prepared', function (window)
 
 
 	/**
-	 * @class OUI.core.positioning.prepared.AroundWithCornersPosition
+	 * @class OUI.core.positioning.prepared.RoundWithCornersPosition
 	 */
-	function AroundWithCornersPosition(options)
+	function RoundWithCornersPosition(options)
 	{
 		Classy.classify(this);
 
@@ -89,10 +89,10 @@ namespace('OUI.core.positioning.prepared', function (window)
 	}
 
 
-	this.AroundWithCornersPosition = AroundWithCornersPosition;
+	this.RoundWithCornersPosition = RoundWithCornersPosition;
 
 
-	this.AroundWithCornersPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
-	this.AroundWithCornersPosition.prototype.constructor = this.AroundWithCornersPosition;
+	this.RoundWithCornersPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
+	this.RoundWithCornersPosition.prototype.constructor = this.RoundWithCornersPosition;
 
 });

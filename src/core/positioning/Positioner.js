@@ -25,6 +25,23 @@ namespace('OUI.core.positioning', function ()
 	};
 	
 	
+	Positioner.prototype._checkParams = function () 
+	{	
+		if (is.empty(this.areas))
+			return false;
+		
+		if (!is.object(this.related))
+			return false;
+		
+		if (!is.object(this.target))
+			return false;
+		
+		if (!is.object(this.container))
+			return false;
+		
+		return true;
+	};
+	
 	Positioner.prototype._transformTarget = function (area, initialX, initialY) 
 	{
 		initialX = initialX || 0;
@@ -86,8 +103,10 @@ namespace('OUI.core.positioning', function ()
 	{
 		isAbsolute = isAbsolute || false;
 		
-		if (is.empty(this.areas))
+		if (!this._checkParams())
+		{
 			return false;
+		}
 
 		var index;
 		

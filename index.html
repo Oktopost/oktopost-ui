@@ -44,8 +44,8 @@
    
    <div class="clear:both"></div>
    
-   <div id="positioner-container" style="background-color: #CCCCCC; width: 590px; height: 140px; margin-top: 150px; position: relative;">
-		<div id="related" style="width:100px; position: absolute; height: 100px; left: 140px; top: 30px; background-color: #5b8c00">
+   <div id="positioner-container" style="background-color: #CCCCCC; width: 590px; height: 440px; margin-top: 150px; position: relative;">
+		<div id="related" style="width:100px; position: absolute; height: 100px; left: 140px; top: 230px; background-color: #5b8c00">
 			related
 		</div>
    </div>
@@ -134,7 +134,7 @@
                 bigModal.open();
             });
             
-            var SidesWithCornersPosition = window.OUI.core.positioning.prepared.SidesWithCornersPosition;
+            var RoundWithCornersPosition = window.OUI.core.positioning.prepared.RoundWithCornersPosition;
 
 			var $target = $('<div />', {
 				text: 'positioned div',
@@ -153,7 +153,7 @@
 				isAbsolute: true
 			};
 
-			var pos = new SidesWithCornersPosition(options);
+			var pos = new RoundWithCornersPosition(options);
 
 			$target.css({top: pos.y, left: pos.x});
 

@@ -1,4 +1,4 @@
-namespace('OUI.core.positioning', function (window) 
+namespace('OUI.core.positioning.prepared', function (window) 
 {
 	'use strict';
 
@@ -21,7 +21,7 @@ namespace('OUI.core.positioning', function (window)
 	
 	
 	/**
-	 * @class OUI.core.positioning.BasePreparedWithOffsets
+	 * @class OUI.core.positioning.prepared.BasePreparedWithOffsets
 	 */
 	function BasePreparedWithOffsets(options)
 	{

@@ -3,7 +3,7 @@ namespace('OUI.core.positioning.prepared', function (window)
 	'use strict';
 
 	
-	var BasePreparedWithOffsets = OUI.core.positioning.BasePreparedWithOffsets;
+	var BasePreparedWithOffsets = OUI.core.positioning.prepared.BasePreparedWithOffsets;
 	
 	
 	var defaults = {
