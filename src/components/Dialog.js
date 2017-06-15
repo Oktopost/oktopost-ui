@@ -1,6 +1,6 @@
 namespace('OUI.components', function (window) 
 {
-	var Event       = window.duct.Event;
+	var Event       = window.Duct.Event;
 	var DialogView 	= window.OUI.views.DialogView;
 
 	var idGenerator = window.OUI.core.view.idGenerator;
@@ -24,7 +24,7 @@ namespace('OUI.components', function (window)
 		this.onOpen(this._dialogView.bindEvents);
 		this.onCancel(this._dialogView.remove);
 		this.onConfirm(this._dialogView.remove);
-	};
+	}
 
 	Dialog.prototype.getId = function ()
 	{

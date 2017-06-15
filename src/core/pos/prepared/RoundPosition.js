@@ -1,8 +1,8 @@
-namespace('OUI.core.pos.prepared', function () 
+namespace('OUI.core.pos.prepared', function (window) 
 {
-	var TargetSide 				= OUI.core.pos.enum.TargetSide;
-	var TargetPosition 			= OUI.core.pos.enum.TargetPosition;
-	var BasePreparedWithOffsets = OUI.core.pos.prepared.BasePreparedWithOffsets;
+	var TargetSide 				= window.OUI.core.pos.enum.TargetSide;
+	var TargetPosition 			= window.OUI.core.pos.enum.TargetPosition;
+	var BasePreparedWithOffsets = window.OUI.core.pos.prepared.BasePreparedWithOffsets;
 
 	
 	var defaults = {
@@ -37,7 +37,7 @@ namespace('OUI.core.pos.prepared', function ()
 	
 
 	RoundPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
-	RoundPosition.prototype.constructor = this.RoundPosition;
+	RoundPosition.prototype.constructor = RoundPosition;
 	
 	
 	RoundPosition.prototype._getAvailableSides = function () 

@@ -1,13 +1,14 @@
-namespace('OUI.core.pos', function () {
-	'use strict';
-
+namespace('OUI.core.pos', function (window) 
+{
+	var classify = window.Classy.classify;
+	
 	
 	/**
 	 * @class OUI.core.pos.Box
 	 */
 	var Box = function (point, size) 
 	{
-		Classy.classify(this);
+		classify(this);
 		
 		/** @type {OUI.core.pos.Point} */
 		this._point = point;
@@ -15,6 +16,7 @@ namespace('OUI.core.pos', function () {
 		/** @type {OUI.core.pos.Point} */
 		this._size = size;
 	};	
+	
 	
 	Box.prototype._debug = function () 
 	{

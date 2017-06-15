@@ -1,6 +1,6 @@
 namespace('OUI.core.view', function (window) 
 {
-	this.fadeRemove = function($container, extraClass, delay)
+	this.fadeRemove = function ($container, extraClass, delay)
 	{
 		extraClass = extraClass || 'removing';
 		delay = delay || 200;

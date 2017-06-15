@@ -54,115 +54,12 @@
 
     <script src="vendor/jquery/dist/jquery.min.js"></script>
     <script src="vendor/handlebars/handlebars.runtime.min.js"></script>
-    <script src="vendor/oktopost-namespace/web/namespace.js"></script>
-    <script src="vendor/plankton/plankton-min.js"></script>
-    <script src="vendor/oktopost-duct/duct.js"></script>
-
-    <script src="vendor/oktopost-classy/web/namespace.js"></script>
-    <script src="vendor/oktopost-classy/web/Classify.js"></script>
-    <script src="vendor/oktopost-classy/web/Enum.js"></script>
-    <script src="vendor/oktopost-classy/web/Singleton.js"></script>
 
     <script src="dist/okto-ui-templates.js"></script>
     <script src="dist/okto-ui.js"></script>
     
     <script>
-        (function () {
-            var Dialog = window.OUI.components.Dialog;
-            var Modal = window.OUI.components.Modal;
-            var Menu = window.OUI.components.Menu;
-            var Toast = window.OUI.components.Toast;
-
-
-            $('a.toast').on('click', function (e) {
-                e.preventDefault();
-                var message = new Toast(3000);
-
-                message.add('Lorem ipsum dolor sit amet, eos at iusto salutatus pri. Ei vim stet');
-                message.onAdd(function (id) {
-                    console.log('added ' + id);
-                });
-                message.onDismiss(function (id) {
-                    console.log('dismissed ' + id);
-                });
-            });
-            
-
-            var myMenu = new Menu($('a.menu'), $('div.my-menu').html(), 'my-menu');
-            
-            myMenu.onAfterOpen(function (container) {
-                var subMenu = new Menu(
-                    container.find('a.menu'), 
-                    $('div.my-menu').html(), 
-                    'my-sub-menu');
-            });
-
-            $('a.dialog').on('click', function (e) {
-                e.preventDefault();
-                
-                var dialog = new Dialog('YES', 'NO');
-                
-                dialog.onConfirm(function () {
-                    console.log('YES');
-                });
-
-                dialog.open('Are you sure?');
-            });
-
-            $('a.modal').on('click', function (e) {
-                e.preventDefault();
-
-                var bigContents = $('div.big-modal').html();
-                var bigModal = new Modal(bigContents, 'big');
-
-                bigModal.onAfterOpen(function (container) {
-                    container.find('div.body a').on('click', function (e) {
-                        e.preventDefault();
-
-                        var smallContents = $('div.small-modal').html();
-                        var smallModal = new Modal(smallContents, 'small');
-                        smallModal.onAfterOpen(function (smallModalContainer) {
-                            new Menu(
-                                smallModalContainer.find('a.popup-toggle'), 
-                                $('div.my-menu').html(), 
-                                'my-menu');
-                        });
-                        smallModal.open();
-                    });
-                });
-
-                bigModal.open();
-            });
-            
-            var RoundPosition = window.OUI.core.pos.prepared.RoundPosition;
-            var TargetPosition = window.OUI.core.pos.enum.TargetPosition;
-            var TargetSide = window.OUI.core.pos.enum.TargetSide;
-            
-			var $target = $('<div />', {
-				text: 'positioned div',
-				style: 'width:150px; height: 80px; background-color: #1DA1F3; position: absolute'
-			});
-
-			var $container = $('#positioner-container');
-
-			var options = {
-				container: $container,
-				containerOffset: 10,
-				relatedElement: document.getElementById('related'),
-				relatedOffset: 5,
-				targetElement: $target,
-				targetOffset: 0,
-				isAbsolute: true,
-                initialPosition: TargetPosition.bottom,
-                initialSide: TargetSide.left
-			};
-
-			var pos = RoundPosition.get(options);
-
-			$target.css({top: pos.y, left: pos.x});
-
-			$container.append($target);            
-        })();        
+       OUI.index();
     </script>
 
 </body>

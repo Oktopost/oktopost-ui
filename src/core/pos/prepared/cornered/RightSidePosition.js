@@ -1,8 +1,9 @@
-namespace('OUI.core.pos.prepared.cornered', function () 
+namespace('OUI.core.pos.prepared.cornered', function (window) 
 {
-	var TargetSide 				= OUI.core.pos.enum.TargetSide;
-	var TargetPosition 			= OUI.core.pos.enum.TargetPosition;
-	var BasePreparedWithOffsets = OUI.core.pos.prepared.BasePreparedWithOffsets;
+	var classify				= window.Classy.classify;
+	var TargetSide 				= window.OUI.core.pos.enum.TargetSide;
+	var TargetPosition 			= window.OUI.core.pos.enum.TargetPosition;
+	var BasePreparedWithOffsets = window.OUI.core.pos.prepared.BasePreparedWithOffsets;
 	
 	
 	var defaults = {
@@ -16,7 +17,7 @@ namespace('OUI.core.pos.prepared.cornered', function ()
 	 */
 	function RightSidePosition(options)
 	{
-		Classy.classify(this);
+		classify(this);
 		
 		BasePreparedWithOffsets.call(this, options, defaults);
 			
@@ -33,7 +34,7 @@ namespace('OUI.core.pos.prepared.cornered', function ()
 	
 
 	RightSidePosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
-	RightSidePosition.prototype.constructor = this.RightSidePosition;
+	RightSidePosition.prototype.constructor = RightSidePosition;
 	
 	
 	RightSidePosition.prototype._getAvailableSides = function () 

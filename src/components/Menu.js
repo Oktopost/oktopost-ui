@@ -1,9 +1,6 @@
 namespace('OUI.components', function (window) 
 {
-	'use strict';
-
-
-	var Event 		= window.duct.Event;	
+	var Event 		= window.Duct.Event;	
 	var MenuView 	= window.OUI.views.MenuView;
 
 	var idGenerator = window.OUI.core.view.idGenerator;

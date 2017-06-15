@@ -1,14 +1,11 @@
 namespace('OUI.core.pos.prepared', function (window) 
 {
-	'use strict';
-
-	
-	var is 				= plankton.is;
-	var Point 			= OUI.core.pos.Point;
-	var Box 			= OUI.core.pos.Box;
-	var Positioner		= OUI.core.pos.Positioner;
-	var TargetSide 		= OUI.core.pos.enum.TargetSide;
-	var TargetPosition 	= OUI.core.pos.enum.TargetPosition;
+	var is 				= window.Plankton.is;
+	var Point 			= window.OUI.core.pos.Point;
+	var Box 			= window.OUI.core.pos.Box;
+	var Positioner		= window.OUI.core.pos.Positioner;
+	var TargetSide 		= window.OUI.core.pos.enum.TargetSide;
+	var TargetPosition 	= window.OUI.core.pos.enum.TargetPosition;
 	
 	
 	var defaults = {
@@ -43,7 +40,6 @@ namespace('OUI.core.pos.prepared', function (window)
 	
 	BasePreparedWithOffsets.prototype._getAvailableSides = function () 
 	{
-		console.log(this._availableSides);
 		return [];
 	};
 	

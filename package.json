@@ -9,24 +9,26 @@
   },
   "devDependencies": {
     "camelcase": "^4.1.0",
-    "mocha": "^3.2.0",
-    "istanbul": "^0.4.5",
-    "coveralls": "2.10.0",
     "chai": "^4.0.2",
+    "coveralls": "2.10.0",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
     "gulp-declare": "^0.3.0",
     "gulp-handlebars": "^4.0.0",
+    "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^2.6.0",
     "gulp-wrap": "^0.13.0",
+    "istanbul": "^0.4.5",
     "jsdom": "^9.12.0",
-    "merge-stream": "^1.0.1"
+    "merge-stream": "^1.0.1",
+    "mocha": "^3.2.0"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "oktopost-classy": "https://github.com/Oktopost/classy.git#900af20",
     "oktopost-plankton": "https://github.com/Oktopost/plankton.git#c600915",
-    "oktopost-namespace": "git+https://github.com/Oktopost/namespace.git#32d6f41"
+    "oktopost-namespace": "git+https://github.com/Oktopost/namespace.git#32d6f41",
+    "oktopost-duct": "git+https://github.com/Oktopost/duct.git#013f2c7"
   }
 }

@@ -3,7 +3,7 @@ namespace('OUI.components', function (window)
 	'use strict';
 
 
-	var Event       = window.duct.Event;
+	var Event       = window.Duct.Event;
 	var ModalView   = window.OUI.views.ModalView;
 	
 	var idGenerator = window.OUI.core.view.idGenerator;

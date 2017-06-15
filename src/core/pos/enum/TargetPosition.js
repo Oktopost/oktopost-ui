@@ -1,16 +1,13 @@
-namespace('OUI.core.pos.enum', function ()
+namespace('OUI.core.pos.enum', function (window)
 {
-	'use strict';
-	
-	
-	var Enum = Classy.Enum;
+	var Enum = window.Classy.Enum;
 	
 	
 	/**
-	 * @name OUI.core.pos.enum.TargetPosition
+	 * @class OUI.core.pos.enum.TargetPosition
 	 * @enum {string}
 	 */
-	this.TargetPosition = {
+	var TargetPosition = {
 			center: 'center',
 			left: 	'left',
 			right: 	'right',
@@ -19,5 +16,5 @@ namespace('OUI.core.pos.enum', function ()
 	};
 	
 	
-	Enum(this.TargetPosition);
+	this.TargetPosition = Enum(TargetPosition);
 });
