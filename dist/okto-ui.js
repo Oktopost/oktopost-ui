@@ -1683,7 +1683,7 @@ namespace('OUI.core.pos', function (window)
 	Positioner.prototype._putInArea = function (box, moveX, moveY, area) 
 	{
 		var target = this._transformTarget(box, moveX, moveY);
-		
+	
 		while (target.isCrossBorder(area.box))
 		{
 			target = this._putInArea(target, this._moveX(target, box), this._moveY(target, box), area);
@@ -2278,6 +2278,7 @@ namespace('OUI.core.pos.prepared', function (window)
 			}
 		}
 		
+		
 		return areas;
 	};	
 	
@@ -2291,6 +2292,7 @@ namespace('OUI.core.pos.prepared', function (window)
 		var containerBox = this._getContainerBox(true);
 		var relatedBox = this._getRelatedBox();
 		var targetBox = this._getTargetBox();
+		
 				
 		return {
 			container: containerBox,
@@ -2874,16 +2876,13 @@ namespace('OUI.views', function (window)
 	};
 
 	TipView.prototype._getCoordinates = function ($related, $target)
-	{
-		console.log($related, $target);
-
-		console.log($related.position(), $related.width(), $related.height());
-		console.log($target.position(), $target.width(), $target.height());
-			
+	{	
 		var options = {
+			container: $('body'),
 			relatedElement:  $related,
 		    targetElement: $target,
-		    relatedOffset: 10,
+		    relatedOffset: 5,
+			isAbsolute: true,
 		    initialPosition: TargetPosition.center,
 		    initialSide: TargetSide.bottom
 		};
@@ -3131,29 +3130,29 @@ namespace('OUI', function (window)
 			bigModal.open();
 		});
 
-		var $target = $('<div />', {
-			text: 'positioned div',
-			style: 'width:150px; height: 80px; background-color: #1DA1F3; position: absolute'
-		});
-
-		var $container = $('#positioner-container');
-
-		var options = {
-			container: $container,
-			containerOffset: 10,
-			relatedElement: document.getElementById('related'),
-			relatedOffset: 5,
-			targetElement: $target,
-			targetOffset: 0,
-			isAbsolute: true,
-			initialPosition: TargetPosition.bottom,
-			initialSide: TargetSide.left
-		};
-
-		var pos = RoundPosition.get(options);
-
-		$target.css({top: pos.y, left: pos.x});
-
-		$container.append($target);
+		// var $target = $('<div />', {
+		// 	text: 'positioned div',
+		// 	style: 'width:150px; height: 80px; background-color: #1DA1F3; position: absolute'
+		// });
+		//
+		// var $container = $('#positioner-container');
+		//
+		// var options = {
+		// 	container: $container,
+		// 	containerOffset: 10,
+		// 	relatedElement: document.getElementById('related'),
+		// 	relatedOffset: 5,
+		// 	targetElement: $target,
+		// 	targetOffset: 0,
+		// 	isAbsolute: true,
+		// 	initialPosition: TargetPosition.bottom,
+		// 	initialSide: TargetSide.left
+		// };
+		//
+		// var pos = RoundPosition.get(options);
+		//
+		// $target.css({top: pos.y, left: pos.x});
+		//
+		// $container.append($target);
 	}
 });        

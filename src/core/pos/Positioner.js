@@ -98,7 +98,7 @@ namespace('OUI.core.pos', function (window)
 	Positioner.prototype._putInArea = function (box, moveX, moveY, area) 
 	{
 		var target = this._transformTarget(box, moveX, moveY);
-		
+	
 		while (target.isCrossBorder(area.box))
 		{
 			target = this._putInArea(target, this._moveX(target, box), this._moveY(target, box), area);

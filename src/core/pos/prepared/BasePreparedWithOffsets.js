@@ -339,6 +339,7 @@ namespace('OUI.core.pos.prepared', function (window)
 			}
 		}
 		
+		
 		return areas;
 	};	
 	
@@ -352,6 +353,7 @@ namespace('OUI.core.pos.prepared', function (window)
 		var containerBox = this._getContainerBox(true);
 		var relatedBox = this._getRelatedBox();
 		var targetBox = this._getTargetBox();
+		
 				
 		return {
 			container: containerBox,

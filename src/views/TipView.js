@@ -32,16 +32,13 @@ namespace('OUI.views', function (window)
 	};
 
 	TipView.prototype._getCoordinates = function ($related, $target)
-	{
-		console.log($related, $target);
-
-		console.log($related.position(), $related.width(), $related.height());
-		console.log($target.position(), $target.width(), $target.height());
-			
+	{	
 		var options = {
+			container: $('body'),
 			relatedElement:  $related,
 		    targetElement: $target,
-		    relatedOffset: 10,
+		    relatedOffset: 0,
+			isAbsolute: true,
 		    initialPosition: TargetPosition.center,
 		    initialSide: TargetSide.bottom
 		};
