@@ -337,51 +337,6 @@ namespace('OUI.core.view', function (window)
 		return baseName + '-' + Math.random().toString(36).substr(2);
 	};
 });
-namespace('OUI.core.positioning.enum', function ()
-{
-	'use strict';
-	
-	
-	var Enum = Classy.Enum;
-	
-	
-	/**
-	 * @name OUI.core.positioning.enum.TargetPosition
-	 * @enum {string}
-	 */
-	this.TargetPosition = {
-			center: 'center',
-			left: 	'left',
-			right: 	'right',
-			top: 	'top',
-			bottom: 'bottom'
-	};
-	
-	
-	Enum(this.TargetPosition);
-});
-namespace('OUI.core.positioning.enum', function ()
-{
-	'use strict';
-	
-	
-	var Enum = Classy.Enum;
-	
-	
-	/**
-	 * @name OUI.core.positioning.enum.TargetSide
-	 * @enum {string}
-	 */
-	this.TargetSide = {
-		left: 	'left',
-		right: 	'right',
-		bottom: 'bottom',
-		top: 	'top'
-	};
-	
-	
-	Enum(this.TargetSide);
-});
 namespace('OUI.core.positioning.prepared', function (window) 
 {
 	'use strict';
@@ -822,6 +777,51 @@ namespace('OUI.core.positioning.prepared', function ()
 	
 	
 	this.RoundPosition = RoundPosition;
+});
+namespace('OUI.core.positioning.enum', function ()
+{
+	'use strict';
+	
+	
+	var Enum = Classy.Enum;
+	
+	
+	/**
+	 * @name OUI.core.positioning.enum.TargetPosition
+	 * @enum {string}
+	 */
+	this.TargetPosition = {
+			center: 'center',
+			left: 	'left',
+			right: 	'right',
+			top: 	'top',
+			bottom: 'bottom'
+	};
+	
+	
+	Enum(this.TargetPosition);
+});
+namespace('OUI.core.positioning.enum', function ()
+{
+	'use strict';
+	
+	
+	var Enum = Classy.Enum;
+	
+	
+	/**
+	 * @name OUI.core.positioning.enum.TargetSide
+	 * @enum {string}
+	 */
+	this.TargetSide = {
+		left: 	'left',
+		right: 	'right',
+		bottom: 'bottom',
+		top: 	'top'
+	};
+	
+	
+	Enum(this.TargetSide);
 });
 namespace('OUI.core.positioning.prepared.cornered', function () 
 {
