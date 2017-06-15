@@ -5,7 +5,7 @@ namespace('OUI.views', function (window)
 
 	var hbs 							= window.OUI.core.view.hbs;
 	var FadeRemove 						= window.OUI.core.view.FadeRemove;
-	var BottomWithCornersPosition	 	= window.OUI.core.positioning.prepared.BottomWithCornersPosition;
+	var BottomPosition	 				= window.OUI.core.positioning.prepared.cornered.BottomPosition;
 	var TargetPosition					= window.OUI.core.positioning.enum.TargetPosition;
 
 
@@ -63,7 +63,7 @@ namespace('OUI.views', function (window)
 		var $target 	= $container.find('div.wrapper');
 		var $related 	= this._toggleElement;
 		
-		var position = new BottomWithCornersPosition({
+		var position = new BottomPosition({
 			container: $container,
 			containerOffset: 0,
 			relatedElement: $related,

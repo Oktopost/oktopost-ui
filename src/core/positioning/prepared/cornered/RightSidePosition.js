@@ -1,4 +1,4 @@
-namespace('OUI.core.positioning.prepared', function (window) 
+namespace('OUI.core.positioning.prepared.cornered', function (window) 
 {
 	'use strict';
 
@@ -16,15 +16,15 @@ namespace('OUI.core.positioning.prepared', function (window)
 		targetElement: null,
 		targetOffset: 0,
 		isAbsolute: false,
-		initialSide: TargetSide.bottom,
+		initialSide: TargetSide.right,
 		initialPosition: TargetPosition.center
 	};
 	
 	
 	/**
-	 * @class OUI.core.positioning.prepared.BottomWithCornersPosition
+	 * @class OUI.core.positioning.prepared.cornered.RightSidePosition
 	 */
-	function BottomWithCornersPosition(options)
+	function RightSidePosition(options)
 	{
 		Classy.classify(this);
 		
@@ -34,10 +34,11 @@ namespace('OUI.core.positioning.prepared', function (window)
 
 		BasePreparedWithOffsets.call(self, settings);
 		
-		
+			
 		this.availableSides = [
-			TargetSide.bottom
+			TargetSide.right
 		];
+
 		
 		this._getAvailableSides = function () 
 		{
@@ -49,9 +50,9 @@ namespace('OUI.core.positioning.prepared', function (window)
 	}
 	
 	
-	this.BottomWithCornersPosition = BottomWithCornersPosition;
+	this.RightSidePosition = RightSidePosition;
 	
 	
-	this.BottomWithCornersPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
-	this.BottomWithCornersPosition.prototype.constructor = this.BottomWithCornersPosition;
+	this.RightSidePosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
+	this.RightSidePosition.prototype.constructor = this.RightSidePosition;
 });

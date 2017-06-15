@@ -63,6 +63,23 @@ namespace('OUI.core.positioning.prepared', function (window)
 			&& (is.object(this.settings.relatedElement))
 			&& (is.object(this.settings.targetElement));
 	};
+	
+	BasePreparedWithOffsets.prototype._isNeedToSubtractContainer = function () 
+	{
+		if ($.isWindow(this.settings.container))
+		{
+			return false;
+		}
+		
+		return (this.settings.container.css('position') === 'relative');
+	};
+	
+	BasePreparedWithOffsets.prototype._subtractContainer = function (point) 
+	{
+		var container = this._getContainerBox();
+		
+		return new Point(point.x - container.x(), point.y - container.y());
+	};
 		
 	BasePreparedWithOffsets.prototype._applyOffset = function (position, offset) 
 	{
@@ -129,8 +146,13 @@ namespace('OUI.core.positioning.prepared', function (window)
 		return new Box(point, size);
 	};
 	
-	BasePreparedWithOffsets.prototype._getContainerBox = function () 
+	BasePreparedWithOffsets.prototype._getContainerBox = function (withOffsets) 
 	{
+		if (!withOffsets)
+		{
+			return this._getElementBox(this.settings.container);
+		}
+		
 		if (this.settings.containerOffset > 0)
 		{
 			this.settings.containerOffset = this.settings.containerOffset * -1;
@@ -323,18 +345,17 @@ namespace('OUI.core.positioning.prepared', function (window)
 		return areas;
 	};	
 	
-
-	BasePreparedWithOffsets.prototype.getData = function () 
+	BasePreparedWithOffsets.prototype._getData = function () 
 	{
 		if (!this._settingsIsValid() || is.empty(this._getAvailableSides()))
 		{
 			return {};
 		}
 		
-		var containerBox = this._getContainerBox();
+		var containerBox = this._getContainerBox(true);
 		var relatedBox = this._getRelatedBox();
 		var targetBox = this._getTargetBox();
-
+				
 		return {
 			container: containerBox,
 			related: relatedBox,
@@ -343,18 +364,26 @@ namespace('OUI.core.positioning.prepared', function (window)
 		}
 	};
 	
+	
 	BasePreparedWithOffsets.prototype.getPosition = function () 
 	{
-		var data = this.getData();
+		var data = this._getData();
 		
 		if (is.object.empty(data))
 		{
 			return false;
 		}
 		
-		var positioner = new Positioner(this.getData());
+		var positioner = new Positioner(data);
 
-		return positioner.getPosition(this.settings.isAbsolute);
+		var position = positioner.getPosition(this.settings.isAbsolute);
+		
+		if (is.object(position) && this._isNeedToSubtractContainer())
+		{;
+			position = this._subtractContainer(position);
+		}
+		
+		return position;
 	};
 	
 

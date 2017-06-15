@@ -36,10 +36,7 @@ namespace('OUI.core.positioning', function ()
 		if (!is.object(this.target))
 			return false;
 		
-		if (!is.object(this.container))
-			return false;
-		
-		return true;
+		return (is.object(this.container));
 	};
 	
 	Positioner.prototype._transformTarget = function (box, initialX, initialY) 
@@ -66,16 +63,11 @@ namespace('OUI.core.positioning', function ()
 			var originalY = area.box.y();
 			
 			area.box.intersect(this.container);
-			
+
 			this._subtractInitial(area, originalX, originalY);
 		}
 		
 		return !(area.box.w() < this.target.w() || area.box.h() < this.target.h());
-	};
-	
-	Positioner.prototype._subtractContainer = function (point) 
-	{
-		return new Point(point.x - this.container.x(), point.y - this.container.y());
 	};
 	
 	Positioner.prototype._subtractInitial = function (area, originalX, originalY) 
@@ -164,16 +156,16 @@ namespace('OUI.core.positioning', function ()
 		
 		if (is.null(this.absolutePosition))
 		{
-			console.log('Error: imposible to put target in correct position');			
+			console.log('Error: impossible to put target in a correct position');			
 			return new Point(this.areas[0].box.x(), this.areas[0].box.y());
 		}
 		
 		if (isAbsolute)
 		{
-			return this._subtractContainer(this.absolutePosition);
+			return this.absolutePosition;
 		}
 		
-		return this._subtractContainer(this.relativePosition);
+		return this.relativePosition;
 	};
 	
 	

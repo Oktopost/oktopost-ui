@@ -1,12 +1,12 @@
-namespace('OUI.core.positioning.prepared', function (window) 
+namespace('OUI.core.positioning.prepared.cornered', function (window) 
 {
 	'use strict';
 
-
+	
 	var BasePreparedWithOffsets = OUI.core.positioning.prepared.BasePreparedWithOffsets;
 	var TargetSide = OUI.core.positioning.enum.TargetSide;
 	var TargetPosition = OUI.core.positioning.enum.TargetPosition;
-
+	
 	
 	var defaults = {
 		container: window,
@@ -16,28 +16,26 @@ namespace('OUI.core.positioning.prepared', function (window)
 		targetElement: null,
 		targetOffset: 0,
 		isAbsolute: false,
-		initialSide: TargetSide.right,
-		initialPosition: TargetPosition.top
+		initialSide: TargetSide.top,
+		initialPosition: TargetPosition.center
 	};
 	
-
+	
 	/**
-	 * @class OUI.core.positioning.prepared.RoundWithCornersPosition
+	 * @class OUI.core.positioning.prepared.cornered.TopPosition
 	 */
-	function RoundWithCornersPosition(options)
+	function TopPosition(options)
 	{
 		Classy.classify(this);
-
+		
 		var self = this;
-
+		
 		var settings = $.extend(true, {}, defaults, options);
 
 		BasePreparedWithOffsets.call(self, settings);
 		
+			
 		this.availableSides = [
-			TargetSide.right,
-			TargetSide.bottom,
-			TargetSide.left,
 			TargetSide.top
 		];
 
@@ -46,15 +44,14 @@ namespace('OUI.core.positioning.prepared', function (window)
 		{
 			return this.availableSides;	
 		};
-
+			
 		return this.getPosition();
 	}
-
-
-	this.RoundWithCornersPosition = RoundWithCornersPosition;
-
-
-	this.RoundWithCornersPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
-	this.RoundWithCornersPosition.prototype.constructor = this.RoundWithCornersPosition;
-
+	
+	
+	this.TopPosition = TopPosition;
+	
+	
+	this.TopPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
+	this.TopPosition.prototype.constructor = this.TopPosition;
 });

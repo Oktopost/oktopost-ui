@@ -44,8 +44,8 @@
    
    <div class="clear:both"></div>
    
-   <div id="positioner-container" style="background-color: #CCCCCC; width: 590px; height: 400px; margin-top: 150px; position: relative;">
-		<div id="related" style="width:100px; position: absolute; height: 100px; left: 140px; top: 230px; background-color: #5b8c00">
+   <div id="positioner-container" style="background-color: #CCCCCC; width: 590px; height: 400px; margin-top: 150px; position: relative">
+		<div id="related" style="width:100px; position: absolute; height: 100px; left: 170px; top: 130px; background-color: #5b8c00">
 			related
 		</div>
    </div>
@@ -134,35 +134,34 @@
                 bigModal.open();
             });
             
-            var RoundWithCornersPosition = window.OUI.core.positioning.prepared.RoundWithCornersPosition;
+            var RoundPosition = window.OUI.core.positioning.prepared.RoundPosition;
             var TargetPosition = window.OUI.core.positioning.enum.TargetPosition;
             var TargetSide = window.OUI.core.positioning.enum.TargetSide;
             
 			var $target = $('<div />', {
 				text: 'positioned div',
-				style: 'width:480px; height: 80px; background-color: #1DA1F3; position: absolute'
+				style: 'width:150px; height: 80px; background-color: #1DA1F3; position: absolute'
 			});
 
 			var $container = $('#positioner-container');
 
 			var options = {
 				container: $container,
-				containerOffset: 0,
+				containerOffset: 10,
 				relatedElement: document.getElementById('related'),
 				relatedOffset: 5,
 				targetElement: $target,
 				targetOffset: 0,
 				isAbsolute: true,
-                initialPosition: TargetPosition.left,
-                initialSide: TargetSide.top
+                initialPosition: TargetPosition.bottom,
+                initialSide: TargetSide.left
 			};
 
-			var pos = new RoundWithCornersPosition(options);
+			var pos = new RoundPosition(options);
 
 			$target.css({top: pos.y, left: pos.x});
 
-			$container.append($target);
-            
+			$container.append($target);            
         })();        
     </script>
 

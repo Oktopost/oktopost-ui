@@ -1,4 +1,4 @@
-namespace('OUI.core.positioning.prepared', function (window) 
+namespace('OUI.core.positioning.prepared.cornered', function (window) 
 {
 	'use strict';
 
@@ -22,9 +22,9 @@ namespace('OUI.core.positioning.prepared', function (window)
 	
 	
 	/**
-	 * @class OUI.core.positioning.prepared.TopBottomWithCornersPosition
+	 * @class OUI.core.positioning.prepared.cornered.TopBottomPosition
 	 */
-	function TopBottomWithCornersPosition(options)
+	function TopBottomPosition(options)
 	{
 		Classy.classify(this);
 		
@@ -51,9 +51,9 @@ namespace('OUI.core.positioning.prepared', function (window)
 	}
 	
 	
-	this.TopBottomWithCornersPosition = TopBottomWithCornersPosition;
+	this.TopBottomPosition = TopBottomPosition;
 	
 	
-	this.TopBottomWithCornersPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
-	this.TopBottomWithCornersPosition.prototype.constructor = this.TopBottomWithCornersPosition;
+	this.TopBottomPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
+	this.TopBottomPosition.prototype.constructor = this.TopBottomPosition;
 });

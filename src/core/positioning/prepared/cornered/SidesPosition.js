@@ -1,4 +1,4 @@
-namespace('OUI.core.positioning.prepared', function (window) 
+namespace('OUI.core.positioning.prepared.cornered', function (window) 
 {
 	'use strict';
 
@@ -16,15 +16,15 @@ namespace('OUI.core.positioning.prepared', function (window)
 		targetElement: null,
 		targetOffset: 0,
 		isAbsolute: false,
-		initialSide: TargetSide.top,
+		initialSide: TargetSide.right,
 		initialPosition: TargetPosition.center
 	};
 	
 	
 	/**
-	 * @class OUI.core.positioning.prepared.TopWithCornersPosition
+	 * @class OUI.core.positioning.prepared.cornered.SidesPosition
 	 */
-	function TopWithCornersPosition(options)
+	function SidesPosition(options)
 	{
 		Classy.classify(this);
 		
@@ -36,7 +36,8 @@ namespace('OUI.core.positioning.prepared', function (window)
 		
 			
 		this.availableSides = [
-			TargetSide.top
+			TargetSide.right,
+			TargetSide.left
 		];
 
 		
@@ -45,13 +46,14 @@ namespace('OUI.core.positioning.prepared', function (window)
 			return this.availableSides;	
 		};
 			
+		
 		return this.getPosition();
 	}
 	
 	
-	this.TopWithCornersPosition = TopWithCornersPosition;
+	this.SidesPosition = SidesPosition;
 	
 	
-	this.TopWithCornersPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
-	this.TopWithCornersPosition.prototype.constructor = this.TopWithCornersPosition;
+	this.SidesPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
+	this.SidesPosition.prototype.constructor = this.SidesPosition;
 });
