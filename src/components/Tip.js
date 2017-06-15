@@ -1,5 +1,6 @@
 namespace('OUI.components', function (window) 
 {
+	var classify	= window.Classy.classify;
 	var TipView 	= window.OUI.views.TipView;
 	var idGenerator = window.OUI.core.view.idGenerator;
 
@@ -9,7 +10,7 @@ namespace('OUI.components', function (window)
 	 */
 	function Tip(baseName)
 	{
-		Classy.classify(this);
+		classify(this);
 
 		this._id 		= idGenerator(baseName);
 		this._tipView 	= new TipView(this, baseName);

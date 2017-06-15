@@ -767,10 +767,8 @@ namespace('OUI.core.pos.enum', function (window)
 });
 namespace('OUI.views', function (window) 
 {
-	'use strict';
-
-
 	var hbs = window.OUI.core.view.hbs;
+	var classify = window.Classy.classify;
 	var fadeRemove = window.OUI.core.view.fadeRemove;
 
 
@@ -779,14 +777,14 @@ namespace('OUI.views', function (window)
 	 */
 	function DialogView(dialog, okButtonText, cancelButtonText) 
 	{
-		Classy.classify(this);
+		classify(this);
 
 		this._dialog 			= dialog;
 		this._okButtonText 		= okButtonText || 'OK';
 		this._cancelButtonText 	= cancelButtonText || 'Cancel';
 		this._okButton 			= 'a.ok-button';
 		this._cancelButton 		= 'a.cancel-button';
-	};
+	}
 
 
 	DialogView.prototype.getContainer = function ()
@@ -830,18 +828,15 @@ namespace('OUI.views', function (window)
 });
 namespace('OUI.views', function (window) 
 {
-	'use strict';
-
-
 	var hbs = window.OUI.core.view.hbs;
-
+	var classify = window.Classy.classify;
 
 	/**
 	 * @class OUI.views.ModalView
 	 */
 	function ModalView(modal, contents, className) 
 	{
-		Classy.classify(this);
+		classify(this);
 
 		className = className || '';
 
@@ -911,19 +906,17 @@ namespace('OUI.views', function (window)
 });
 namespace('OUI.views', function (window) 
 {
-	'use strict';
-
-
 	var hbs 		= window.OUI.core.view.hbs;
 	var fadeRemove 	= window.OUI.core.view.fadeRemove;
-
+	var classify 	= window.Classy.classify;
+	
 
 	/**
 	 * @class OUI.views.ToastView
 	 */
 	function ToastView(toast, delay)
 	{
-		Classy.classify(this);
+		classify(this);
 
 		delay = delay || 5000;
 
@@ -1592,9 +1585,10 @@ namespace('Plankton', function (root)
 });
 namespace('OUI.core.pos', function (window) 
 {
-	var is 		= window.Plankton.is;
-	var Box 	= window.OUI.core.pos.Box;
-	var Point	= window.OUI.core.pos.Point;
+	var is 			= window.Plankton.is;
+	var classify 	= window.Classy.classify; 
+	var Box 		= window.OUI.core.pos.Box;
+	var Point		= window.OUI.core.pos.Point;
 	
 	
 	/**
@@ -1602,7 +1596,7 @@ namespace('OUI.core.pos', function (window)
 	 */
 	var Positioner = function (data) 
 	{	
-		Classy.classify(this);
+		classify(this);
 		
 		this.container = data.container;
 		this.related = data.related;
@@ -1946,6 +1940,7 @@ namespace('Duct.Debug', function (root)
 namespace('OUI.core.pos.prepared', function (window) 
 {
 	var is 				= window.Plankton.is;
+	var classify		= window.Classy.classify;
 	var Point 			= window.OUI.core.pos.Point;
 	var Box 			= window.OUI.core.pos.Box;
 	var Positioner		= window.OUI.core.pos.Positioner;
@@ -1971,7 +1966,7 @@ namespace('OUI.core.pos.prepared', function (window)
 	 */
 	function BasePreparedWithOffsets(options, defaultsOptions)
 	{
-		Classy.classify(this);
+		classify(this);
 		
 		var mergedDefaults = $.extend(true, {}, defaults, defaultsOptions);
 		
@@ -2464,6 +2459,7 @@ namespace('Duct', function (root)
 });
 namespace('OUI.core.pos.prepared', function (window) 
 {
+	var classify				= window.Classy.classify;
 	var TargetSide 				= window.OUI.core.pos.enum.TargetSide;
 	var TargetPosition 			= window.OUI.core.pos.enum.TargetPosition;
 	var BasePreparedWithOffsets = window.OUI.core.pos.prepared.BasePreparedWithOffsets;
@@ -2480,7 +2476,7 @@ namespace('OUI.core.pos.prepared', function (window)
 	 */
 	function RoundPosition(options)
 	{
-		Classy.classify(this);
+		classify(this);
 
 		BasePreparedWithOffsets.call(this, options, defaults);
 		
@@ -2761,10 +2757,8 @@ namespace('OUI.components', function (window)
 });
 namespace('OUI.views', function (window) 
 {
-	'use strict';
-
-
 	var hbs 							= window.OUI.core.view.hbs;
+	var classify						= window.Classy.classify;
 	var FadeRemove 						= window.OUI.core.view.FadeRemove;
 	var BottomPosition	 				= window.OUI.core.pos.prepared.cornered.BottomPosition;
 	var TargetPosition					= window.OUI.core.pos.enum.TargetPosition;
@@ -2772,7 +2766,7 @@ namespace('OUI.views', function (window)
 
 	function MenuView(menu, $toggleElement, contents, extraClass)
 	{
-		Classy.classify(this);
+		classify(this);
 
 		extraClass = extraClass || '';
 
@@ -2846,6 +2840,110 @@ namespace('OUI.views', function (window)
 
 	this.MenuView = MenuView;
 });
+namespace('OUI.views', function (window) 
+{
+	var classify		= window.Classy.classify;
+	var RoundPosition 	= window.OUI.core.pos.prepared.RoundPosition;
+    var TargetPosition 	= window.OUI.core.pos.enum.TargetPosition;
+    var TargetSide 		= window.OUI.core.pos.enum.TargetSide;
+
+
+	/**
+	 * @class OUI.views.TipView
+	 */
+	function TipView(tip, baseName)
+	{
+		classify(this);
+
+		this._tip 				= tip;
+
+		this._tipBaseName 		= baseName;
+		this._tipSelector 		= '*[data-' + baseName + ']';
+		this._tipContentAttr 	= 'title';
+	};
+
+
+	TipView.prototype._getContent = function ($element)
+	{
+		var content = $element.data(this._tipBaseName);
+
+		content = content.replace(/\[/g, '<');
+		content = content.replace(/\]/g, '>');
+
+		return content;
+	};
+
+	TipView.prototype._getCoordinates = function ($related, $target)
+	{
+		console.log($related, $target);
+
+		console.log($related.position(), $related.width(), $related.height());
+		console.log($target.position(), $target.width(), $target.height());
+			
+		var options = {
+			relatedElement:  $related,
+		    targetElement: $target,
+		    relatedOffset: 10,
+		    initialPosition: TargetPosition.center,
+		    initialSide: TargetSide.bottom
+		};
+
+		return RoundPosition.get(options);
+	};
+
+
+	TipView.prototype.bindHover = function ()
+	{
+		var view = this;
+
+		$(document).on(
+		{
+		    'mouseenter.tip': function () 
+		    {
+		        view._tip.add($(this));
+		    },
+		    'mouseleave.tip': function () 
+		    {
+		        view._tip.remove();
+		    }
+		}, this._tipSelector);
+
+		$(document).on('click.tip', this._tipSelector, function () 
+		{
+			view._tip.remove();
+		});
+	};
+
+	TipView.prototype.getContainer = function ()
+	{
+		return $('#' + this._tip.getId());
+	};
+
+	TipView.prototype.show = function ($element)
+	{
+		var $tip = $('<div>')
+			.attr('id', this._tip.getId())
+			.addClass(this._tipBaseName)
+			.html(this._getContent($element));
+
+		var coords = this._getCoordinates($element, $tip);
+
+		$tip.css({
+			top: coords.y, 
+			left: coords.x
+		});
+
+		$('body').append($tip);
+	};
+
+	TipView.prototype.remove = function ()
+	{
+		this.getContainer().remove();
+	};
+
+
+	this.TipView = TipView;
+});
 namespace('OUI.components', function (window) 
 {
 	var Event 		= window.Duct.Event;	
@@ -2918,12 +3016,53 @@ namespace('OUI.components', function (window)
 
 	this.Menu = Menu;
 });
+namespace('OUI.components', function (window) 
+{
+	var classify	= window.Classy.classify;
+	var TipView 	= window.OUI.views.TipView;
+	var idGenerator = window.OUI.core.view.idGenerator;
+
+
+	/**
+	 * @class OUI.components.Tip
+	 */
+	function Tip(baseName)
+	{
+		classify(this);
+
+		this._id 		= idGenerator(baseName);
+		this._tipView 	= new TipView(this, baseName);
+
+		this._tipView.bindHover();
+	};
+
+
+	Tip.prototype.getId = function ()
+	{
+		return this._id;
+	};
+
+	Tip.prototype.add = function ($element)
+	{
+		this._tipView.show($element);
+	};
+
+	Tip.prototype.remove = function ()
+	{
+		this._tipView.remove();
+	};
+
+
+	this.Tip = Tip;
+});
 namespace('OUI', function (window)
 {
 	var Dialog = window.OUI.components.Dialog;
 	var Modal = window.OUI.components.Modal;
 	var Menu = window.OUI.components.Menu;
 	var Toast = window.OUI.components.Toast;
+	var Tip = window.OUI.components.Tip;
+
 	
 	var RoundPosition = window.OUI.core.pos.prepared.RoundPosition;
 	var TargetPosition = window.OUI.core.pos.enum.TargetPosition;
@@ -2931,6 +3070,8 @@ namespace('OUI', function (window)
 	
 	this.index = function ()
 	{
+		var myTip = new Tip('oui-tip');
+
 		$('a.toast').on('click', function (e) {
 			e.preventDefault();
 			var message = new Toast(3000);
@@ -2944,21 +3085,20 @@ namespace('OUI', function (window)
 			});
 		});
 
-
 		var myMenu = new Menu($('a.menu'), $('div.my-menu').html(), 'my-menu');
-
+            
 		myMenu.onAfterOpen(function (container) {
 			var subMenu = new Menu(
-				container.find('a.menu'),
-				$('div.my-menu').html(),
+				container.find('a.menu'), 
+				$('div.my-menu').html(), 
 				'my-sub-menu');
 		});
 
 		$('a.dialog').on('click', function (e) {
 			e.preventDefault();
-
+			
 			var dialog = new Dialog('YES', 'NO');
-
+			
 			dialog.onConfirm(function () {
 				console.log('YES');
 			});
@@ -2980,8 +3120,8 @@ namespace('OUI', function (window)
 					var smallModal = new Modal(smallContents, 'small');
 					smallModal.onAfterOpen(function (smallModalContainer) {
 						new Menu(
-							smallModalContainer.find('a.popup-toggle'),
-							$('div.my-menu').html(),
+							smallModalContainer.find('a.popup-toggle'), 
+							$('div.my-menu').html(), 
 							'my-menu');
 					});
 					smallModal.open();

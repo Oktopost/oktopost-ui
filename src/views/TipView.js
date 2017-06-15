@@ -35,7 +35,9 @@ namespace('OUI.views', function (window)
 	{
 		console.log($related, $target);
 
-
+		console.log($related.position(), $related.width(), $related.height());
+		console.log($target.position(), $target.width(), $target.height());
+			
 		var options = {
 			relatedElement:  $related,
 		    targetElement: $target,
