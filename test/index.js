@@ -1,7 +1,9 @@
 'use strict';
 
-var ns = require('oktopost-namespace').dynamic(__dirname + '/..').OUI;
+var ns = require('oktopost-namespace');
 
-console.log(ns);
+var a = ns.dynamic(__dirname + '/..');
 
-module.exports = require('oktopost-namespace').dynamic(__dirname + '/..');
+console.log(a.OUI.core.pos.Positioner({}));
+
+//module.exports = require('oktopost-namespace').dynamic(__dirname + '/..').OUI;

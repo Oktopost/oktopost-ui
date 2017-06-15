@@ -1,14 +1,11 @@
 'use strict';
 
 
-const Namespace = require('../index');
-
-const Pos = Namespace.get('OUI.core.positioning.Pos');
-
+const Positioner = require('../index').core.pos.Positioner;
 const assert = require('chai').assert;
 
 
 suite('pos library' ,function () 
 {
-
+	console.log(Positioner);
 });

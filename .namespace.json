@@ -1,8 +1,6 @@
 {
-	"map":
-	{
-		"partial":
-		{
+	"map": {
+		"partial": {
 			"OUI": "./src"
 		}
 	}
