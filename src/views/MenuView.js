@@ -5,8 +5,8 @@ namespace('OUI.views', function (window)
 
 	var hbs 							= window.OUI.core.view.hbs;
 	var FadeRemove 						= window.OUI.core.view.FadeRemove;
-	var BottomPosition	 				= window.OUI.core.positioning.prepared.cornered.BottomPosition;
-	var TargetPosition					= window.OUI.core.positioning.enum.TargetPosition;
+	var BottomPosition	 				= window.OUI.core.pos.prepared.cornered.BottomPosition;
+	var TargetPosition					= window.OUI.core.pos.enum.TargetPosition;
 
 
 	function MenuView(menu, $toggleElement, contents, extraClass)

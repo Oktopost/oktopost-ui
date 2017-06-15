@@ -1,4 +1,4 @@
-namespace('OUI.core.positioning.enum', function ()
+namespace('OUI.core.pos.enum', function ()
 {
 	'use strict';
 	
@@ -7,7 +7,7 @@ namespace('OUI.core.positioning.enum', function ()
 	
 	
 	/**
-	 * @name OUI.core.positioning.enum.TargetSide
+	 * @name OUI.core.pos.enum.TargetSide
 	 * @enum {string}
 	 */
 	this.TargetSide = {

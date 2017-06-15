@@ -1,14 +1,14 @@
-namespace('OUI.core.positioning.prepared', function (window) 
+namespace('OUI.core.pos.prepared', function (window) 
 {
 	'use strict';
 
 	
 	var is 				= plankton.is;
-	var Point 			= OUI.core.positioning.Point;
-	var Box 			= OUI.core.positioning.Box;
-	var Pos 			= OUI.core.positioning.Pos;
-	var TargetSide 		= OUI.core.positioning.enum.TargetSide;
-	var TargetPosition 	= OUI.core.positioning.enum.TargetPosition;
+	var Point 			= OUI.core.pos.Point;
+	var Box 			= OUI.core.pos.Box;
+	var Positioner		= OUI.core.pos.Positioner;
+	var TargetSide 		= OUI.core.pos.enum.TargetSide;
+	var TargetPosition 	= OUI.core.pos.enum.TargetPosition;
 	
 	
 	var defaults = {
@@ -25,7 +25,7 @@ namespace('OUI.core.positioning.prepared', function (window)
 	
 	
 	/**
-	 * @class OUI.core.positioning.prepared.BasePreparedWithOffsets
+	 * @class OUI.core.pos.prepared.BasePreparedWithOffsets
 	 */
 	function BasePreparedWithOffsets(options, defaultsOptions)
 	{
@@ -374,9 +374,9 @@ namespace('OUI.core.positioning.prepared', function (window)
 			return false;
 		}
 		
-		var pos = new Pos(data);
+		var positioner = new Positioner(data);
 
-		var position = pos.getPosition(this.settings.isAbsolute);
+		var position = positioner.getPosition(this.settings.isAbsolute);
 		
 		if (is.object(position) && this._isNeedToSubtractContainer())
 		{

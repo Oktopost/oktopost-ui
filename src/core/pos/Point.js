@@ -1,8 +1,8 @@
-namespace('OUI.core.positioning', function () {
+namespace('OUI.core.pos', function () {
 	'use strict';
 
 	/**
-	 * @class OUI.core.positioning.Point
+	 * @class OUI.core.pos.Point
 	 */
 	var Point = function (x, y) 
 	{	

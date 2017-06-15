@@ -1,8 +1,8 @@
-namespace('OUI.core.positioning.prepared.cornered', function (window) 
+namespace('OUI.core.pos.prepared.cornered', function (window) 
 {
-	var BasePreparedWithOffsets = OUI.core.positioning.prepared.BasePreparedWithOffsets;
-	var TargetSide = OUI.core.positioning.enum.TargetSide;
-	var TargetPosition = OUI.core.positioning.enum.TargetPosition;
+	var TargetSide 				= OUI.core.pos.enum.TargetSide;
+	var TargetPosition 			= OUI.core.pos.enum.TargetPosition;
+	var BasePreparedWithOffsets = OUI.core.pos.prepared.BasePreparedWithOffsets;
 	
 	
 	var defaults = {
@@ -12,7 +12,7 @@ namespace('OUI.core.positioning.prepared.cornered', function (window)
 	
 	
 	/**
-	 * @class OUI.core.positioning.prepared.cornered.TopPosition
+	 * @class OUI.core.pos.prepared.cornered.TopPosition
 	 */
 	function TopPosition(options)
 	{
