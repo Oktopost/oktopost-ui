@@ -37,7 +37,7 @@ namespace('OUI.views', function (window)
 			container: $('body'),
 			relatedElement:  $related,
 		    targetElement: $target,
-		    relatedOffset: 0,
+		    relatedOffset: 10,
 		    initialPosition: TargetPosition.center,
 		    initialSide: TargetSide.bottom
 		};

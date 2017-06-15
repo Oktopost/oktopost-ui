@@ -74,29 +74,29 @@ namespace('OUI', function (window)
 			bigModal.open();
 		});
 
-		// var $target = $('<div />', {
-		// 	text: 'positioned div',
-		// 	style: 'width:150px; height: 80px; background-color: #1DA1F3; position: absolute'
-		// });
-		//
-		// var $container = $('#positioner-container');
-		//
-		// var options = {
-		// 	container: $container,
-		// 	containerOffset: 10,
-		// 	relatedElement: document.getElementById('related'),
-		// 	relatedOffset: 5,
-		// 	targetElement: $target,
-		// 	targetOffset: 0,
-		// 	isRelative: false,
-		// 	initialPosition: TargetPosition.bottom,
-		// 	initialSide: TargetSide.left
-		// };
-		//
-		// var pos = RoundPosition.get(options);
-		//
-		// $target.css({top: pos.y, left: pos.x});
-		//
-		// $container.append($target);
+		var $target = $('<div />', {
+			text: 'positioned div',
+			style: 'width:150px; height: 80px; background-color: #1DA1F3; position: absolute'
+		});
+
+		var $container = $('#positioner-container');
+
+		var options = {
+			container: $container,
+			containerOffset: 10,
+			relatedElement: document.getElementById('related'),
+			relatedOffset: 5,
+			targetElement: $target,
+			targetOffset: 0,
+			isRelative: false,
+			initialPosition: TargetPosition.bottom,
+			initialSide: TargetSide.left
+		};
+
+		var pos = RoundPosition.get(options);
+
+		$target.css({top: pos.y, left: pos.x});
+
+		$container.append($target);
 	}
 });        

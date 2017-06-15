@@ -101,16 +101,30 @@ namespace('OUI.core.pos.prepared', function (window)
 		return this._applyOffset(position, offset);
 	};
 	
-	BasePreparedWithOffsets.prototype._getSizeWithOffset = function (el, offset) 
+	BasePreparedWithOffsets.prototype._getSizeWithOffset = function (el, offset, top, left) 
 	{
 		if ($.isWindow(el))
 		{
 			el = $(el);
 		}
 		
+		xOffsetModifier = 1;
+		
+		if (left > offset)
+		{
+			xOffsetModifier = 2;
+		}
+		
+		yOffsetModifier = 1;
+		
+		if (top > offset)
+		{
+			yOffsetModifier = 2;
+		}
+		
 		return {
-			width: el.width() + offset * 2, 
-			height: el.height() + offset * 2
+			width: el.width() + offset * xOffsetModifier, 
+			height: el.height() + offset * yOffsetModifier
 		};
 	};
 	
@@ -125,7 +139,7 @@ namespace('OUI.core.pos.prepared', function (window)
 		
 		var position = this.getPositionWithOffset(el, offset);
 
-		var size = this._getSizeWithOffset(el, offset);
+		var size = this._getSizeWithOffset(el, offset, position.top, position.left);
 		
 		return this._prepareBox(position.left, position.top, size.width, size.height);
 	};
@@ -362,7 +376,6 @@ namespace('OUI.core.pos.prepared', function (window)
 			areas : this._getAreas(relatedBox, targetBox)
 		}
 	};
-	
 	
 	BasePreparedWithOffsets.prototype.getPosition = function () 
 	{

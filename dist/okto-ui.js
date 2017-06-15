@@ -2040,16 +2040,30 @@ namespace('OUI.core.pos.prepared', function (window)
 		return this._applyOffset(position, offset);
 	};
 	
-	BasePreparedWithOffsets.prototype._getSizeWithOffset = function (el, offset) 
+	BasePreparedWithOffsets.prototype._getSizeWithOffset = function (el, offset, top, left) 
 	{
 		if ($.isWindow(el))
 		{
 			el = $(el);
 		}
 		
+		xOffsetModifier = 1;
+		
+		if (left > offset)
+		{
+			xOffsetModifier = 2;
+		}
+		
+		yOffsetModifier = 1;
+		
+		if (top > offset)
+		{
+			yOffsetModifier = 2;
+		}
+		
 		return {
-			width: el.width() + offset * 2, 
-			height: el.height() + offset * 2
+			width: el.width() + offset * xOffsetModifier, 
+			height: el.height() + offset * yOffsetModifier
 		};
 	};
 	
@@ -2064,7 +2078,7 @@ namespace('OUI.core.pos.prepared', function (window)
 		
 		var position = this.getPositionWithOffset(el, offset);
 
-		var size = this._getSizeWithOffset(el, offset);
+		var size = this._getSizeWithOffset(el, offset, position.top, position.left);
 		
 		return this._prepareBox(position.left, position.top, size.width, size.height);
 	};
@@ -2876,14 +2890,12 @@ namespace('OUI.views', function (window)
 	};
 
 	TipView.prototype._getCoordinates = function ($related, $target)
-	{	
-		console.log($target.width(), $target.height());
-		
+	{
 		var options = {
 			container: $('body'),
 			relatedElement:  $related,
 		    targetElement: $target,
-		    relatedOffset: 0,
+		    relatedOffset: 10,
 		    initialPosition: TargetPosition.center,
 		    initialSide: TargetSide.bottom
 		};
@@ -3131,29 +3143,29 @@ namespace('OUI', function (window)
 			bigModal.open();
 		});
 
-		// var $target = $('<div />', {
-		// 	text: 'positioned div',
-		// 	style: 'width:150px; height: 80px; background-color: #1DA1F3; position: absolute'
-		// });
-		//
-		// var $container = $('#positioner-container');
-		//
-		// var options = {
-		// 	container: $container,
-		// 	containerOffset: 10,
-		// 	relatedElement: document.getElementById('related'),
-		// 	relatedOffset: 5,
-		// 	targetElement: $target,
-		// 	targetOffset: 0,
-		// 	isRelative: false,
-		// 	initialPosition: TargetPosition.bottom,
-		// 	initialSide: TargetSide.left
-		// };
-		//
-		// var pos = RoundPosition.get(options);
-		//
-		// $target.css({top: pos.y, left: pos.x});
-		//
-		// $container.append($target);
+		var $target = $('<div />', {
+			text: 'positioned div',
+			style: 'width:150px; height: 80px; background-color: #1DA1F3; position: absolute'
+		});
+
+		var $container = $('#positioner-container');
+
+		var options = {
+			container: $container,
+			containerOffset: 10,
+			relatedElement: document.getElementById('related'),
+			relatedOffset: 5,
+			targetElement: $target,
+			targetOffset: 0,
+			isRelative: false,
+			initialPosition: TargetPosition.bottom,
+			initialSide: TargetSide.left
+		};
+
+		var pos = RoundPosition.get(options);
+
+		$target.css({top: pos.y, left: pos.x});
+
+		$container.append($target);
 	}
 });        
