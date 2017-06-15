@@ -4,6 +4,8 @@ namespace('OUI', function (window)
 	var Modal = window.OUI.components.Modal;
 	var Menu = window.OUI.components.Menu;
 	var Toast = window.OUI.components.Toast;
+	var Tip = window.OUI.components.Tip;
+
 	
 	var RoundPosition = window.OUI.core.pos.prepared.RoundPosition;
 	var TargetPosition = window.OUI.core.pos.enum.TargetPosition;
@@ -11,6 +13,8 @@ namespace('OUI', function (window)
 	
 	this.index = function ()
 	{
+		var myTip = new Tip('oui-tip');
+
 		$('a.toast').on('click', function (e) {
 			e.preventDefault();
 			var message = new Toast(3000);
@@ -24,21 +28,20 @@ namespace('OUI', function (window)
 			});
 		});
 
-
 		var myMenu = new Menu($('a.menu'), $('div.my-menu').html(), 'my-menu');
-
+            
 		myMenu.onAfterOpen(function (container) {
 			var subMenu = new Menu(
-				container.find('a.menu'),
-				$('div.my-menu').html(),
+				container.find('a.menu'), 
+				$('div.my-menu').html(), 
 				'my-sub-menu');
 		});
 
 		$('a.dialog').on('click', function (e) {
 			e.preventDefault();
-
+			
 			var dialog = new Dialog('YES', 'NO');
-
+			
 			dialog.onConfirm(function () {
 				console.log('YES');
 			});
@@ -60,8 +63,8 @@ namespace('OUI', function (window)
 					var smallModal = new Modal(smallContents, 'small');
 					smallModal.onAfterOpen(function (smallModalContainer) {
 						new Menu(
-							smallModalContainer.find('a.popup-toggle'),
-							$('div.my-menu').html(),
+							smallModalContainer.find('a.popup-toggle'), 
+							$('div.my-menu').html(), 
 							'my-menu');
 					});
 					smallModal.open();
