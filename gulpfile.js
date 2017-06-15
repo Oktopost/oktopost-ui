@@ -25,7 +25,7 @@ for (var i = 0; i < result.length; i++)
 {
 	if (result[i][0] === '/')
 	{
-		result[i] = result[i].substr(LENGTH); // __dirname + '/node_modules/' + result[i];  
+		result[i] = result[i].substr(LENGTH);
 	}
 	else 
 	{
@@ -35,7 +35,6 @@ for (var i = 0; i < result.length; i++)
 	result[i] += '.js';
 }
 
-console.log(result);
 
 const files = {
 	
@@ -54,7 +53,6 @@ const files = {
 	]
 };
 
-console.log(result);
 
 function buildNamespace()
 {

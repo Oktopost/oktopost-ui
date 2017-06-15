@@ -1,18 +1,16 @@
 namespace('OUI.views', function (window) 
 {
-	'use strict';
-
-
 	var hbs 		= window.OUI.core.view.hbs;
 	var fadeRemove 	= window.OUI.core.view.fadeRemove;
-
+	var classify 	= window.Classy.classify;
+	
 
 	/**
 	 * @class OUI.views.ToastView
 	 */
 	function ToastView(toast, delay)
 	{
-		Classy.classify(this);
+		classify(this);
 
 		delay = delay || 5000;
 

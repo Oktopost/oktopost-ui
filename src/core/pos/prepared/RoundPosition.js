@@ -1,5 +1,6 @@
 namespace('OUI.core.pos.prepared', function (window) 
 {
+	var classify				= window.Classy.classify;
 	var TargetSide 				= window.OUI.core.pos.enum.TargetSide;
 	var TargetPosition 			= window.OUI.core.pos.enum.TargetPosition;
 	var BasePreparedWithOffsets = window.OUI.core.pos.prepared.BasePreparedWithOffsets;
@@ -16,7 +17,7 @@ namespace('OUI.core.pos.prepared', function (window)
 	 */
 	function RoundPosition(options)
 	{
-		Classy.classify(this);
+		classify(this);
 
 		BasePreparedWithOffsets.call(this, options, defaults);
 		

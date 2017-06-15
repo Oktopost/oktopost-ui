@@ -1,9 +1,7 @@
 namespace('OUI.views', function (window) 
 {
-	'use strict';
-
-
 	var hbs = window.OUI.core.view.hbs;
+	var classify = window.Classy.classify;
 	var fadeRemove = window.OUI.core.view.fadeRemove;
 
 
@@ -12,14 +10,14 @@ namespace('OUI.views', function (window)
 	 */
 	function DialogView(dialog, okButtonText, cancelButtonText) 
 	{
-		Classy.classify(this);
+		classify(this);
 
 		this._dialog 			= dialog;
 		this._okButtonText 		= okButtonText || 'OK';
 		this._cancelButtonText 	= cancelButtonText || 'Cancel';
 		this._okButton 			= 'a.ok-button';
 		this._cancelButton 		= 'a.cancel-button';
-	};
+	}
 
 
 	DialogView.prototype.getContainer = function ()

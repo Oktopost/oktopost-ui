@@ -1,8 +1,9 @@
 namespace('OUI.core.pos', function (window) 
 {
-	var is 		= window.Plankton.is;
-	var Box 	= window.OUI.core.pos.Box;
-	var Point	= window.OUI.core.pos.Point;
+	var is 			= window.Plankton.is;
+	var classify 	= window.Classy.classify; 
+	var Box 		= window.OUI.core.pos.Box;
+	var Point		= window.OUI.core.pos.Point;
 	
 	
 	/**
@@ -10,7 +11,7 @@ namespace('OUI.core.pos', function (window)
 	 */
 	var Positioner = function (data) 
 	{	
-		Classy.classify(this);
+		classify(this);
 		
 		this.container = data.container;
 		this.related = data.related;

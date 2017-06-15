@@ -1,17 +1,14 @@
 namespace('OUI.views', function (window) 
 {
-	'use strict';
-
-
 	var hbs = window.OUI.core.view.hbs;
-
+	var classify = window.Classy.classify;
 
 	/**
 	 * @class OUI.views.ModalView
 	 */
 	function ModalView(modal, contents, className) 
 	{
-		Classy.classify(this);
+		classify(this);
 
 		className = className || '';
 

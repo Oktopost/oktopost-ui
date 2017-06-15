@@ -1,9 +1,7 @@
 namespace('OUI.views', function (window) 
 {
-	'use strict';
-
-
 	var hbs 							= window.OUI.core.view.hbs;
+	var classify						= window.Classy.classify;
 	var FadeRemove 						= window.OUI.core.view.FadeRemove;
 	var BottomPosition	 				= window.OUI.core.pos.prepared.cornered.BottomPosition;
 	var TargetPosition					= window.OUI.core.pos.enum.TargetPosition;
@@ -11,7 +9,7 @@ namespace('OUI.views', function (window)
 
 	function MenuView(menu, $toggleElement, contents, extraClass)
 	{
-		Classy.classify(this);
+		classify(this);
 
 		extraClass = extraClass || '';
 

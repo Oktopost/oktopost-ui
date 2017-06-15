@@ -1,6 +1,7 @@
 namespace('OUI.core.pos.prepared', function (window) 
 {
 	var is 				= window.Plankton.is;
+	var classify		= window.Classy.classify;
 	var Point 			= window.OUI.core.pos.Point;
 	var Box 			= window.OUI.core.pos.Box;
 	var Positioner		= window.OUI.core.pos.Positioner;
@@ -26,7 +27,7 @@ namespace('OUI.core.pos.prepared', function (window)
 	 */
 	function BasePreparedWithOffsets(options, defaultsOptions)
 	{
-		Classy.classify(this);
+		classify(this);
 		
 		var mergedDefaults = $.extend(true, {}, defaults, defaultsOptions);
 		
