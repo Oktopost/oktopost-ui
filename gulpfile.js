@@ -15,12 +15,11 @@ var result = require('oktopost-namespace').getDependencies(
 	(dep, root) =>
 	{
 		var a = root.OUI.index;
-		console.log(dep);
 	});
 
 
 
-const LENGTH = '/home/ivan/Code/oktopost-ui/'.length;
+const LENGTH = __dirname.length + 1;
 
 for (var i = 0; i < result.length; i++)
 {
