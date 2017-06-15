@@ -38,7 +38,6 @@ namespace('OUI.views', function (window)
 			relatedElement:  $related,
 		    targetElement: $target,
 		    relatedOffset: 0,
-			isAbsolute: true,
 		    initialPosition: TargetPosition.center,
 		    initialSide: TargetSide.bottom
 		};

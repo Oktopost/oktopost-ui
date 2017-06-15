@@ -133,7 +133,7 @@ namespace('OUI.core.pos', function (window)
 	};
 		
 	
-	Positioner.prototype.getPosition = function (isAbsolute) 
+	Positioner.prototype.getPosition = function (isRelative) 
 	{
 		isAbsolute = isAbsolute || false;
 		
@@ -158,12 +158,12 @@ namespace('OUI.core.pos', function (window)
 			return new Point(this.areas[0].box.x(), this.areas[0].box.y());
 		}
 		
-		if (isAbsolute)
+		if (isRelative)
 		{
-			return this.absolutePosition;
+			return this.relativePosition;
 		}
 		
-		return this.relativePosition;
+		return this.absolutePosition;
 	};
 	
 	

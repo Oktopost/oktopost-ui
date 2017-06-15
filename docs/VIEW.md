@@ -41,7 +41,7 @@ Get method returns Point object with "x" and "y" properties.
 * relatedOffset: related element margin, can be positive or negative,
 * targetElement: positioned element, must have width and height,
 * targetOffset: target element margin, can be positive or negative,
-* isAbsolute: return absolute position or relatively to relatedElement,
+* isRelative: return absolute position or relatively to relatedElement, false by default,
 * initialPosition: initial point of positioning, from TargetPosition enum,
 * initialSide: initial side of positioning, from TargetSide enum, used if prepared objects have more than one side for positioning.
 

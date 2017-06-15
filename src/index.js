@@ -88,7 +88,7 @@ namespace('OUI', function (window)
 		// 	relatedOffset: 5,
 		// 	targetElement: $target,
 		// 	targetOffset: 0,
-		// 	isAbsolute: true,
+		// 	isRelative: false,
 		// 	initialPosition: TargetPosition.bottom,
 		// 	initialSide: TargetSide.left
 		// };

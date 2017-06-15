@@ -16,7 +16,7 @@ namespace('OUI.core.pos.prepared', function (window)
 		relatedOffset: 0,
 		targetElement: null,
 		targetOffset: 0,
-		isAbsolute: false,
+		isRelative: false,
 		initialSide: null,
 		initialPosition: null
 	};
@@ -375,7 +375,7 @@ namespace('OUI.core.pos.prepared', function (window)
 		
 		var positioner = new Positioner(data);
 
-		var position = positioner.getPosition(this.settings.isAbsolute);
+		var position = positioner.getPosition(this.settings.isRelative);
 		
 		if (is.object(position) && this._isNeedToSubtractContainer())
 		{
