@@ -1335,6 +1335,128 @@ namespace('OUI.views', function (window)
 });
 namespace('OUI.views', function (window) 
 {
+	var RoundPosition 	= window.OUI.core.pos.prepared.RoundPosition;
+    var TargetPosition 	= window.OUI.core.pos.enum.TargetPosition;
+    var TargetSide 		= window.OUI.core.pos.enum.TargetSide;
+
+
+	/**
+	 * @class OUI.views.TipView
+	 */
+	function TipView(tip, baseName)
+	{
+		Classy.classify(this);
+
+		this._tip 				= tip;
+
+		this._tipBaseName 		= baseName;
+		this._tipSelector 		= '*[data-' + baseName + ']';
+		this._tipContentAttr 	= 'title';
+	};
+
+
+	TipView.prototype._getContent = function ($element)
+	{
+		var content = $element.data(this._tipBaseName);
+
+		content = content.replace(/\[/g, '<');
+		content = content.replace(/\]/g, '>');
+
+		return content;
+	};
+
+	TipView.prototype._getCoordinates = function ($related, $target)
+	{
+		console.log($related, $target);
+
+
+		var options = {
+			relatedElement:  $related,
+		    targetElement: $target,
+		    relatedOffset: 10,
+		    initialPosition: TargetPosition.center,
+		    initialSide: TargetSide.bottom		    
+		};
+
+		return RoundPosition.get(options);
+
+		// var pos = new RoundPosition(
+		// {
+		//     relatedElement:  $related,
+		//     targetElement: $target,
+		//     initialPosition: TargetPosition.center,
+		//     initialSide: TargetSide.right
+
+
+		//  //    container: $container,
+		// 	// containerOffset: 10,
+		// 	// relatedElement: document.getElementById('related'),
+		// 	// relatedOffset: 5,
+		// 	// targetElement: $target,
+		// 	// targetOffset: 0,
+		// 	// isAbsolute: true,
+  //  //          initialPosition: TargetPosition.bottom,
+  //  //          initialSide: TargetSide.left
+		// });
+
+		// return pos.getPosition();
+	};
+
+
+	TipView.prototype.bindHover = function ()
+	{
+		var view = this;
+
+		$(document).on(
+		{
+		    'mouseenter.tip': function () 
+		    {
+		        view._tip.add($(this));
+		    },
+		    'mouseleave.tip': function () 
+		    {
+		        view._tip.remove();
+		    }
+		}, this._tipSelector);
+
+		$(document).on('click.tip', this._tipSelector, function () 
+		{
+			view._tip.remove();
+		});
+	};
+
+	TipView.prototype.getContainer = function ()
+	{
+		return $('#' + this._tip.getId());
+	};
+
+	TipView.prototype.show = function ($element)
+	{
+		var $tip = $('<div>')
+			.attr('id', this._tip.getId())
+			.addClass(this._tipBaseName)
+			.html(this._getContent($element));
+
+		var coords = this._getCoordinates($element, $tip);
+
+		$tip.css({
+			top: coords.y, 
+			left: coords.x
+		});
+
+		$('body').append($tip);
+	};
+
+	TipView.prototype.remove = function ()
+	{
+		this.getContainer().remove();
+	};
+
+
+	this.TipView = TipView;
+});
+namespace('OUI.views', function (window) 
+{
 	'use strict';
 
 
@@ -1615,6 +1737,44 @@ namespace('OUI.components', function (window)
 
 
 	this.Modal = Modal;
+});
+namespace('OUI.components', function (window) 
+{
+	var TipView 	= window.OUI.views.TipView;
+	var idGenerator = window.OUI.core.view.idGenerator;
+
+
+	/**
+	 * @class OUI.components.Tip
+	 */
+	function Tip(baseName)
+	{
+		Classy.classify(this);
+
+		this._id 		= idGenerator(baseName);
+		this._tipView 	= new TipView(this, baseName);
+
+		this._tipView.bindHover();
+	};
+
+
+	Tip.prototype.getId = function ()
+	{
+		return this._id;
+	};
+
+	Tip.prototype.add = function ($element)
+	{
+		this._tipView.show($element);
+	};
+
+	Tip.prototype.remove = function ()
+	{
+		this._tipView.remove();
+	};
+
+
+	this.Tip = Tip;
 });
 namespace('OUI.components', function (window) 
 {

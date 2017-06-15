@@ -15,11 +15,12 @@
 
    <a href="" class="menu" style="float: right">Toggle Menu</a>
 
-   <a href="" class="toast">Show Message</a>
+   <a href="" data-oui-tip="Lorem ipsum dolor sit amet, usu ne nullam reprimique interpretaris" class="toast">Show Message</a>
 
    <div class="my-menu hidden">
         <a href="">My menu</a>
    </div>
+
 
 
    <div class="small-modal hidden">
@@ -73,6 +74,9 @@
             var Menu = window.OUI.components.Menu;
             var Toast = window.OUI.components.Toast;
 
+            var Tip = window.OUI.components.Tip;
+
+            var myTip = new Tip('oui-tip');
 
             $('a.toast').on('click', function (e) {
                 e.preventDefault();
@@ -134,34 +138,34 @@
                 bigModal.open();
             });
             
-            var RoundPosition = window.OUI.core.pos.prepared.RoundPosition;
-            var TargetPosition = window.OUI.core.pos.enum.TargetPosition;
-            var TargetSide = window.OUI.core.pos.enum.TargetSide;
+   //          var RoundPosition = window.OUI.core.pos.prepared.RoundPosition;
+   //          var TargetPosition = window.OUI.core.pos.enum.TargetPosition;
+   //          var TargetSide = window.OUI.core.pos.enum.TargetSide;
             
-			var $target = $('<div />', {
-				text: 'positioned div',
-				style: 'width:150px; height: 80px; background-color: #1DA1F3; position: absolute'
-			});
+			// var $target = $('<div />', {
+			// 	text: 'positioned div',
+			// 	style: 'width:150px; height: 80px; background-color: #1DA1F3; position: absolute'
+			// });
 
-			var $container = $('#positioner-container');
+			// var $container = $('#positioner-container');
 
-			var options = {
-				container: $container,
-				containerOffset: 10,
-				relatedElement: document.getElementById('related'),
-				relatedOffset: 5,
-				targetElement: $target,
-				targetOffset: 0,
-				isAbsolute: true,
-                initialPosition: TargetPosition.bottom,
-                initialSide: TargetSide.left
-			};
+			// var options = {
+			// 	container: $container,
+			// 	containerOffset: 10,
+			// 	relatedElement: document.getElementById('related'),
+			// 	relatedOffset: 5,
+			// 	targetElement: $target,
+			// 	targetOffset: 0,
+			// 	isAbsolute: true,
+   //              initialPosition: TargetPosition.bottom,
+   //              initialSide: TargetSide.left
+			// };
 
-			var pos = RoundPosition.get(options);
+			// var pos = RoundPosition.get(options);
 
-			$target.css({top: pos.y, left: pos.x});
+			// $target.css({top: pos.y, left: pos.x});
 
-			$container.append($target);            
+			// $container.append($target);            
         })();        
     </script>
 
