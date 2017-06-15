@@ -135,7 +135,7 @@ namespace('OUI.core.pos', function (window)
 	
 	Positioner.prototype.getPosition = function (isRelative) 
 	{
-		isAbsolute = isAbsolute || false;
+		isRelative = isRelative || false;
 		
 		if (!this._checkParams())
 		{

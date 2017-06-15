@@ -32,7 +32,7 @@ namespace('OUI.views', function (window)
 	};
 
 	TipView.prototype._getCoordinates = function ($related, $target)
-	{	
+	{
 		var options = {
 			container: $('body'),
 			relatedElement:  $related,

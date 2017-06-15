@@ -1718,9 +1718,9 @@ namespace('OUI.core.pos', function (window)
 	};
 		
 	
-	Positioner.prototype.getPosition = function (isAbsolute) 
+	Positioner.prototype.getPosition = function (isRelative) 
 	{
-		isAbsolute = isAbsolute || false;
+		isRelative = isRelative || false;
 		
 		if (!this._checkParams())
 		{
@@ -1743,12 +1743,12 @@ namespace('OUI.core.pos', function (window)
 			return new Point(this.areas[0].box.x(), this.areas[0].box.y());
 		}
 		
-		if (isAbsolute)
+		if (isRelative)
 		{
-			return this.absolutePosition;
+			return this.relativePosition;
 		}
 		
-		return this.relativePosition;
+		return this.absolutePosition;
 	};
 	
 	
@@ -1955,7 +1955,7 @@ namespace('OUI.core.pos.prepared', function (window)
 		relatedOffset: 0,
 		targetElement: null,
 		targetOffset: 0,
-		isAbsolute: false,
+		isRelative: false,
 		initialSide: null,
 		initialPosition: null
 	};
@@ -2314,7 +2314,7 @@ namespace('OUI.core.pos.prepared', function (window)
 		
 		var positioner = new Positioner(data);
 
-		var position = positioner.getPosition(this.settings.isAbsolute);
+		var position = positioner.getPosition(this.settings.isRelative);
 		
 		if (is.object(position) && this._isNeedToSubtractContainer())
 		{
@@ -2877,12 +2877,13 @@ namespace('OUI.views', function (window)
 
 	TipView.prototype._getCoordinates = function ($related, $target)
 	{	
+		console.log($target.width(), $target.height());
+		
 		var options = {
 			container: $('body'),
 			relatedElement:  $related,
 		    targetElement: $target,
-		    relatedOffset: 5,
-			isAbsolute: true,
+		    relatedOffset: 0,
 		    initialPosition: TargetPosition.center,
 		    initialSide: TargetSide.bottom
 		};
@@ -3144,7 +3145,7 @@ namespace('OUI', function (window)
 		// 	relatedOffset: 5,
 		// 	targetElement: $target,
 		// 	targetOffset: 0,
-		// 	isAbsolute: true,
+		// 	isRelative: false,
 		// 	initialPosition: TargetPosition.bottom,
 		// 	initialSide: TargetSide.left
 		// };
