@@ -1,11 +1,8 @@
-namespace('OUI.core.pos', function () 
+namespace('OUI.core.pos', function (window) 
 {
-	'use strict';
-	
-	
-	var is 		= plankton.is;
-	var Box 	= OUI.core.pos.Box;
-	var Point	= OUI.core.pos.Point;
+	var is 		= window.Plankton.is;
+	var Box 	= window.OUI.core.pos.Box;
+	var Point	= window.OUI.core.pos.Point;
 	
 	
 	/**

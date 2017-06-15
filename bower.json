@@ -15,10 +15,6 @@
     "tests"
   ],
   "dependencies": {
-    "oktopost-classy": "^1.0.1",
-    "plankton": "*",
-    "oktopost-namespace": "^1.2.0",
-    "oktopost-duct": "*",
     "jquery": "^3.2.1",
     "handlebars": "3.0.3"
   }

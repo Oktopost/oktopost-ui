@@ -1,16 +1,18 @@
-namespace('OUI.core.pos', function () {
-	'use strict';
-
+namespace('OUI.core.pos', function (window)
+{
+	var classify = window.Classy.classify; 
+	
+	
 	/**
 	 * @class OUI.core.pos.Point
 	 */
-	var Point = function (x, y) 
+	function Point(x, y) 
 	{	
-		Classy.classify(this);
+		classify(this);
 		
 		this.x = x;
 		this.y = y;
-	};
+	}
 	
 	
 	this.Point = Point;

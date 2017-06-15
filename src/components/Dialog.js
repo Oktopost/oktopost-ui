@@ -1,8 +1,5 @@
 namespace('OUI.components', function (window) 
 {
-	'use strict';
-
-
 	var Event       = window.duct.Event;
 	var DialogView 	= window.OUI.views.DialogView;
 

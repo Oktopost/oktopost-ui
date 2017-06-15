@@ -8,9 +8,17 @@ var handlebars = require('gulp-handlebars');
 var sourcemaps = require('gulp-sourcemaps');
 
 
+var result = require('oktopost-namespace').getDependencies(
+	__dirname,
+	() => {},
+	(dep, root) =>
+	{
+		var a = root.OUI.core.pos.Positioner;
+	});
+
+
 var files = {
-    js: [
-        'src/namespace.js', 
+    js: [ 
         'src/core/**/*',
         'src/views/**/*',
         'src/components/**/*'
@@ -24,22 +32,26 @@ var files = {
 };
 
 
-function buildCss() {
+
+function buildCss()
+{
     gulp.src(files.css)
         .pipe(sourcemaps.init())
         .pipe(sass())
         .pipe(concat('okto-ui.css'))
         .pipe(sourcemaps.write())
         .pipe(gulp.dest('dist'));
-};
+}
 
-function buildJs() {
+function buildJs()
+{
     gulp.src(files.js)
         .pipe(concat('okto-ui.js'))
         .pipe(gulp.dest('dist'));
-};
+}
 
-function buildViews() {
+function buildViews()
+{
     gulp.src(files.views)
         .pipe(handlebars())
         .pipe(wrap('Handlebars.template(<%= contents %>)'))
@@ -52,7 +64,8 @@ function buildViews() {
         }))
         .pipe(concat('okto-ui-templates.js'))
         .pipe(gulp.dest('dist')); 
-};
+}
+
 
 gulp.task('buildCss', buildCss);
 gulp.task('buildJs', buildJs);
