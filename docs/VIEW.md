@@ -45,7 +45,7 @@ Get method returns Point object with "x" and "y" properties.
 * initialPosition: initial point of positioning, from TargetPosition enum,
 * initialSide: initial side of positioning, from TargetSide enum, used if prepared objects have more than one side for positioning.
 
-###usage
+### usage
 ```Javascript
 var RoundPosition = window.OUI.core.positioning.prepared.RoundPosition;
 var TargetPosition = window.OUI.core.positioning.enum.TargetPosition;
