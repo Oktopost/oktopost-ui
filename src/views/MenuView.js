@@ -63,7 +63,7 @@ namespace('OUI.views', function (window)
 		var $target 	= $container.find('div.wrapper');
 		var $related 	= this._toggleElement;
 		
-		var position = new BottomPosition({
+		var options = {
 			container: $container,
 			containerOffset: 0,
 			relatedElement: $related,
@@ -72,7 +72,9 @@ namespace('OUI.views', function (window)
 			targetOffset: 0,
 			isAbsolute: true,
 			initialPosition: TargetPosition.center
-		});
+		};
+		
+		var position = BottomPosition.get(options);
 
 		$target.offset({
 			top: position.y,

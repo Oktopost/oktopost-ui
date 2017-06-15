@@ -9,9 +9,9 @@ namespace('OUI.core.positioning', function ()
 	
 	
 	/**
-	 * @class OUI.core.positioning.Positioner
+	 * @class OUI.core.positioning.Pos
 	 */
-	var Positioner = function (data) 
+	var Pos = function (data) 
 	{	
 		Classy.classify(this);
 		
@@ -25,7 +25,7 @@ namespace('OUI.core.positioning', function ()
 	};
 	
 	
-	Positioner.prototype._checkParams = function () 
+	Pos.prototype._checkParams = function () 
 	{	
 		if (is.empty(this.areas))
 			return false;
@@ -39,7 +39,7 @@ namespace('OUI.core.positioning', function ()
 		return (is.object(this.container));
 	};
 	
-	Positioner.prototype._transformTarget = function (box, initialX, initialY) 
+	Pos.prototype._transformTarget = function (box, initialX, initialY) 
 	{
 		initialX = initialX || 0;
 		initialY = initialY || 0;
@@ -50,7 +50,7 @@ namespace('OUI.core.positioning', function ()
 		return new Box(new Point(newX, newY), new Point(this.target.w(), this.target.h()));
 	};
 	
-	Positioner.prototype._prepareArea = function (area) 
+	Pos.prototype._prepareArea = function (area) 
 	{
 		if (!area.box.isIntersect(this.container))
 		{
@@ -70,7 +70,7 @@ namespace('OUI.core.positioning', function ()
 		return !(area.box.w() < this.target.w() || area.box.h() < this.target.h());
 	};
 	
-	Positioner.prototype._subtractInitial = function (area, originalX, originalY) 
+	Pos.prototype._subtractInitial = function (area, originalX, originalY) 
 	{
 		area.initial.x = area.initial.x + originalX - area.box.x();
 		
@@ -87,17 +87,17 @@ namespace('OUI.core.positioning', function ()
 		}
 	};
 	
-	Positioner.prototype._moveX = function (target, box) 
+	Pos.prototype._moveX = function (target, box) 
 	{
 		return -(target.x() + target.w() - box.x() - box.w());
 	};
 	
-	Positioner.prototype._moveY = function (target, box) 
+	Pos.prototype._moveY = function (target, box) 
 	{
 		return -(target.y() + target.h() - box.y() - box.h());
 	};
 	
-	Positioner.prototype._putInArea = function (box, moveX, moveY, area) 
+	Pos.prototype._putInArea = function (box, moveX, moveY, area) 
 	{
 		var target = this._transformTarget(box, moveX, moveY);
 		
@@ -114,7 +114,7 @@ namespace('OUI.core.positioning', function ()
 		return target;
 	};
 	
-	Positioner.prototype._tryPutTargetInArea = function (area) 
+	Pos.prototype._tryPutTargetInArea = function (area) 
 	{
 		if (!this._prepareArea(area))
 		{
@@ -135,7 +135,7 @@ namespace('OUI.core.positioning', function ()
 	};
 		
 	
-	Positioner.prototype.getPosition = function (isAbsolute) 
+	Pos.prototype.getPosition = function (isAbsolute) 
 	{
 		isAbsolute = isAbsolute || false;
 		
@@ -169,5 +169,5 @@ namespace('OUI.core.positioning', function ()
 	};
 	
 	
-	this.Positioner = Positioner;
+	this.Pos = Pos;
 });

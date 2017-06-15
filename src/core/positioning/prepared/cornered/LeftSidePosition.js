@@ -1,21 +1,11 @@
-namespace('OUI.core.positioning.prepared.cornered', function (window) 
+namespace('OUI.core.positioning.prepared.cornered', function () 
 {
-	'use strict';
-
-	
 	var BasePreparedWithOffsets = OUI.core.positioning.prepared.BasePreparedWithOffsets;
 	var TargetSide = OUI.core.positioning.enum.TargetSide;
 	var TargetPosition = OUI.core.positioning.enum.TargetPosition;
 	
 	
 	var defaults = {
-		container: window,
-		containerOffset: 0,
-		relatedElement: null,
-		relatedOffset: 0,
-		targetElement: null,
-		targetOffset: 0,
-		isAbsolute: false,
 		initialSide: TargetSide.left,
 		initialPosition: TargetPosition.center
 	};
@@ -28,30 +18,29 @@ namespace('OUI.core.positioning.prepared.cornered', function (window)
 	{
 		Classy.classify(this);
 		
-		var self = this;
+		BasePreparedWithOffsets.call(this, options, defaults);
 		
-		var settings = $.extend(true, {}, defaults, options);
-
-		BasePreparedWithOffsets.call(self, settings);
-		
-			
-		this.availableSides = [
+		this._availableSides = [
 			TargetSide.left
 		];
-		
-		this._getAvailableSides = function () 
-		{
-			return this.availableSides;	
-		};
-			
-		
-		return this.getPosition();
 	}
 	
+	LeftSidePosition.get = function (options) 
+	{
+		var leftSidePosition = new LeftSidePosition(options);
+		return leftSidePosition.getPosition();
+	};
+	
+
+	LeftSidePosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
+	LeftSidePosition.prototype.constructor = this.LeftSidePosition;
+	
+	
+	LeftSidePosition.prototype._getAvailableSides = function () 
+	{
+		return this._availableSides;	
+	};
+		
 	
 	this.LeftSidePosition = LeftSidePosition;
-	
-	
-	this.LeftSidePosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
-	this.LeftSidePosition.prototype.constructor = this.LeftSidePosition;
 });

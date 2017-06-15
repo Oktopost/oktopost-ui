@@ -157,7 +157,7 @@
                 initialSide: TargetSide.left
 			};
 
-			var pos = new RoundPosition(options);
+			var pos = RoundPosition.get(options);
 
 			$target.css({top: pos.y, left: pos.x});
 

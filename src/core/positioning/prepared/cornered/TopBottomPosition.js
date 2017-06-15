@@ -1,21 +1,11 @@
 namespace('OUI.core.positioning.prepared.cornered', function (window) 
 {
-	'use strict';
-
-	
 	var BasePreparedWithOffsets = OUI.core.positioning.prepared.BasePreparedWithOffsets;
 	var TargetSide = OUI.core.positioning.enum.TargetSide;
 	var TargetPosition = OUI.core.positioning.enum.TargetPosition;
 	
 	
 	var defaults = {
-		container: window,
-		containerOffset: 0,
-		relatedElement: null,
-		relatedOffset: 0,
-		targetElement: null,
-		targetOffset: 0,
-		isAbsolute: false,
 		initialSide: TargetSide.top,
 		initialPosition: TargetPosition.center
 	};
@@ -28,32 +18,30 @@ namespace('OUI.core.positioning.prepared.cornered', function (window)
 	{
 		Classy.classify(this);
 		
-		var self = this;
-		
-		var settings = $.extend(true, {}, defaults, options);
-
-		BasePreparedWithOffsets.call(self, settings);
-		
+		BasePreparedWithOffsets.call(this, options, defaults);
 	
-		this.availableSides = [
+		this._availableSides = [
 			TargetSide.bottom,
 			TargetSide.top
 		];
-
-		
-		this._getAvailableSides = function () 
-		{
-			return this.availableSides;	
-		};
-		
-			
-		return this.getPosition();
 	}
 	
+	TopBottomPosition.get = function (options) 
+	{
+		var topBottomPosition = new TopBottomPosition(options);
+		return topBottomPosition.getPosition();
+	};
+	
+
+	TopBottomPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
+	TopBottomPosition.prototype.constructor = this.TopBottomPosition;
+	
+	
+	TopBottomPosition.prototype._getAvailableSides = function () 
+	{
+		return this._availableSides;	
+	};
+		
 	
 	this.TopBottomPosition = TopBottomPosition;
-	
-	
-	this.TopBottomPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
-	this.TopBottomPosition.prototype.constructor = this.TopBottomPosition;
 });

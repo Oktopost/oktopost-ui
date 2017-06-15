@@ -28,11 +28,11 @@ var fadeRemove = window.OUI.core.view.fadeRemove;
 fadeRemove($('#elem'), classOnRemove, delay);
 ```
 
-## positioner
+## pos
 Library used to position element relatively to another with considering offsets and container limitations. 
 Entry point is prepared objects each of them presents area to position target element. 
 Available prepared objects can be found in core/positioning/prepared directory. 
-Returns Point object with "x" and "y" properties.
+Get method returns Point object with "x" and "y" properties.
 
 ### options
 * container: container inside which the positioning is performed. If not provided, a window will be used. Can be jQuery object or HTMLElement,
@@ -65,7 +65,7 @@ var options = {
     initialSide: TargetSide.left
 };
 
-var position = new RoundPosition(options);
+var position = RoundPosition.get(options);
 
 $target.css({top: position.y, left: position.x});
 ```

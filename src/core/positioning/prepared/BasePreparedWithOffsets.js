@@ -6,7 +6,7 @@ namespace('OUI.core.positioning.prepared', function (window)
 	var is 				= plankton.is;
 	var Point 			= OUI.core.positioning.Point;
 	var Box 			= OUI.core.positioning.Box;
-	var Positioner 		= OUI.core.positioning.Positioner;
+	var Pos 			= OUI.core.positioning.Pos;
 	var TargetSide 		= OUI.core.positioning.enum.TargetSide;
 	var TargetPosition 	= OUI.core.positioning.enum.TargetPosition;
 	
@@ -27,25 +27,25 @@ namespace('OUI.core.positioning.prepared', function (window)
 	/**
 	 * @class OUI.core.positioning.prepared.BasePreparedWithOffsets
 	 */
-	function BasePreparedWithOffsets(options)
+	function BasePreparedWithOffsets(options, defaultsOptions)
 	{
 		Classy.classify(this);
 		
-		this.settings = $.extend(true, {}, defaults, options);
+		var mergedDefaults = $.extend(true, {}, defaults, defaultsOptions);
+		
+		this.settings = $.extend(true, {}, mergedDefaults, options);
 		
 		this.settings.container = this._prepareElement(this.settings.container);
 		this.settings.relatedElement = this._prepareElement(this.settings.relatedElement);
 		this.settings.targetElement = this._prepareElement(this.settings.targetElement);
-		
-		
-		this.availableSides = [];
-		
-		this._getAvailableSides = function () 
-		{
-			return this.availableSides;
-		};
 	}
 	
+	
+	BasePreparedWithOffsets.prototype._getAvailableSides = function () 
+	{
+		console.log(this._availableSides);
+		return [];
+	};
 	
 	BasePreparedWithOffsets.prototype._prepareElement = function (el) 
 	{
@@ -374,12 +374,12 @@ namespace('OUI.core.positioning.prepared', function (window)
 			return false;
 		}
 		
-		var positioner = new Positioner(data);
+		var pos = new Pos(data);
 
-		var position = positioner.getPosition(this.settings.isAbsolute);
+		var position = pos.getPosition(this.settings.isAbsolute);
 		
 		if (is.object(position) && this._isNeedToSubtractContainer())
-		{;
+		{
 			position = this._subtractContainer(position);
 		}
 		
