@@ -1,0 +1,9 @@
+{
+	"map":
+	{
+		"file":
+		{
+			"OUI.core.positioning": "./src/core/positioning/Pos"
+		}
+	}
+}

@@ -17,6 +17,7 @@
     "gulp-wrap": "^0.13.0",
     "jsdom": "^9.12.0",
     "merge-stream": "^1.0.1",
+    "oktopost-namespace": "git+https://github.com/Oktopost/namespace.git#32d6f41",
     "path": "^0.12.7"
   },
   "author": "",
