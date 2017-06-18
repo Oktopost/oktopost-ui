@@ -71,4 +71,7 @@ $target.css({
         top: position.coordinates.top, 
         left: position.coordinates.left
     });
+
+$target.addClass(position.name);
+
 ```
