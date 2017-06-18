@@ -261,11 +261,6 @@ namespace('OUI.core.pos.prepared', function (window)
 		}
 	};
 	
-	BasePreparedWithOffsets.prototype._getAreaName = function (side) 
-	{
-		return side + '-' + this.settings.initialPosition;
-	};
-	
 	BasePreparedWithOffsets.prototype._getHorizontalSide = function (relatedBox, targetBox, side) 
 	{
 		if (side === TargetSide.bottom)
@@ -284,9 +279,10 @@ namespace('OUI.core.pos.prepared', function (window)
 
 		var box = this._prepareBox(x, y, w, h);
 		var initial = this._getInitialPosition(targetBox, relatedBox, false);
-		var name = this._getAreaName(side);
+		var areaName = side;
+		var positionName = this.settings.initialPosition;
 		
-		return new Area(box, initial, name);
+		return new Area(box, initial, areaName, positionName);
 	};
 
 	BasePreparedWithOffsets.prototype._getVerticalSide = function (relatedBox, targetBox, side) 
@@ -307,9 +303,10 @@ namespace('OUI.core.pos.prepared', function (window)
 
 		var box = this._prepareBox(x, y, w, h);
 		var initial = this._getInitialPosition(targetBox, relatedBox, true);
-		var name = this._getAreaName(side);
+		var areaName = side;
+		var positionName = this.settings.initialPosition;
 		
-		return new Area(box, initial, name);
+		return new Area(box, initial, areaName, positionName);
 	};
 		
 	BasePreparedWithOffsets.prototype._getSide = function (relatedBox, targetBox, side) 

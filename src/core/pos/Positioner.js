@@ -174,14 +174,20 @@ namespace('OUI.core.pos', function (window)
 		if (is.null(this.absolutePosition))
 		{
 			targetArea = this._load(false);
+			if (is.object(targetArea))
+			{
+				targetArea.positionName = 'positioned';
+			}
 		}
 		
 		if (is.null(this.absolutePosition))
 		{
 			console.log('Error: impossible to put target in a correct position');
 			
+			this.areas[0].positionName = 'nonpositioned';
+			
 			return {
-				name: this.areas[0].name,
+				name: this.areas[0].getName(),
 				coordinates: {
 					x: this.areas[0].box.x(),
 					y:  this.areas[0].box.y()
@@ -199,7 +205,7 @@ namespace('OUI.core.pos', function (window)
 		}
 		
 		return {
-			name: targetArea.name,
+			name: targetArea.getName(),
 			coordinates: {
 				x: x,
 				y: y

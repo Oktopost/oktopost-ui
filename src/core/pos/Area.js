@@ -6,7 +6,7 @@ namespace('OUI.core.pos', function (window)
 	/**
 	 * @class OUI.core.pos.Area
 	 */
-	function Area(box, initial, name) 
+	function Area(box, initial, areaName, positionName) 
 	{	
 		classify(this);
 		
@@ -14,8 +14,15 @@ namespace('OUI.core.pos', function (window)
 		this.box = box;
 		
 		this.initial = initial;
-		this.name = name;
+		this.areaName = areaName;
+		this.positionName = positionName;
 	}
+	
+	
+	Area.prototype.getName = function () 
+	{
+		return this.areaName + '-' + this.positionName;	
+	};
 	
 	
 	this.Area = Area;

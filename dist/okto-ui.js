@@ -644,7 +644,7 @@ namespace('OUI.core.pos', function (window)
 	/**
 	 * @class OUI.core.pos.Area
 	 */
-	function Area(box, initial, name) 
+	function Area(box, initial, areaName, positionName) 
 	{	
 		classify(this);
 		
@@ -652,8 +652,15 @@ namespace('OUI.core.pos', function (window)
 		this.box = box;
 		
 		this.initial = initial;
-		this.name = name;
+		this.areaName = areaName;
+		this.positionName = positionName;
 	}
+	
+	
+	Area.prototype.getName = function () 
+	{
+		return this.areaName + '-' + this.positionName;	
+	};
 	
 	
 	this.Area = Area;
@@ -1824,14 +1831,20 @@ namespace('OUI.core.pos', function (window)
 		if (is.null(this.absolutePosition))
 		{
 			targetArea = this._load(false);
+			if (is.object(targetArea))
+			{
+				targetArea.positionName = 'positioned';
+			}
 		}
 		
 		if (is.null(this.absolutePosition))
 		{
 			console.log('Error: impossible to put target in a correct position');
 			
+			this.areas[0].positionName = 'nonpositioned';
+			
 			return {
-				name: this.areas[0].name,
+				name: this.areas[0].getName(),
 				coordinates: {
 					x: this.areas[0].box.x(),
 					y:  this.areas[0].box.y()
@@ -1849,7 +1862,7 @@ namespace('OUI.core.pos', function (window)
 		}
 		
 		return {
-			name: targetArea.name,
+			name: targetArea.getName(),
 			coordinates: {
 				x: x,
 				y: y
@@ -2306,11 +2319,6 @@ namespace('OUI.core.pos.prepared', function (window)
 		}
 	};
 	
-	BasePreparedWithOffsets.prototype._getAreaName = function (side) 
-	{
-		return side + '-' + this.settings.initialPosition;
-	};
-	
 	BasePreparedWithOffsets.prototype._getHorizontalSide = function (relatedBox, targetBox, side) 
 	{
 		if (side === TargetSide.bottom)
@@ -2329,9 +2337,10 @@ namespace('OUI.core.pos.prepared', function (window)
 
 		var box = this._prepareBox(x, y, w, h);
 		var initial = this._getInitialPosition(targetBox, relatedBox, false);
-		var name = this._getAreaName(side);
+		var areaName = side;
+		var positionName = this.settings.initialPosition;
 		
-		return new Area(box, initial, name);
+		return new Area(box, initial, areaName, positionName);
 	};
 
 	BasePreparedWithOffsets.prototype._getVerticalSide = function (relatedBox, targetBox, side) 
@@ -2352,9 +2361,10 @@ namespace('OUI.core.pos.prepared', function (window)
 
 		var box = this._prepareBox(x, y, w, h);
 		var initial = this._getInitialPosition(targetBox, relatedBox, true);
-		var name = this._getAreaName(side);
+		var areaName = side;
+		var positionName = this.settings.initialPosition;
 		
-		return new Area(box, initial, name);
+		return new Area(box, initial, areaName, positionName);
 	};
 		
 	BasePreparedWithOffsets.prototype._getSide = function (relatedBox, targetBox, side) 
@@ -3277,7 +3287,7 @@ namespace('OUI', function (window)
 
 		var $target = $('<div />', {
 			text: 'positioned div',
-			style: 'width:180px; height: 50px; background-color: #1DA1F3; position: absolute'
+			style: 'width:680px; height: 50px; background-color: #1DA1F3; position: absolute'
 		});
 
 		var $container = $('#positioner-container');
