@@ -105,10 +105,6 @@ namespace('OUI.core.pos', function (window)
 	Positioner.prototype._putInInitialPoint = function (area) 
 	{
 		var target = this._transformTarget(area.box, area.initial.x, area.initial.y);
-
-		this.container._debug();
-		area.box._debug();
-		target._debug();
 		
 		if (!target.isCrossBorder(area.box))
 		{

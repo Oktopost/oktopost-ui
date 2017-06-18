@@ -83,13 +83,13 @@ namespace('OUI', function (window)
 
 		var options = {
 			container: $container,
-			containerOffset: 10,
+			containerOffset: 0,
 			relatedElement: document.getElementById('related'),
-			relatedOffset: 10,
+			relatedOffset: 0,
 			targetElement: $target,
-			targetOffset: 0,
-			initialPosition: TargetPosition.center,
-			initialSide: TargetSide.left
+			targetOffset: 10,
+			initialPosition: TargetPosition.top,
+			initialSide: TargetSide.right
 		};
 
 		var pos = RoundPosition.get(options);

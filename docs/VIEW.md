@@ -16,7 +16,7 @@ This helper can be used to generate a unique Id for DOM elements.
 ```JavaScript
 var hbs = window.OUI.core.view.isGenerator;
 
-va myId = idGenerator('my-prefix'); // my-prefix-so7567s1pcpojemi
+var myId = idGenerator('my-prefix'); // my-prefix-so7567s1pcpojemi
 ```
 
 ## fadeRemove
@@ -32,7 +32,8 @@ fadeRemove($('#elem'), classOnRemove, delay);
 Library used to position element relatively to another with considering offsets and container limitations. 
 Entry point is prepared objects each of them presents area to position target element. 
 Available prepared objects can be found in core/positioning/prepared directory. 
-Get method returns Point object with "x" and "y" properties.
+Get method returns object with "name" and "coordinates" property. 
+Name built as "side"-"position". Coordinates contains x,y and left,top properties. 
 
 ### options
 * container: container inside which the positioning is performed. If not provided, a window will be used. Can be jQuery object or HTMLElement,
@@ -40,7 +41,7 @@ Get method returns Point object with "x" and "y" properties.
 * relatedElement: element relatively to which will be positioned target element. Can be jQuery object or HTMLElement,
 * relatedOffset: related element margin, can be positive or negative,
 * targetElement: positioned element, must have width and height,
-* targetOffset: target element margin, can be positive or negative,
+* targetOffset: target element margin from relatedElement, can be positive or negative,
 * isRelative: return absolute position or relatively to relatedElement, false by default,
 * initialPosition: initial point of positioning, from TargetPosition enum,
 * initialSide: initial side of positioning, from TargetSide enum, used if prepared objects have more than one side for positioning.
@@ -60,12 +61,14 @@ var options = {
     container: $('.container'),
     relatedElement:  $('.related'),
     targetElement: $target,
-    isAbsolute: true,
     initialPosition: TargetPosition.bottom,
     initialSide: TargetSide.left
 };
 
 var position = RoundPosition.get(options);
 
-$target.css({top: position.y, left: position.x});
+$target.css({
+        top: position.coordinates.top, 
+        left: position.coordinates.left
+    });
 ```
