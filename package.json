@@ -1,12 +1,27 @@
 {
   "name": "oktopost-ui",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "mocha",
     "test-cover": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha"
   },
+  "authors": [
+    {
+      "name": "Liad Guez",
+      "email": "liad@oktopost.com"
+    },
+    {
+      "name": "Ivan Demchenkov",
+      "email": "ivan@oktopost.com"
+    },
+    {
+      "name": "Alexey Puchkov",
+      "email": "alexey@oktopost.com"
+    }
+  ],
+  "license": "MIT",
   "devDependencies": {
     "camelcase": "^4.1.0",
     "chai": "^4.0.2",
@@ -23,8 +38,6 @@
     "merge-stream": "^1.0.1",
     "mocha": "^3.2.0"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "oktopost-classy": "^1.0.2",
     "oktopost-plankton": "^1.1.0",

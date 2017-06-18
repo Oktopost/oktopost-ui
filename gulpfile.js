@@ -18,24 +18,6 @@ var result = require('oktopost-namespace').getDependencies(
 	});
 
 
-
-const LENGTH = __dirname.length + 1;
-
-for (var i = 0; i < result.length; i++)
-{
-	if (result[i][0] === '/')
-	{
-		result[i] = result[i].substr(LENGTH);
-	}
-	else 
-	{
-		result[i] = 'node_modules/' + result[i]; 
-	}
-	
-	result[i] += '.js';
-}
-
-
 const files = {
 	
 	css: [
