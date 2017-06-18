@@ -1,6 +1,6 @@
 {
   "name": "oktopost-ui",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -26,9 +26,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "oktopost-classy": "https://github.com/Oktopost/classy.git#900af20",
-    "oktopost-plankton": "https://github.com/Oktopost/plankton.git#c600915",
-    "oktopost-namespace": "git+https://github.com/Oktopost/namespace.git#32d6f41",
-    "oktopost-duct": "git+https://github.com/Oktopost/duct.git#013f2c7"
+    "oktopost-classy": "^1.0.2",
+    "oktopost-plankton": "^1.1.0",
+    "oktopost-namespace": "^2.0.0",
+    "oktopost-duct": "^0.1.0"
   }
 }
