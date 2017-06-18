@@ -17,7 +17,8 @@ function getPositioner()
 		target: new Box(new Point(1,1), new Point(2,2)),
 		container: new Box(new Point(1,1), new Point(2,2))
 	});	
-};
+}
+
 
 suite('Positioner library', () => 
 {
@@ -234,52 +235,156 @@ suite('Positioner library', () =>
 	suite('_putInInitialPoint', () => 
 	{
 		test('put target in suitable point', () => {
-		
+			var area = new Area(new Box(new Point(0,0), new Point(50,50)), new Point(10,10), '');
+			
+			var pos = new Positioner({
+				areas: [area],
+				related: new Box(new Point(1,1), new Point(2,2)),
+				target: new Box(new Point(0,0), new Point(10,10)),
+				container: new Box(new Point(0,0), new Point(110,110))
+			});	
+			
+			assert.isObject(pos._putInInitialPoint(area));
 		});
 		
 		test('put target in impossible point', () => {
+			var area = new Area(new Box(new Point(0,0), new Point(50,50)), new Point(45,45), '');
 			
+			var pos = new Positioner({
+				areas: [area],
+				related: new Box(new Point(1,1), new Point(2,2)),
+				target: new Box(new Point(0,0), new Point(10,10)),
+				container: new Box(new Point(0,0), new Point(110,110))
+			});	
+			
+			assert.isFalse(pos._putInInitialPoint(area));
 		});
 	});
 	
 	suite('_tryPutTargetInArea', () => 
 	{
 		test('put target in area in suitable initial point', () => {
+			var area = new Area(new Box(new Point(0,0), new Point(50,50)), new Point(10,10), '');
 			
+			var pos = new Positioner({
+				areas: [area],
+				related: new Box(new Point(1,1), new Point(2,2)),
+				target: new Box(new Point(0,0), new Point(10,10)),
+				container: new Box(new Point(0,0), new Point(110,110))
+			});	
+			
+			assert.isTrue(pos._tryPutTargetInArea(area, true));
 		});
 		
 		test('put target in area in impossible initial point', () => {
+			var area = new Area(new Box(new Point(0,0), new Point(50,50)), new Point(45,45), '');
 			
+			var pos = new Positioner({
+				areas: [area],
+				related: new Box(new Point(1,1), new Point(2,2)),
+				target: new Box(new Point(0,0), new Point(10,10)),
+				container: new Box(new Point(0,0), new Point(110,110))
+			});	
+			
+			assert.isFalse(pos._tryPutTargetInArea(area, true));
 		});
 		
 		test('put target in suitable area', () => {
+			var area = new Area(new Box(new Point(0,0), new Point(50,50)), new Point(10,10), '');
 			
+			var pos = new Positioner({
+				areas: [area],
+				related: new Box(new Point(1,1), new Point(2,2)),
+				target: new Box(new Point(0,0), new Point(10,10)),
+				container: new Box(new Point(0,0), new Point(110,110))
+			});	
+			
+			assert.isTrue(pos._tryPutTargetInArea(area, false));
 		});
 		
 		test('put target in too small area ', () => {
+			var area = new Area(new Box(new Point(0,0), new Point(20,20)), new Point(10,10), '');
 			
+			var pos = new Positioner({
+				areas: [area],
+				related: new Box(new Point(1,1), new Point(2,2)),
+				target: new Box(new Point(0,0), new Point(30,30)),
+				container: new Box(new Point(0,0), new Point(110,110))
+			});	
+			
+			assert.isFalse(pos._tryPutTargetInArea(area, false));
 		});
 	});
 	
 	suite('_load', () => 
 	{
 		test('some area fits', () => {
+			var area = new Area(new Box(new Point(0,0), new Point(50,50)), new Point(10,10), '');
+			var area2 = new Area(new Box(new Point(20,20), new Point(80,80)), new Point(10,10), '');
 			
+			var pos = new Positioner({
+				areas: [area, area2],
+				related: new Box(new Point(1,1), new Point(2,2)),
+				target: new Box(new Point(0,0), new Point(10,10)),
+				container: new Box(new Point(0,0), new Point(110,110))
+			});	
+			
+			pos._load(false);
+			
+			assert.isObject(pos.absolutePosition);
 		});
 		
 		test('no area fits', () => {
+			var area = new Area(new Box(new Point(0,0), new Point(50,50)), new Point(10,10), '');
+			var area2 = new Area(new Box(new Point(20,20), new Point(80,80)), new Point(10,10), '');
 			
+			var pos = new Positioner({
+				areas: [area, area2],
+				related: new Box(new Point(1,1), new Point(2,2)),
+				target: new Box(new Point(0,0), new Point(100,100)),
+				container: new Box(new Point(0,0), new Point(110,110))
+			});	
+			
+			pos._load(false);
+			
+			assert.isNull(pos.absolutePosition);
 		});
 	});
 	
 	suite('getPosition', () => 
 	{
 		test('some area fits', () => {
+			var area = new Area(new Box(new Point(0,0), new Point(50,50)), new Point(10,10), 'fit');
+			var area2 = new Area(new Box(new Point(0,0), new Point(5,5)), new Point(0,0), 'nofit');
 			
+			var pos = new Positioner({
+				areas: [area, area2],
+				related: new Box(new Point(1,1), new Point(2,2)),
+				target: new Box(new Point(0,0), new Point(10,10)),
+				container: new Box(new Point(0,0), new Point(110,110))
+			});	
+			
+			pos.getPosition();
+			
+			assert.equal('fit', pos.getPosition().name);
 		});
 		
-		test('no area fits', () => {
+		test('no area fits return first', () => {
+			var area = new Area(new Box(new Point(0,0), new Point(5,5)), new Point(0,0), 'nofit');
+			var area2 = new Area(new Box(new Point(1,1), new Point(5,5)), new Point(0,0), 'nofit2');
 			
+			var pos = new Positioner({
+				areas: [area, area2],
+				related: new Box(new Point(1,1), new Point(2,2)),
+				target: new Box(new Point(0,0), new Point(10,10)),
+				container: new Box(new Point(0,0), new Point(110,110))
+			});	
+
+			var position =  pos.getPosition();
+			
+			assert.equal('nofit', position.name);
+			assert.equal(area.box.x(), position.coordinates.x);
+			assert.equal(area.box.y(), position.coordinates.y);
 		});
 	});
 });
