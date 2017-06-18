@@ -354,7 +354,7 @@ suite('Positioner library', () =>
 	suite('getPosition', () => 
 	{
 		test('some area fits', () => {
-			var area = new Area(new Box(new Point(0,0), new Point(50,50)), new Point(10,10), 'fit');
+			var area = new Area(new Box(new Point(0,0), new Point(50,50)), new Point(10,10), 'right', 'fit');
 			var area2 = new Area(new Box(new Point(0,0), new Point(5,5)), new Point(0,0), 'nofit');
 			
 			var pos = new Positioner({
@@ -366,7 +366,7 @@ suite('Positioner library', () =>
 			
 			pos.getPosition();
 			
-			assert.equal('fit', pos.getPosition().name);
+			assert.equal('right-fit', pos.getPosition().name);
 		});
 		
 		test('no area fits return first', () => {
@@ -382,7 +382,7 @@ suite('Positioner library', () =>
 
 			var position =  pos.getPosition();
 			
-			assert.equal('nofit', position.name);
+			assert.isNull(position.name);
 			assert.equal(area.box.x(), position.coordinates.x);
 			assert.equal(area.box.y(), position.coordinates.y);
 		});

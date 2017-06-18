@@ -176,7 +176,7 @@ namespace('OUI.core.pos', function (window)
 			targetArea = this._load(false);
 			if (is.object(targetArea))
 			{
-				targetArea.positionName = 'positioned';
+				targetArea.positionName = '';
 			}
 		}
 		
@@ -187,7 +187,7 @@ namespace('OUI.core.pos', function (window)
 			this.areas[0].positionName = 'nonpositioned';
 			
 			return {
-				name: this.areas[0].getName(),
+				name: null,
 				coordinates: {
 					x: this.areas[0].box.x(),
 					y:  this.areas[0].box.y()
