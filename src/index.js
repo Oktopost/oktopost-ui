@@ -88,11 +88,12 @@ namespace('OUI', function (window)
 			relatedOffset: 0,
 			targetElement: $target,
 			targetOffset: 10,
-			initialPosition: TargetPosition.top,
+			initialPosition: TargetPosition.center,
 			initialSide: TargetSide.right
 		};
 
 		var pos = RoundPosition.get(options);
+		console.log(pos);
 
 		$target.css({top: pos.coordinates.top, left: pos.coordinates.left});
 

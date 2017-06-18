@@ -10,7 +10,7 @@ namespace('OUI.core.pos', function (window)
 	 * @class OUI.core.pos.Positioner
 	 */
 	var Positioner = function (data) 
-	{	
+	{
 		classify(this);
 		
 		this.container = data.container;
@@ -25,7 +25,7 @@ namespace('OUI.core.pos', function (window)
 	
 	Positioner.prototype._checkParams = function () 
 	{	
-		if (is.empty(this.areas))
+		if (is.false(this.areas) || is.empty(this.areas))
 			return false;
 		
 		if (!is.object(this.related))
@@ -91,9 +91,9 @@ namespace('OUI.core.pos', function (window)
 	
 		while (target.isCrossBorder(area.box))
 		{
-			target = this._putInArea(target, this._moveX(target, box), this._moveY(target, box), area);
-			
-			if (target.x() < 0 || target.y() < 0)
+			target = this._transformTarget(target, this._moveX(target, box), this._moveY(target, box));
+
+			if (target.x() <= 0 || target.y() <= 0)
 			{
 				return false;
 			}

@@ -695,14 +695,14 @@ namespace('OUI.core.pos', function (window)
 	
 	Box.prototype._crossHorizontalBorder = function (x, w)
 	{
-		return ((this.x() < x) && (this.x() + this.w() > x))
-			|| (((this.x() + this.w()) > (x + w)) && (this.x() > x));
+		return ((this.x() < x) && (this.x() + this.w() >= x)) || 
+			(((this.x() + this.w()) > (x + w)) && (this.x() >= x));
 	};
 
 	Box.prototype._crossVerticalBorder = function (y, h)
 	{
-		return ((this.y() < y) && (this.y() + this.h() > y))
-			|| ((this.y() + this.h() > y + h) && (this.y() > y));
+		return ((this.y() < y) && (this.y() + this.h() >= y)) || 
+			((this.y() + this.h() > y + h) && (this.y() >= y));
 	};
 	
 	Box.prototype._intersectHorizontal = function (x, w) 
@@ -1660,7 +1660,7 @@ namespace('OUI.core.pos', function (window)
 	 * @class OUI.core.pos.Positioner
 	 */
 	var Positioner = function (data) 
-	{	
+	{
 		classify(this);
 		
 		this.container = data.container;
@@ -1675,7 +1675,7 @@ namespace('OUI.core.pos', function (window)
 	
 	Positioner.prototype._checkParams = function () 
 	{	
-		if (is.empty(this.areas))
+		if (is.false(this.areas) || is.empty(this.areas))
 			return false;
 		
 		if (!is.object(this.related))
@@ -1741,9 +1741,9 @@ namespace('OUI.core.pos', function (window)
 	
 		while (target.isCrossBorder(area.box))
 		{
-			target = this._putInArea(target, this._moveX(target, box), this._moveY(target, box), area);
-			
-			if (target.x() < 0 || target.y() < 0)
+			target = this._transformTarget(target, this._moveX(target, box), this._moveY(target, box));
+
+			if (target.x() <= 0 || target.y() <= 0)
 			{
 				return false;
 			}
@@ -3289,11 +3289,12 @@ namespace('OUI', function (window)
 			relatedOffset: 0,
 			targetElement: $target,
 			targetOffset: 10,
-			initialPosition: TargetPosition.top,
+			initialPosition: TargetPosition.center,
 			initialSide: TargetSide.right
 		};
 
 		var pos = RoundPosition.get(options);
+		console.log(pos);
 
 		$target.css({top: pos.coordinates.top, left: pos.coordinates.left});
 

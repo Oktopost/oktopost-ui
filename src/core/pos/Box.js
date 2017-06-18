@@ -35,14 +35,14 @@ namespace('OUI.core.pos', function (window)
 	
 	Box.prototype._crossHorizontalBorder = function (x, w)
 	{
-		return ((this.x() < x) && (this.x() + this.w() > x))
-			|| (((this.x() + this.w()) > (x + w)) && (this.x() > x));
+		return ((this.x() < x) && (this.x() + this.w() >= x)) || 
+			(((this.x() + this.w()) > (x + w)) && (this.x() >= x));
 	};
 
 	Box.prototype._crossVerticalBorder = function (y, h)
 	{
-		return ((this.y() < y) && (this.y() + this.h() > y))
-			|| ((this.y() + this.h() > y + h) && (this.y() > y));
+		return ((this.y() < y) && (this.y() + this.h() >= y)) || 
+			((this.y() + this.h() > y + h) && (this.y() >= y));
 	};
 	
 	Box.prototype._intersectHorizontal = function (x, w) 

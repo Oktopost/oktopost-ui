@@ -1,1 +1,3 @@
-module.exports = require('oktopost-namespace').virtual(__dirname + '/..').OUI;
+var root = require('oktopost-namespace').dynamic(__dirname + '/..');
+
+module.exports = root.OUI;
