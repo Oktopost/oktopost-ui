@@ -12,7 +12,7 @@ const rename = require('gulp-rename');
 var result = require('oktopost-namespace').getDependencies(
 	__dirname,
 	() => {},
-	(dep, root) =>
+	(root) =>
 	{
 		var a = root.OUI.index;
 	});
