@@ -14,14 +14,14 @@ suite('Box model', () =>
 {
 	suite('_isIntersectHorizontal', () =>
 	{
-		test('box not intersect another box horizontal', () => {
+		test('box is not intersect another box horizontal', () => {
 			var box1 = new Box(new Point(0,0), new Point(10, 10));
 			var box2 = new Box(new Point(11, 11), new Point(10, 10));
 			
 			assert.isFalse(box1._isIntersectHorizontal(box2.x(), box2.w()));
 		});
 		
-		test('box intersect another box horizontal', () => {
+		test('box is intersect another box horizontal', () => {
 			var box1 = new Box(new Point(10,10), new Point(30, 30));
 			var box2 = new Box(new Point(15, 0), new Point(60, 60));
 			
@@ -31,14 +31,14 @@ suite('Box model', () =>
 	
 	suite('_isIntersectVertical', () =>
 	{
-		test('box not intersect another box vertical', () => {
+		test('box is not intersect another box vertical', () => {
 			var box1 = new Box(new Point(0,0), new Point(10, 10));
 			var box2 = new Box(new Point(11, 11), new Point(10, 10));
 			
 			assert.isFalse(box1._isIntersectVertical(box2.y(), box2.h()));
 		});
 		
-		test('box intersect another box vertical', () => {
+		test('box is intersect another box vertical', () => {
 			var box1 = new Box(new Point(10,10), new Point(30, 30));
 			var box2 = new Box(new Point(0, 15), new Point(60, 30));
 			
@@ -48,16 +48,23 @@ suite('Box model', () =>
 	
 	suite('isIntersect', () =>
 	{
-		test('box not intersect another box', () => {
+		test('box is not intersect another box', () => {
 			var box1 = new Box(new Point(0,0), new Point(10, 10));
 			var box2 = new Box(new Point(11, 11), new Point(10, 10));
 			
 			assert.isFalse(box1.isIntersect(box2));
 		});
 		
-		test('box intersect another box', () => {
+		test('box is intersect another box', () => {
 			var box1 = new Box(new Point(0,0), new Point(100, 100));
 			var box2 = new Box(new Point(11, 11), new Point(20, 20));
+			
+			assert.isTrue(box1.isIntersect(box2));
+		});
+		
+		test('box is intersect same box', () => {
+			var box1 = new Box(new Point(0,0), new Point(100, 100));
+			var box2 = new Box(new Point(0, 0), new Point(100, 100));
 			
 			assert.isTrue(box1.isIntersect(box2));
 		});
@@ -123,6 +130,13 @@ suite('Box model', () =>
 		test('box not cross border of another box being inside', () => {
 			var box1 = new Box(new Point(10,10), new Point(10, 10));
 			var box2 = new Box(new Point(0, 0), new Point(100, 100));
+			
+			assert.isFalse(box1.isCrossBorder(box2));
+		});
+		
+		test('box not cross border of another box being same', () => {
+			var box1 = new Box(new Point(10,10), new Point(10, 10));
+			var box2 = new Box(new Point(10, 10), new Point(10, 10));
 			
 			assert.isFalse(box1.isCrossBorder(box2));
 		});

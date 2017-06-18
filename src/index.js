@@ -83,12 +83,12 @@ namespace('OUI', function (window)
 
 		var options = {
 			container: $container,
-			containerOffset: 0,
+			containerOffset: 10,
 			relatedElement: document.getElementById('related'),
-			relatedOffset: 0,
+			relatedOffset: 10,
 			targetElement: $target,
-			targetOffset: 10,
-			initialPosition: TargetPosition.center,
+			targetOffset: 0,
+			initialPosition: TargetPosition.top,
 			initialSide: TargetSide.right
 		};
 
