@@ -82,18 +82,18 @@ namespace('OUI.core.pos.prepared', function (window)
 		return position;
 	};
 		
-	BasePreparedWithOffsets.prototype._applyOffset = function (position, offset) 
+	BasePreparedWithOffsets.prototype._applyOffset = function (position, offset, isContainer) 
 	{
 		var leftWithOffset = position.left - offset;
 		var topWithOffset = position.top - offset;
-
+		
 		return {
-			left: leftWithOffset > 0 ? leftWithOffset : 0,
-			top: topWithOffset > 0 ? topWithOffset : 0
+			left: leftWithOffset > 0 ? leftWithOffset : isContainer ? leftWithOffset * -1 : 0,
+			top: topWithOffset > 0 ? topWithOffset :  isContainer ? topWithOffset * -1 : 0
 		};
 	};
 		
-	BasePreparedWithOffsets.prototype.getPositionWithOffset = function (el, offset) 
+	BasePreparedWithOffsets.prototype.getPositionWithOffset = function (el, offset, isContainer) 
 	{
 		var position = {left: 0, top: 0};
 		
@@ -101,11 +101,11 @@ namespace('OUI.core.pos.prepared', function (window)
 		{
 			position = el.offset();	
 		}
-		
-		return this._applyOffset(position, offset);
+
+		return this._applyOffset(position, offset, isContainer);
 	};
 	
-	BasePreparedWithOffsets.prototype._getSizeWithOffset = function (el, offset, top, left, withoutPaddings) 
+	BasePreparedWithOffsets.prototype._getSizeWithOffset = function (el, offset, top, left, isContainer) 
 	{
 		if ($.isWindow(el))
 		{
@@ -114,23 +114,20 @@ namespace('OUI.core.pos.prepared', function (window)
 		
 		var xOffsetModifier = 1;
 		
-		console.log(left);
-		console.log(offset);
-		
-		if (left > offset)
+		if (left > offset && left > offset * -1 && !isContainer)
 		{
 			xOffsetModifier = 2;
 		}
 		
 		var yOffsetModifier = 1;
 		
-		if (top > offset)
+		if (top > offset && top > offset * -1 && !isContainer)
 		{
 			yOffsetModifier = 2;
 		}
 		
-		var width = withoutPaddings ? el.width() : el.outerWidth();
-		var height = withoutPaddings ? el.height() : el.outerHeight();
+		var width = isContainer ? el.width() : el.outerWidth();
+		var height = isContainer ? el.height() : el.outerHeight();
 		
 		return {
 			width: width + offset * xOffsetModifier, 
@@ -138,19 +135,19 @@ namespace('OUI.core.pos.prepared', function (window)
 		};
 	};
 	
-	BasePreparedWithOffsets.prototype._getElementBox = function (el, offset, withoutPaddings) 
+	BasePreparedWithOffsets.prototype._getElementBox = function (el, offset, isContainer) 
 	{
 		offset = offset || 0;
-		withoutPaddings = withoutPaddings || false;
+		isContainer = isContainer || false;
 		
 		if (el instanceof HTMLElement)
 		{
 			el = $(el);
 		}
 		
-		var position = this.getPositionWithOffset(el, offset);
+		var position = this.getPositionWithOffset(el, offset, isContainer);
 
-		var size = this._getSizeWithOffset(el, offset, position.top, position.left, withoutPaddings);
+		var size = this._getSizeWithOffset(el, offset, position.top, position.left, isContainer);
 		
 		return this._prepareBox(position.left, position.top, size.width, size.height);
 	};
@@ -385,6 +382,8 @@ namespace('OUI.core.pos.prepared', function (window)
 		var containerBox = this._getContainerBox(true);
 		var relatedBox = this._getRelatedBox();
 		var targetBox = this._getTargetBox();
+		
+		containerBox._debug();
 		
 		return {
 			container: containerBox,

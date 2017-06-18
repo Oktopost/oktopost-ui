@@ -76,7 +76,7 @@ namespace('OUI', function (window)
 
 		var $target = $('<div />', {
 			text: 'positioned div',
-			style: 'width:180px; height: 40px; background-color: #1DA1F3; position: absolute'
+			style: 'width:180px; height: 50px; background-color: #1DA1F3; position: absolute'
 		});
 
 		var $container = $('#positioner-container');
@@ -85,11 +85,10 @@ namespace('OUI', function (window)
 			container: $container,
 			containerOffset: 0,
 			relatedElement: document.getElementById('related'),
-			relatedOffset: 0,
+			relatedOffset: 10,
 			targetElement: $target,
 			targetOffset: 0,
-			isRelative: false,
-			initialPosition: TargetPosition.center,
+			initialPosition: TargetPosition.bottom,
 			initialSide: TargetSide.right
 		};
 

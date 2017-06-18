@@ -72,17 +72,7 @@ namespace('OUI.core.pos', function (window)
 	{
 		area.initial.x = area.initial.x + originalX - area.box.x();
 		
-		if (area.initial.x < 0)
-		{
-			area.initial.x = 0;
-		}
-		
 		area.initial.y = area.initial.y + originalY - area.box.y();
-		
-		if (area.initial.y < 0)
-		{
-			area.initial.y = 0;
-		}
 	};
 	
 	Positioner.prototype._moveX = function (target, box) 
