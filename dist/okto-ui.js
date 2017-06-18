@@ -3304,8 +3304,6 @@ namespace('OUI', function (window)
 		};
 
 		var pos = RoundPosition.get(options);
-
-		console.log(pos.name);
 		
 		$target.addClass(pos.name);
 		$target.css({top: pos.coordinates.top, left: pos.coordinates.left});
