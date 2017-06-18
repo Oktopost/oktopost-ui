@@ -83,9 +83,9 @@ namespace('OUI', function (window)
 
 		var options = {
 			container: $container,
-			containerOffset: 0,
+			containerOffset: 10,
 			relatedElement: document.getElementById('related'),
-			relatedOffset: 10,
+			relatedOffset: 0,
 			targetElement: $target,
 			targetOffset: 0,
 			initialPosition: TargetPosition.bottom,

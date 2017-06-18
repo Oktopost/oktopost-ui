@@ -2133,8 +2133,8 @@ namespace('OUI.core.pos.prepared', function (window)
 		var topWithOffset = position.top - offset;
 		
 		return {
-			left: leftWithOffset > 0 ? leftWithOffset : isContainer ? leftWithOffset * -1 : 0,
-			top: topWithOffset > 0 ? topWithOffset :  isContainer ? topWithOffset * -1 : 0
+			left: leftWithOffset >= 0 ? leftWithOffset : isContainer ? leftWithOffset * -1 : 0,
+			top: topWithOffset >= 0 ? topWithOffset :  isContainer ? topWithOffset * -1 : 0
 		};
 	};
 		
@@ -2159,20 +2159,20 @@ namespace('OUI.core.pos.prepared', function (window)
 		
 		var xOffsetModifier = 1;
 		
-		if (left > offset && left > offset * -1 && !isContainer)
+		if (left > offset && left > offset * -1)
 		{
 			xOffsetModifier = 2;
 		}
 		
 		var yOffsetModifier = 1;
 		
-		if (top > offset && top > offset * -1 && !isContainer)
+		if (top > offset && top > offset * -1)
 		{
 			yOffsetModifier = 2;
 		}
 		
-		var width = isContainer ? el.width() : el.outerWidth();
-		var height = isContainer ? el.height() : el.outerHeight();
+		var width = el.outerWidth();
+		var height = el.outerHeight();
 		
 		return {
 			width: width + offset * xOffsetModifier, 
@@ -2427,8 +2427,6 @@ namespace('OUI.core.pos.prepared', function (window)
 		var containerBox = this._getContainerBox(true);
 		var relatedBox = this._getRelatedBox();
 		var targetBox = this._getTargetBox();
-		
-		containerBox._debug();
 		
 		return {
 			container: containerBox,
@@ -3286,9 +3284,9 @@ namespace('OUI', function (window)
 
 		var options = {
 			container: $container,
-			containerOffset: 0,
+			containerOffset: 10,
 			relatedElement: document.getElementById('related'),
-			relatedOffset: 10,
+			relatedOffset: 0,
 			targetElement: $target,
 			targetOffset: 0,
 			initialPosition: TargetPosition.bottom,
