@@ -1755,6 +1755,10 @@ namespace('OUI.core.pos', function (window)
 	Positioner.prototype._putInInitialPoint = function (area) 
 	{
 		var target = this._transformTarget(area.box, area.initial.x, area.initial.y);
+
+		this.container._debug();
+		area.box._debug();
+		target._debug();
 		
 		if (!target.isCrossBorder(area.box))
 		{
@@ -2159,14 +2163,16 @@ namespace('OUI.core.pos.prepared', function (window)
 		
 		var xOffsetModifier = 1;
 		
-		if (left > offset && left > offset * -1)
+		if (left >= offset && left >= offset * -1)
 		{
 			xOffsetModifier = 2;
 		}
 		
+		console.log(left, offset);
+		
 		var yOffsetModifier = 1;
 		
-		if (top > offset && top > offset * -1)
+		if (top >= offset && top >= offset * -1)
 		{
 			yOffsetModifier = 2;
 		}
@@ -2427,6 +2433,8 @@ namespace('OUI.core.pos.prepared', function (window)
 		var containerBox = this._getContainerBox(true);
 		var relatedBox = this._getRelatedBox();
 		var targetBox = this._getTargetBox();
+		
+		containerBox._debug();
 		
 		return {
 			container: containerBox,
@@ -3286,11 +3294,11 @@ namespace('OUI', function (window)
 			container: $container,
 			containerOffset: 10,
 			relatedElement: document.getElementById('related'),
-			relatedOffset: 0,
+			relatedOffset: 10,
 			targetElement: $target,
 			targetOffset: 0,
-			initialPosition: TargetPosition.bottom,
-			initialSide: TargetSide.right
+			initialPosition: TargetPosition.center,
+			initialSide: TargetSide.left
 		};
 
 		var pos = RoundPosition.get(options);

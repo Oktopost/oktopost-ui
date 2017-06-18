@@ -85,11 +85,11 @@ namespace('OUI', function (window)
 			container: $container,
 			containerOffset: 10,
 			relatedElement: document.getElementById('related'),
-			relatedOffset: 0,
+			relatedOffset: 10,
 			targetElement: $target,
 			targetOffset: 0,
-			initialPosition: TargetPosition.bottom,
-			initialSide: TargetSide.right
+			initialPosition: TargetPosition.center,
+			initialSide: TargetSide.left
 		};
 
 		var pos = RoundPosition.get(options);
