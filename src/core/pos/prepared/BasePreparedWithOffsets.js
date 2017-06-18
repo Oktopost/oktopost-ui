@@ -4,6 +4,7 @@ namespace('OUI.core.pos.prepared', function (window)
 	var classify		= window.Classy.classify;
 	var Point 			= window.OUI.core.pos.Point;
 	var Box 			= window.OUI.core.pos.Box;
+	var Area			= window.OUI.core.pos.Area;
 	var Positioner		= window.OUI.core.pos.Positioner;
 	var TargetSide 		= window.OUI.core.pos.enum.TargetSide;
 	var TargetPosition 	= window.OUI.core.pos.enum.TargetPosition;
@@ -71,11 +72,14 @@ namespace('OUI.core.pos.prepared', function (window)
 		return (this.settings.container.css('position') === 'relative');
 	};
 	
-	BasePreparedWithOffsets.prototype._subtractContainer = function (point) 
+	BasePreparedWithOffsets.prototype._subtractContainer = function (position) 
 	{
-		var container = this._getContainerBox();
+		var container = this._getContainerBox(false);
+
+		position.coordinates.x = position.coordinates.x - container.x();
+		position.coordinates.y = position.coordinates.y - container.y();
 		
-		return new Point(point.x - container.x(), point.y - container.y());
+		return position;
 	};
 		
 	BasePreparedWithOffsets.prototype._applyOffset = function (position, offset) 
@@ -101,36 +105,43 @@ namespace('OUI.core.pos.prepared', function (window)
 		return this._applyOffset(position, offset);
 	};
 	
-	BasePreparedWithOffsets.prototype._getSizeWithOffset = function (el, offset, top, left) 
+	BasePreparedWithOffsets.prototype._getSizeWithOffset = function (el, offset, top, left, withoutPaddings) 
 	{
 		if ($.isWindow(el))
 		{
 			el = $(el);
 		}
 		
-		xOffsetModifier = 1;
+		var xOffsetModifier = 1;
+		
+		console.log(left);
+		console.log(offset);
 		
 		if (left > offset)
 		{
 			xOffsetModifier = 2;
 		}
 		
-		yOffsetModifier = 1;
+		var yOffsetModifier = 1;
 		
 		if (top > offset)
 		{
 			yOffsetModifier = 2;
 		}
 		
+		var width = withoutPaddings ? el.width() : el.outerWidth();
+		var height = withoutPaddings ? el.height() : el.outerHeight();
+		
 		return {
-			width: el.width() + offset * xOffsetModifier, 
-			height: el.height() + offset * yOffsetModifier
+			width: width + offset * xOffsetModifier, 
+			height: height + offset * yOffsetModifier
 		};
 	};
 	
-	BasePreparedWithOffsets.prototype._getElementBox = function (el, offset) 
+	BasePreparedWithOffsets.prototype._getElementBox = function (el, offset, withoutPaddings) 
 	{
 		offset = offset || 0;
+		withoutPaddings = withoutPaddings || false;
 		
 		if (el instanceof HTMLElement)
 		{
@@ -139,7 +150,7 @@ namespace('OUI.core.pos.prepared', function (window)
 		
 		var position = this.getPositionWithOffset(el, offset);
 
-		var size = this._getSizeWithOffset(el, offset, position.top, position.left);
+		var size = this._getSizeWithOffset(el, offset, position.top, position.left, withoutPaddings);
 		
 		return this._prepareBox(position.left, position.top, size.width, size.height);
 	};
@@ -158,10 +169,10 @@ namespace('OUI.core.pos.prepared', function (window)
 	};
 	
 	BasePreparedWithOffsets.prototype._getContainerBox = function (withOffsets) 
-	{
+	{		
 		if (!withOffsets)
 		{
-			return this._getElementBox(this.settings.container);
+			return this._getElementBox(this.settings.container, 0, true);
 		}
 		
 		if (this.settings.containerOffset > 0)
@@ -169,7 +180,7 @@ namespace('OUI.core.pos.prepared', function (window)
 			this.settings.containerOffset = this.settings.containerOffset * -1;
 		}
 		
-		return this._getElementBox(this.settings.container, this.settings.containerOffset);
+		return this._getElementBox(this.settings.container, this.settings.containerOffset, true);
 	};
 	
 	BasePreparedWithOffsets.prototype._getRelatedBox = function () 
@@ -179,7 +190,7 @@ namespace('OUI.core.pos.prepared', function (window)
 	
 	BasePreparedWithOffsets.prototype._getTargetBox = function () 
 	{
-		return this._getElementBox(this.settings.targetElement);
+		return this._getElementBox(this.settings.targetElement, this.settings.targetOffset);
 	};
 	
 	BasePreparedWithOffsets.prototype._getCenterPoint = function (targetParam, relatedParam) 
@@ -253,9 +264,14 @@ namespace('OUI.core.pos.prepared', function (window)
 		}
 	};
 	
-	BasePreparedWithOffsets.prototype._getHorizontalSide = function (relatedBox, targetBox, direction) 
+	BasePreparedWithOffsets.prototype._getAreaName = function (side) 
 	{
-		if (direction === 1)
+		return side + '-' + this.settings.initialPosition;
+	};
+	
+	BasePreparedWithOffsets.prototype._getHorizontalSide = function (relatedBox, targetBox, side) 
+	{
+		if (side === TargetSide.bottom)
 		{
 			var y = relatedBox.y() + relatedBox.h() +  this.settings.targetOffset;
 		}
@@ -269,15 +285,16 @@ namespace('OUI.core.pos.prepared', function (window)
 		var h = targetBox.h();
 		var w = relatedBox.w() + (targetBox.w() * 2);
 
-		return {
-			box: this._prepareBox(x, y, w, h),
-			initial: this._getInitialPosition(targetBox, relatedBox, false)
-		}
+		var box = this._prepareBox(x, y, w, h);
+		var initial = this._getInitialPosition(targetBox, relatedBox, false);
+		var name = this._getAreaName(side);
+		
+		return new Area(box, initial, name);
 	};
 
-	BasePreparedWithOffsets.prototype._getVerticalSide = function (relatedBox, targetBox, direction) 
+	BasePreparedWithOffsets.prototype._getVerticalSide = function (relatedBox, targetBox, side) 
 	{
-		if (direction === 1)
+		if (side === TargetSide.right)
 		{
 			var x = relatedBox.x() + relatedBox.w() +  this.settings.targetOffset;
 		}
@@ -291,10 +308,11 @@ namespace('OUI.core.pos.prepared', function (window)
 		var w = targetBox.w();
 		var h = relatedBox.h() + (targetBox.h() * 2);
 
-		return {
-			box: this._prepareBox(x, y, w, h),
-			initial: this._getInitialPosition(targetBox, relatedBox, true)
-		}
+		var box = this._prepareBox(x, y, w, h);
+		var initial = this._getInitialPosition(targetBox, relatedBox, true);
+		var name = this._getAreaName(side);
+		
+		return new Area(box, initial, name);
 	};
 		
 	BasePreparedWithOffsets.prototype._getSide = function (relatedBox, targetBox, side) 
@@ -307,16 +325,16 @@ namespace('OUI.core.pos.prepared', function (window)
 		switch (side)
 		{
 			case TargetSide.top:
-				return this._getHorizontalSide(relatedBox, targetBox, -1);
+				return this._getHorizontalSide(relatedBox, targetBox, TargetSide.top);
 				
 			case TargetSide.bottom:
-				return this._getHorizontalSide(relatedBox, targetBox, 1);
+				return this._getHorizontalSide(relatedBox, targetBox, TargetSide.bottom);
 				
 			case TargetSide.right:
-				return this._getVerticalSide(relatedBox, targetBox, 1);
+				return this._getVerticalSide(relatedBox, targetBox, TargetSide.right);
 				
 			case TargetSide.left:
-				return this	._getVerticalSide(relatedBox, targetBox, -1);
+				return this	._getVerticalSide(relatedBox, targetBox, TargetSide.left);
 				
 			default:
 				return null;
@@ -368,13 +386,29 @@ namespace('OUI.core.pos.prepared', function (window)
 		var relatedBox = this._getRelatedBox();
 		var targetBox = this._getTargetBox();
 		
-				
 		return {
 			container: containerBox,
 			related: relatedBox,
 			target: targetBox,
 			areas : this._getAreas(relatedBox, targetBox)
 		}
+	};
+	
+	BasePreparedWithOffsets.prototype._setupData = function (position) 
+	{		
+		if (!is.object(position))
+			return false;
+		
+		if (this._isNeedToSubtractContainer())
+		{
+			position = this._subtractContainer(position);
+		}
+		
+		position.coordinates.left = position.coordinates.x;
+		position.coordinates.top = position.coordinates.y;
+		
+		return position;
+			
 	};
 	
 	BasePreparedWithOffsets.prototype.getPosition = function () 
@@ -390,11 +424,8 @@ namespace('OUI.core.pos.prepared', function (window)
 
 		var position = positioner.getPosition(this.settings.isRelative);
 		
-		if (is.object(position) && this._isNeedToSubtractContainer())
-		{
-			position = this._subtractContainer(position);
-		}
-		
+		position = this._setupData(position);
+
 		return position;
 	};
 	

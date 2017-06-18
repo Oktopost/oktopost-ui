@@ -22,8 +22,8 @@ namespace('OUI.core.pos.prepared.cornered', function (window)
 		BasePreparedWithOffsets.call(this, options, defaults);
 	
 		this._availableSides = [
-			TargetSide.bottom,
-			TargetSide.top
+			TargetSide.top,
+			TargetSide.bottom
 		];
 	}
 	

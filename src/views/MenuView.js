@@ -68,15 +68,14 @@ namespace('OUI.views', function (window)
 			relatedOffset: 5,
 			targetElement: $target,
 			targetOffset: 0,
-			isAbsolute: true,
 			initialPosition: TargetPosition.center
 		};
 		
-		var position = BottomPosition.get(options);
+		var pos = BottomPosition.get(options);
 
 		$target.offset({
-			top: position.y,
-			left: position.x
+			top: pos.coordinates.top,
+			left: pos.coordinates.left
 		});
 	};
 

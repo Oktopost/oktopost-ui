@@ -80,11 +80,11 @@ namespace('OUI.views', function (window)
 			.addClass(this._tipBaseName)
 			.html(this._getContent($element));
 
-		var coords = this._getCoordinates($element, $tip);
+		var position = this._getCoordinates($element, $tip);
 
 		$tip.css({
-			top: coords.y, 
-			left: coords.x
+			top: position.coordinates.top, 
+			left: position.coordinates.left
 		});
 
 		$('body').append($tip);

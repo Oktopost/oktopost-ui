@@ -590,6 +590,28 @@ namespace('Plankton', function() {
 	
 	this.is = is;
 });
+namespace('OUI.core.pos', function (window)
+{
+	var classify = window.Classy.classify; 
+	
+	
+	/**
+	 * @class OUI.core.pos.Area
+	 */
+	function Area(box, initial, name) 
+	{	
+		classify(this);
+		
+		/** @type {OUI.core.pos.Box} */
+		this.box = box;
+		
+		this.initial = initial;
+		this.name = name;
+	}
+	
+	
+	this.Area = Area;
+});
 namespace('OUI.core.pos', function (window) 
 {
 	var classify = window.Classy.classify;
@@ -1697,14 +1719,36 @@ namespace('OUI.core.pos', function (window)
 		return target;
 	};
 	
-	Positioner.prototype._tryPutTargetInArea = function (area) 
+	Positioner.prototype._putInInitialPoint = function (area) 
+	{
+		var target = this._transformTarget(area.box, area.initial.x, area.initial.y);
+		
+		if (!target.isCrossBorder(area.box))
+		{
+			return target;
+		}
+		
+		return false;
+	};
+	
+	Positioner.prototype._tryPutTargetInArea = function (area, isInitial) 
 	{
 		if (!this._prepareArea(area))
 		{
 			return false;
 		}
 		
-		var target = this._putInArea(area.box, area.initial.x, area.initial.y, area);
+		var target = null;
+		
+		if (isInitial)
+		{
+			target = this._putInInitialPoint(area);
+		}
+		else
+		{		
+			target = this._putInArea(area.box, area.initial.x, area.initial.y, area);
+		}
+
 		
 		if (!is.true(target))
 		{
@@ -1716,6 +1760,21 @@ namespace('OUI.core.pos', function (window)
 		
 		return true;
 	};
+	
+	Positioner.prototype._load = function (isInitial) 
+	{
+		var index;
+		
+		for (index = 0; index < this.areas.length; ++index)
+		{
+			if (this._tryPutTargetInArea(this.areas[index], isInitial))
+			{
+				break;
+			}
+		}
+		
+		return this.areas[index];
+	};
 		
 	
 	Positioner.prototype.getPosition = function (isRelative) 
@@ -1726,29 +1785,43 @@ namespace('OUI.core.pos', function (window)
 		{
 			return false;
 		}
-
-		var index;
 		
-		for (index = 0; index < this.areas.length; ++index)
+		var targetArea = this._load(true);
+		
+		if (is.null(this.absolutePosition))
 		{
-			if (this._tryPutTargetInArea(this.areas[index]))
-			{
-				break;
-			}
+			targetArea = this._load(false);
 		}
 		
 		if (is.null(this.absolutePosition))
 		{
-			console.log('Error: impossible to put target in a correct position');			
-			return new Point(this.areas[0].box.x(), this.areas[0].box.y());
+			console.log('Error: impossible to put target in a correct position');
+			
+			return {
+				name: this.areas[0].name,
+				coordinates: {
+					x: this.areas[0].box.x(),
+					y:  this.areas[0].box.y()
+				}
+			};
 		}
+		
+		var x = this.absolutePosition.x;
+		var y = this.absolutePosition.y;
 		
 		if (isRelative)
 		{
-			return this.relativePosition;
+			x = this.relativePosition.x;
+			y = this.relativePosition.y;
 		}
 		
-		return this.absolutePosition;
+		return {
+			name: targetArea.name,
+			coordinates: {
+				x: x,
+				y: y
+			}
+		}
 	};
 	
 	
@@ -1943,6 +2016,7 @@ namespace('OUI.core.pos.prepared', function (window)
 	var classify		= window.Classy.classify;
 	var Point 			= window.OUI.core.pos.Point;
 	var Box 			= window.OUI.core.pos.Box;
+	var Area			= window.OUI.core.pos.Area;
 	var Positioner		= window.OUI.core.pos.Positioner;
 	var TargetSide 		= window.OUI.core.pos.enum.TargetSide;
 	var TargetPosition 	= window.OUI.core.pos.enum.TargetPosition;
@@ -2010,11 +2084,14 @@ namespace('OUI.core.pos.prepared', function (window)
 		return (this.settings.container.css('position') === 'relative');
 	};
 	
-	BasePreparedWithOffsets.prototype._subtractContainer = function (point) 
+	BasePreparedWithOffsets.prototype._subtractContainer = function (position) 
 	{
-		var container = this._getContainerBox();
+		var container = this._getContainerBox(false);
+
+		position.coordinates.x = position.coordinates.x - container.x();
+		position.coordinates.y = position.coordinates.y - container.y();
 		
-		return new Point(point.x - container.x(), point.y - container.y());
+		return position;
 	};
 		
 	BasePreparedWithOffsets.prototype._applyOffset = function (position, offset) 
@@ -2040,36 +2117,43 @@ namespace('OUI.core.pos.prepared', function (window)
 		return this._applyOffset(position, offset);
 	};
 	
-	BasePreparedWithOffsets.prototype._getSizeWithOffset = function (el, offset, top, left) 
+	BasePreparedWithOffsets.prototype._getSizeWithOffset = function (el, offset, top, left, withoutPaddings) 
 	{
 		if ($.isWindow(el))
 		{
 			el = $(el);
 		}
 		
-		xOffsetModifier = 1;
+		var xOffsetModifier = 1;
+		
+		console.log(left);
+		console.log(offset);
 		
 		if (left > offset)
 		{
 			xOffsetModifier = 2;
 		}
 		
-		yOffsetModifier = 1;
+		var yOffsetModifier = 1;
 		
 		if (top > offset)
 		{
 			yOffsetModifier = 2;
 		}
 		
+		var width = withoutPaddings ? el.width() : el.outerWidth();
+		var height = withoutPaddings ? el.height() : el.outerHeight();
+		
 		return {
-			width: el.width() + offset * xOffsetModifier, 
-			height: el.height() + offset * yOffsetModifier
+			width: width + offset * xOffsetModifier, 
+			height: height + offset * yOffsetModifier
 		};
 	};
 	
-	BasePreparedWithOffsets.prototype._getElementBox = function (el, offset) 
+	BasePreparedWithOffsets.prototype._getElementBox = function (el, offset, withoutPaddings) 
 	{
 		offset = offset || 0;
+		withoutPaddings = withoutPaddings || false;
 		
 		if (el instanceof HTMLElement)
 		{
@@ -2078,7 +2162,7 @@ namespace('OUI.core.pos.prepared', function (window)
 		
 		var position = this.getPositionWithOffset(el, offset);
 
-		var size = this._getSizeWithOffset(el, offset, position.top, position.left);
+		var size = this._getSizeWithOffset(el, offset, position.top, position.left, withoutPaddings);
 		
 		return this._prepareBox(position.left, position.top, size.width, size.height);
 	};
@@ -2097,10 +2181,10 @@ namespace('OUI.core.pos.prepared', function (window)
 	};
 	
 	BasePreparedWithOffsets.prototype._getContainerBox = function (withOffsets) 
-	{
+	{		
 		if (!withOffsets)
 		{
-			return this._getElementBox(this.settings.container);
+			return this._getElementBox(this.settings.container, 0, true);
 		}
 		
 		if (this.settings.containerOffset > 0)
@@ -2108,7 +2192,7 @@ namespace('OUI.core.pos.prepared', function (window)
 			this.settings.containerOffset = this.settings.containerOffset * -1;
 		}
 		
-		return this._getElementBox(this.settings.container, this.settings.containerOffset);
+		return this._getElementBox(this.settings.container, this.settings.containerOffset, true);
 	};
 	
 	BasePreparedWithOffsets.prototype._getRelatedBox = function () 
@@ -2118,7 +2202,7 @@ namespace('OUI.core.pos.prepared', function (window)
 	
 	BasePreparedWithOffsets.prototype._getTargetBox = function () 
 	{
-		return this._getElementBox(this.settings.targetElement);
+		return this._getElementBox(this.settings.targetElement, this.settings.targetOffset);
 	};
 	
 	BasePreparedWithOffsets.prototype._getCenterPoint = function (targetParam, relatedParam) 
@@ -2192,9 +2276,14 @@ namespace('OUI.core.pos.prepared', function (window)
 		}
 	};
 	
-	BasePreparedWithOffsets.prototype._getHorizontalSide = function (relatedBox, targetBox, direction) 
+	BasePreparedWithOffsets.prototype._getAreaName = function (side) 
 	{
-		if (direction === 1)
+		return side + '-' + this.settings.initialPosition;
+	};
+	
+	BasePreparedWithOffsets.prototype._getHorizontalSide = function (relatedBox, targetBox, side) 
+	{
+		if (side === TargetSide.bottom)
 		{
 			var y = relatedBox.y() + relatedBox.h() +  this.settings.targetOffset;
 		}
@@ -2208,15 +2297,16 @@ namespace('OUI.core.pos.prepared', function (window)
 		var h = targetBox.h();
 		var w = relatedBox.w() + (targetBox.w() * 2);
 
-		return {
-			box: this._prepareBox(x, y, w, h),
-			initial: this._getInitialPosition(targetBox, relatedBox, false)
-		}
+		var box = this._prepareBox(x, y, w, h);
+		var initial = this._getInitialPosition(targetBox, relatedBox, false);
+		var name = this._getAreaName(side);
+		
+		return new Area(box, initial, name);
 	};
 
-	BasePreparedWithOffsets.prototype._getVerticalSide = function (relatedBox, targetBox, direction) 
+	BasePreparedWithOffsets.prototype._getVerticalSide = function (relatedBox, targetBox, side) 
 	{
-		if (direction === 1)
+		if (side === TargetSide.right)
 		{
 			var x = relatedBox.x() + relatedBox.w() +  this.settings.targetOffset;
 		}
@@ -2230,10 +2320,11 @@ namespace('OUI.core.pos.prepared', function (window)
 		var w = targetBox.w();
 		var h = relatedBox.h() + (targetBox.h() * 2);
 
-		return {
-			box: this._prepareBox(x, y, w, h),
-			initial: this._getInitialPosition(targetBox, relatedBox, true)
-		}
+		var box = this._prepareBox(x, y, w, h);
+		var initial = this._getInitialPosition(targetBox, relatedBox, true);
+		var name = this._getAreaName(side);
+		
+		return new Area(box, initial, name);
 	};
 		
 	BasePreparedWithOffsets.prototype._getSide = function (relatedBox, targetBox, side) 
@@ -2246,16 +2337,16 @@ namespace('OUI.core.pos.prepared', function (window)
 		switch (side)
 		{
 			case TargetSide.top:
-				return this._getHorizontalSide(relatedBox, targetBox, -1);
+				return this._getHorizontalSide(relatedBox, targetBox, TargetSide.top);
 				
 			case TargetSide.bottom:
-				return this._getHorizontalSide(relatedBox, targetBox, 1);
+				return this._getHorizontalSide(relatedBox, targetBox, TargetSide.bottom);
 				
 			case TargetSide.right:
-				return this._getVerticalSide(relatedBox, targetBox, 1);
+				return this._getVerticalSide(relatedBox, targetBox, TargetSide.right);
 				
 			case TargetSide.left:
-				return this	._getVerticalSide(relatedBox, targetBox, -1);
+				return this	._getVerticalSide(relatedBox, targetBox, TargetSide.left);
 				
 			default:
 				return null;
@@ -2307,7 +2398,6 @@ namespace('OUI.core.pos.prepared', function (window)
 		var relatedBox = this._getRelatedBox();
 		var targetBox = this._getTargetBox();
 		
-				
 		return {
 			container: containerBox,
 			related: relatedBox,
@@ -2316,6 +2406,22 @@ namespace('OUI.core.pos.prepared', function (window)
 		}
 	};
 	
+	BasePreparedWithOffsets.prototype._setupData = function (position) 
+	{		
+		if (!is.object(position))
+			return false;
+		
+		if (this._isNeedToSubtractContainer())
+		{
+			position = this._subtractContainer(position);
+		}
+		
+		position.coordinates.left = position.coordinates.x;
+		position.coordinates.top = position.coordinates.y;
+		
+		return position;
+			
+	};
 	
 	BasePreparedWithOffsets.prototype.getPosition = function () 
 	{
@@ -2330,11 +2436,8 @@ namespace('OUI.core.pos.prepared', function (window)
 
 		var position = positioner.getPosition(this.settings.isRelative);
 		
-		if (is.object(position) && this._isNeedToSubtractContainer())
-		{
-			position = this._subtractContainer(position);
-		}
-		
+		position = this._setupData(position);
+
 		return position;
 	};
 	
@@ -2482,8 +2585,8 @@ namespace('OUI.core.pos.prepared', function (window)
 
 	
 	var defaults = {
-		initialSide: TargetSide.right,
-		initialPosition: TargetPosition.top
+		initialSide: TargetSide.top,
+		initialPosition: TargetPosition.center
 	};
 	
 
@@ -2497,10 +2600,10 @@ namespace('OUI.core.pos.prepared', function (window)
 		BasePreparedWithOffsets.call(this, options, defaults);
 		
 		this._availableSides = [
+			TargetSide.top,
 			TargetSide.right,
 			TargetSide.bottom,
 			TargetSide.left,
-			TargetSide.top
 		];
 	}
 	
@@ -2841,15 +2944,14 @@ namespace('OUI.views', function (window)
 			relatedOffset: 5,
 			targetElement: $target,
 			targetOffset: 0,
-			isAbsolute: true,
 			initialPosition: TargetPosition.center
 		};
 		
-		var position = BottomPosition.get(options);
+		var pos = BottomPosition.get(options);
 
 		$target.offset({
-			top: position.y,
-			left: position.x
+			top: pos.coordinates.top,
+			left: pos.coordinates.left
 		});
 	};
 
@@ -2938,11 +3040,11 @@ namespace('OUI.views', function (window)
 			.addClass(this._tipBaseName)
 			.html(this._getContent($element));
 
-		var coords = this._getCoordinates($element, $tip);
+		var position = this._getCoordinates($element, $tip);
 
 		$tip.css({
-			top: coords.y, 
-			left: coords.x
+			top: position.coordinates.top, 
+			left: position.coordinates.left
 		});
 
 		$('body').append($tip);
@@ -3145,26 +3247,26 @@ namespace('OUI', function (window)
 
 		var $target = $('<div />', {
 			text: 'positioned div',
-			style: 'width:150px; height: 80px; background-color: #1DA1F3; position: absolute'
+			style: 'width:180px; height: 40px; background-color: #1DA1F3; position: absolute'
 		});
 
 		var $container = $('#positioner-container');
 
 		var options = {
 			container: $container,
-			containerOffset: 10,
+			containerOffset: 0,
 			relatedElement: document.getElementById('related'),
-			relatedOffset: 5,
+			relatedOffset: 0,
 			targetElement: $target,
 			targetOffset: 0,
 			isRelative: false,
-			initialPosition: TargetPosition.bottom,
-			initialSide: TargetSide.left
+			initialPosition: TargetPosition.center,
+			initialSide: TargetSide.right
 		};
 
 		var pos = RoundPosition.get(options);
 
-		$target.css({top: pos.y, left: pos.x});
+		$target.css({top: pos.coordinates.top, left: pos.coordinates.left});
 
 		$container.append($target);
 	}

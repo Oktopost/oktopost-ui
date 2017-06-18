@@ -7,8 +7,8 @@ namespace('OUI.core.pos.prepared', function (window)
 
 	
 	var defaults = {
-		initialSide: TargetSide.right,
-		initialPosition: TargetPosition.top
+		initialSide: TargetSide.top,
+		initialPosition: TargetPosition.center
 	};
 	
 
@@ -22,10 +22,10 @@ namespace('OUI.core.pos.prepared', function (window)
 		BasePreparedWithOffsets.call(this, options, defaults);
 		
 		this._availableSides = [
+			TargetSide.top,
 			TargetSide.right,
 			TargetSide.bottom,
 			TargetSide.left,
-			TargetSide.top
 		];
 	}
 	

@@ -76,26 +76,26 @@ namespace('OUI', function (window)
 
 		var $target = $('<div />', {
 			text: 'positioned div',
-			style: 'width:150px; height: 80px; background-color: #1DA1F3; position: absolute'
+			style: 'width:180px; height: 40px; background-color: #1DA1F3; position: absolute'
 		});
 
 		var $container = $('#positioner-container');
 
 		var options = {
 			container: $container,
-			containerOffset: 10,
+			containerOffset: 0,
 			relatedElement: document.getElementById('related'),
-			relatedOffset: 5,
+			relatedOffset: 0,
 			targetElement: $target,
 			targetOffset: 0,
 			isRelative: false,
-			initialPosition: TargetPosition.bottom,
-			initialSide: TargetSide.left
+			initialPosition: TargetPosition.center,
+			initialSide: TargetSide.right
 		};
 
 		var pos = RoundPosition.get(options);
 
-		$target.css({top: pos.y, left: pos.x});
+		$target.css({top: pos.coordinates.top, left: pos.coordinates.left});
 
 		$container.append($target);
 	}

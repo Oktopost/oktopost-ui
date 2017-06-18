@@ -112,14 +112,36 @@ namespace('OUI.core.pos', function (window)
 		return target;
 	};
 	
-	Positioner.prototype._tryPutTargetInArea = function (area) 
+	Positioner.prototype._putInInitialPoint = function (area) 
+	{
+		var target = this._transformTarget(area.box, area.initial.x, area.initial.y);
+		
+		if (!target.isCrossBorder(area.box))
+		{
+			return target;
+		}
+		
+		return false;
+	};
+	
+	Positioner.prototype._tryPutTargetInArea = function (area, isInitial) 
 	{
 		if (!this._prepareArea(area))
 		{
 			return false;
 		}
 		
-		var target = this._putInArea(area.box, area.initial.x, area.initial.y, area);
+		var target = null;
+		
+		if (isInitial)
+		{
+			target = this._putInInitialPoint(area);
+		}
+		else
+		{		
+			target = this._putInArea(area.box, area.initial.x, area.initial.y, area);
+		}
+
 		
 		if (!is.true(target))
 		{
@@ -131,6 +153,21 @@ namespace('OUI.core.pos', function (window)
 		
 		return true;
 	};
+	
+	Positioner.prototype._load = function (isInitial) 
+	{
+		var index;
+		
+		for (index = 0; index < this.areas.length; ++index)
+		{
+			if (this._tryPutTargetInArea(this.areas[index], isInitial))
+			{
+				break;
+			}
+		}
+		
+		return this.areas[index];
+	};
 		
 	
 	Positioner.prototype.getPosition = function (isRelative) 
@@ -141,29 +178,43 @@ namespace('OUI.core.pos', function (window)
 		{
 			return false;
 		}
-
-		var index;
 		
-		for (index = 0; index < this.areas.length; ++index)
+		var targetArea = this._load(true);
+		
+		if (is.null(this.absolutePosition))
 		{
-			if (this._tryPutTargetInArea(this.areas[index]))
-			{
-				break;
-			}
+			targetArea = this._load(false);
 		}
 		
 		if (is.null(this.absolutePosition))
 		{
-			console.log('Error: impossible to put target in a correct position');			
-			return new Point(this.areas[0].box.x(), this.areas[0].box.y());
+			console.log('Error: impossible to put target in a correct position');
+			
+			return {
+				name: this.areas[0].name,
+				coordinates: {
+					x: this.areas[0].box.x(),
+					y:  this.areas[0].box.y()
+				}
+			};
 		}
+		
+		var x = this.absolutePosition.x;
+		var y = this.absolutePosition.y;
 		
 		if (isRelative)
 		{
-			return this.relativePosition;
+			x = this.relativePosition.x;
+			y = this.relativePosition.y;
 		}
 		
-		return this.absolutePosition;
+		return {
+			name: targetArea.name,
+			coordinates: {
+				x: x,
+				y: y
+			}
+		}
 	};
 	
 	
