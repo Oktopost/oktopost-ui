@@ -68,7 +68,7 @@ namespace('OUI', function (window)
 							'my-menu');
 					});
 					smallModal.open();
-				});
+				});				
 			});
 
 			bigModal.open();

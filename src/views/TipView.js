@@ -18,6 +18,7 @@ namespace('OUI.views', function (window)
 		this._tipBaseName 		= baseName;
 		this._tipSelector 		= '*[data-' + baseName + ']';
 		this._tipContentAttr 	= 'title';
+		this._invisibleClass 	= 'invisible';
 	};
 
 
@@ -31,10 +32,9 @@ namespace('OUI.views', function (window)
 		return content;
 	};
 
-	TipView.prototype._getCoordinates = function ($related, $target)
+	TipView.prototype._getPosition = function ($related, $target)
 	{
-		var options = {
-			container: $('body'),
+		var options = {			
 			relatedElement:  $related,
 		    targetElement: $target,
 		    relatedOffset: 10,
@@ -75,19 +75,24 @@ namespace('OUI.views', function (window)
 
 	TipView.prototype.show = function ($element)
 	{
+		var position;
 		var $tip = $('<div>')
 			.attr('id', this._tip.getId())
 			.addClass(this._tipBaseName)
+			.addClass(this._invisibleClass)
 			.html(this._getContent($element));
 
-		var position = this._getCoordinates($element, $tip);
-
-		$tip.css({
-			top: position.coordinates.top, 
-			left: position.coordinates.left
-		});
-
 		$('body').append($tip);
+
+		position = this._getPosition($element, $tip);
+
+		$tip
+			.addClass(position.name)
+			.removeClass(this._invisibleClass)
+			.css({ 
+				left: position.coordinates.left, 
+				top: position.coordinates.top 
+			});
 	};
 
 	TipView.prototype.remove = function ()

@@ -1,8 +1,49 @@
+@import 'vars';
+@import 'animations';
+
+
 div.oui-tip {
 	position: absolute;
-	padding: 1rem;
-	background-color: black;
+	padding: 0.8rem;
+	background-color: opacify($colorDarkBlue, 0.5);
 	color: white;
-	width: 200px;
-	height: 100px;
+	max-width: 240px;
+	border-radius: 3px;
+	animation: animateGrow 0.1s;
+
+	&:after {
+		content: ' ';
+		position: absolute;
+		border: 0.4rem solid transparent;
+		width: 0;
+		height: 0;
+	}
+
+	&.bottom-center:after {
+		left: 50%;
+		bottom: 100%;
+		margin-left: -0.4rem;
+		border-bottom: 0.4rem solid opacify($colorDarkBlue, 0.5);		
+	}
+
+	&.top-center:after {
+		left: 50%;
+		top: 100%;
+		margin-left: -0.4rem;
+		border-top: 0.4rem solid opacify($colorDarkBlue, 0.5);
+	}
+
+	&.right-center:after {
+		left: 100%;
+		top: 50%;
+		margin-top: -0.4rem;
+		border-left: 0.4rem solid opacify($colorDarkBlue, 0.5);
+	}
+
+	&.left-center:after {
+		right: 100%;
+		top: 50%;
+		margin-top: -0.4rem;
+		border-right: 0.4rem solid opacify($colorDarkBlue, 0.5);
+	}
 }

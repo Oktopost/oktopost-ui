@@ -275,8 +275,8 @@ namespace('Plankton', function()
 {
 	var ARRAY_INDEX_REGEX = /^0$|^[1-9]\d*$/;
 	var ARRAY_INDEX_MAX_VALUE = 4294967294;
-
-
+	
+	
 	/**
 	 * @class Plankton.is
 	 * @alias is
@@ -343,6 +343,21 @@ namespace('Plankton', function()
 	is.object.notEmpty = function (subject)
 	{
 		return is.object(subject) && Object.keys(subject).length > 0;
+	};
+	
+	
+	/**
+	 * @param {*} subject
+	 * @returns {boolean}
+	 */
+	is.objectLiteral = function(subject)
+	{
+		if (!is.object(subject))
+		{
+			return false;
+		}
+		
+		return is.undefined(subject.constructor) || subject.constructor === Object;
 	};
 	
 	
@@ -426,7 +441,7 @@ namespace('Plankton', function()
 	 */
 	is.collection = function(subject)
 	{
-		return is.object(subject) || is.array(subject) || is.string(subject);
+		return (is.objectLiteral(subject) || is.array(subject) || is.string(subject));
 	};
 	
 	/**
@@ -439,7 +454,7 @@ namespace('Plankton', function()
 		{
 			return is.array.empty(subject);
 		}
-		else if (is.object(subject))
+		else if (is.objectLiteral(subject))
 		{
 			return is.object.empty(subject);
 		}
@@ -526,7 +541,7 @@ namespace('Plankton', function()
 	 */
 	is.NaN = function(subject)
 	{
-		return isNaN(subject) && Object.prototype.toString.call(subject) === '[object Number]';
+		return Object.prototype.toString.call(subject) === '[object Number]' && isNaN(subject);
 	};
 	
 	/**
@@ -553,7 +568,7 @@ namespace('Plankton', function()
 	 */
 	is.jsObject = function(subject)
 	{
-		return subject instanceof Object;
+		return subject instanceof Object || (!is.null(subject) && typeof subject === 'object');
 	};
 	
 	/**
@@ -576,7 +591,7 @@ namespace('Plankton', function()
 			return is.collection.empty(subject);
 		}
 		
-		throw 'Subject is not Array, Object or String';
+		throw new Error('Subject is not Array, Object or String');
 	};
 	
 	/**
@@ -626,7 +641,7 @@ namespace('Plankton', function()
 	
 	/**
 	 * @param {*} subject
-	 * @retrns {boolean}
+	 * @returns {boolean}
 	 */
 	is.index = function(subject)
 	{
@@ -3018,6 +3033,7 @@ namespace('OUI.views', function (window)
 		this._tipBaseName 		= baseName;
 		this._tipSelector 		= '*[data-' + baseName + ']';
 		this._tipContentAttr 	= 'title';
+		this._invisibleClass 	= 'invisible';
 	};
 
 
@@ -3031,10 +3047,9 @@ namespace('OUI.views', function (window)
 		return content;
 	};
 
-	TipView.prototype._getCoordinates = function ($related, $target)
+	TipView.prototype._getPosition = function ($related, $target)
 	{
-		var options = {
-			container: $('body'),
+		var options = {			
 			relatedElement:  $related,
 		    targetElement: $target,
 		    relatedOffset: 10,
@@ -3075,19 +3090,24 @@ namespace('OUI.views', function (window)
 
 	TipView.prototype.show = function ($element)
 	{
+		var position;
 		var $tip = $('<div>')
 			.attr('id', this._tip.getId())
 			.addClass(this._tipBaseName)
+			.addClass(this._invisibleClass)
 			.html(this._getContent($element));
 
-		var position = this._getCoordinates($element, $tip);
-
-		$tip.css({
-			top: position.coordinates.top, 
-			left: position.coordinates.left
-		});
-
 		$('body').append($tip);
+
+		position = this._getPosition($element, $tip);
+
+		$tip
+			.addClass(position.name)
+			.removeClass(this._invisibleClass)
+			.css({ 
+				left: position.coordinates.left, 
+				top: position.coordinates.top 
+			});
 	};
 
 	TipView.prototype.remove = function ()
@@ -3279,7 +3299,7 @@ namespace('OUI', function (window)
 							'my-menu');
 					});
 					smallModal.open();
-				});
+				});				
 			});
 
 			bigModal.open();
