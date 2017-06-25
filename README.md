@@ -17,9 +17,11 @@ Place the following files in your HTML template:
 2. [Popup Menus](docs/MENU.md)
 3. [Dialogs](docs/DIALOG.md)
 4. [Toast](docs/TOAST.md)
+5. [Tip](docs/TIP.md)
 
 ## Helpers
 1. [View Helpers](docs/VIEW.md)
+2. [Pos](docs/POS.md)
 
 ## Namespace
 ```
