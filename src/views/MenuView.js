@@ -34,7 +34,8 @@ namespace('OUI.views', function (window)
 	{
 		var menu = this._menu;
 
-		this.getContainer().on('click', this._underlay, function () {
+		this.getContainer().on('click', this._underlay, function () 
+		{
 			menu.close();
 		});
 	};
@@ -51,7 +52,8 @@ namespace('OUI.views', function (window)
 
 	MenuView.prototype.show = function ()
 	{
-		$('body').append(hbs('menu', {
+		$('body').append(hbs('menu', 
+		{
 			id: this._menu.getId(),
 			contents: this._contents,
 			extraClass: this._extraClass
@@ -65,7 +67,7 @@ namespace('OUI.views', function (window)
 			container: $container,
 			containerOffset: 0,
 			relatedElement: $related,
-			relatedOffset: 5,
+			relatedOffset: 0,
 			targetElement: $target,
 			targetOffset: 0,
 			initialPosition: TargetPosition.center
@@ -73,10 +75,13 @@ namespace('OUI.views', function (window)
 		
 		var pos = BottomPosition.get(options);
 
-		$target.offset({
+		$target.offset(
+		{
 			top: pos.coordinates.top,
 			left: pos.coordinates.left
 		});
+
+		$target.addClass(pos.name);
 	};
 
 

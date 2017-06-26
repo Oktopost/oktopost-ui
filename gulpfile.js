@@ -70,7 +70,7 @@ function buildViews()
 		.pipe(handlebars())
 		.pipe(wrap('Handlebars.template(<%= contents %>)'))
 		.pipe(declare({
-			namespace: 'Handlebars.templates',
+			namespace: 'OUI.templates',
 			noRedeclare: true,
 			processName: function (filePath) {
 				return declare.processNameByPath(filePath.replace('src/templates/', ''));

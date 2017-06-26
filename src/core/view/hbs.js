@@ -4,6 +4,6 @@ namespace('OUI.core.view', function (window)
 	{
 		options = options || {};
 
-		return window.Handlebars['templates'][name].hbs(options);
+		return window.OUI.templates[name].hbs(options);
 	};
 });
