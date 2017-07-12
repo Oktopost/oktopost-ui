@@ -1,8 +1,8 @@
 namespace('OUI.views', function (window) 
 {
-	var hbs = window.OUI.core.view.hbs;
-	var classify = window.Classy.classify;
-	var fadeRemove = window.OUI.core.view.fadeRemove;
+	var hbs 		= window.OUI.core.view.hbs;
+	var classify 	= window.Classy.classify;
+	var fadeRemove 	= window.OUI.core.view.fadeRemove;
 
 
 	/**

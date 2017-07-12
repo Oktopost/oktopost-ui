@@ -1,7 +1,8 @@
 namespace('OUI.components', function (window) 
 {
-	var classify	= window.Classy.classify;
 	var TipView 	= window.OUI.views.TipView;
+
+	var classify	= window.Classy.classify;
 	var idGenerator = window.OUI.core.view.idGenerator;
 
 

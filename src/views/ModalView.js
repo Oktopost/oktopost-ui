@@ -1,7 +1,7 @@
 namespace('OUI.views', function (window) 
 {
-	var hbs = window.OUI.core.view.hbs;
-	var classify = window.Classy.classify;
+	var hbs 		= window.OUI.core.view.hbs;
+	var classify 	= window.Classy.classify;
 
 	/**
 	 * @class OUI.views.ModalView

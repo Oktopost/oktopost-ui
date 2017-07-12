@@ -1,8 +1,9 @@
 namespace('OUI.components', function (window) 
 {
-	var Event 		= window.Duct.Event;	
+	var Event 		= window.Duct.Event;
 	var MenuView 	= window.OUI.views.MenuView;
 
+	var classify 	= window.Classy.classify;
 	var idGenerator = window.OUI.core.view.idGenerator;
 
 
@@ -11,7 +12,7 @@ namespace('OUI.components', function (window)
 	 */
 	function Menu($toggleElement, contents, extraClass)
 	{
-		Classy.classify(this);
+		classify(this);
 
 		this._id 			= idGenerator('oui-menu');
 		

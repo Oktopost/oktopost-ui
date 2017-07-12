@@ -3,6 +3,7 @@ namespace('OUI.components', function (window)
 	var Event       = window.Duct.Event;
 	var DialogView 	= window.OUI.views.DialogView;
 
+	var classify 	= window.Classy.classify;
 	var idGenerator = window.OUI.core.view.idGenerator;
 
 
@@ -11,7 +12,7 @@ namespace('OUI.components', function (window)
 	 */
 	function Dialog(okButtonText, cancelButtonText) 
 	{
-		Classy.classify(this);
+		classify(this);
 
 		this._id 			= idGenerator('oui-dialog');
 		

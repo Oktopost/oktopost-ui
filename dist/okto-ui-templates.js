@@ -38,6 +38,14 @@ this["OUI"]["templates"]["modal"]["hbs"] = Handlebars.template({"compiler":[6,">
     + ((stack1 = ((helper = (helper = helpers.contents || (depth0 != null ? depth0.contents : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"contents","hash":{},"data":data}) : helper))) != null ? stack1 : "")
     + "</div>\n	<div class=\"oui-modal-underlay\"></div>\n</div>";
 },"useData":true});
+this["OUI"]["templates"]["search-form"] = this["OUI"]["templates"]["search-form"] || {};
+this["OUI"]["templates"]["search-form"]["hbs"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+    var helper;
+
+  return "<form class=\"search-form\">\n	<input type=\"text\" name=\"q\" placeholder=\""
+    + this.escapeExpression(((helper = (helper = helpers.placeholder || (depth0 != null ? depth0.placeholder : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0,{"name":"placeholder","hash":{},"data":data}) : helper)))
+    + "\">\n\n	<button type=\"button\" class=\"tcon tcon-search--xcross\" aria-label=\"toggle search\">\n	  	<span class=\"tcon-search__item\" aria-hidden=\"true\"></span>\n	  	<span class=\"tcon-visuallyhidden\">toggle search</span>\n	</button>\n</form>";
+},"useData":true});
 this["OUI"]["templates"]["toast"] = this["OUI"]["templates"]["toast"] || {};
 this["OUI"]["templates"]["toast"]["hbs"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
     var helper, alias1=helpers.helperMissing, alias2="function", alias3=this.escapeExpression;

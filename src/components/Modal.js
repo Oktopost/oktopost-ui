@@ -1,11 +1,9 @@
 namespace('OUI.components', function (window) 
 {
-	'use strict';
-
-
 	var Event       = window.Duct.Event;
 	var ModalView   = window.OUI.views.ModalView;
 	
+	var classify 	= window.Classy.classify;
 	var idGenerator = window.OUI.core.view.idGenerator;
 
 
@@ -14,7 +12,7 @@ namespace('OUI.components', function (window)
 	 */
 	function Modal(contents, className) 
 	{
-		Classy.classify(this);
+		classify(this);
 
 		this._id            = idGenerator('oui-modal');
 		

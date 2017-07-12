@@ -5,7 +5,7 @@ namespace('OUI', function (window)
 	var Menu = window.OUI.components.Menu;
 	var Toast = window.OUI.components.Toast;
 	var Tip = window.OUI.components.Tip;
-
+	var SearchForm = window.OUI.components.SearchForm;
 	
 	var RoundPosition = window.OUI.core.pos.prepared.RoundPosition;
 	var TargetPosition = window.OUI.core.pos.enum.TargetPosition;
@@ -98,5 +98,13 @@ namespace('OUI', function (window)
 		$target.css({top: pos.coordinates.top, left: pos.coordinates.left});
 
 		$container.append($target);
+
+
+		var sFormContainer = $('div.search-form-container');
+		var sForm = new SearchForm(sFormContainer, 'Search ...');
+
+		sForm.onKeyup(function (c) {
+			console.log(c.val());
+		});
 	}
 });        

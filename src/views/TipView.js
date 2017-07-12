@@ -1,9 +1,10 @@
 namespace('OUI.views', function (window) 
 {
-	var classify		= window.Classy.classify;
 	var RoundPosition 	= window.OUI.core.pos.prepared.RoundPosition;
     var TargetPosition 	= window.OUI.core.pos.enum.TargetPosition;
     var TargetSide 		= window.OUI.core.pos.enum.TargetSide;
+
+    var classify		= window.Classy.classify;
 
 
 	/**

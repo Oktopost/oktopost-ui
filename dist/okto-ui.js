@@ -857,9 +857,9 @@ namespace('OUI.core.pos.enum', function (window)
 });
 namespace('OUI.views', function (window) 
 {
-	var hbs = window.OUI.core.view.hbs;
-	var classify = window.Classy.classify;
-	var fadeRemove = window.OUI.core.view.fadeRemove;
+	var hbs 		= window.OUI.core.view.hbs;
+	var classify 	= window.Classy.classify;
+	var fadeRemove 	= window.OUI.core.view.fadeRemove;
 
 
 	/**
@@ -918,8 +918,8 @@ namespace('OUI.views', function (window)
 });
 namespace('OUI.views', function (window) 
 {
-	var hbs = window.OUI.core.view.hbs;
-	var classify = window.Classy.classify;
+	var hbs 		= window.OUI.core.view.hbs;
+	var classify 	= window.Classy.classify;
 
 	/**
 	 * @class OUI.views.ModalView
@@ -993,6 +993,83 @@ namespace('OUI.views', function (window)
 
 	
 	this.ModalView = ModalView;
+});
+namespace('OUI.views', function (window) 
+{
+	var hbs 		= window.OUI.core.view.hbs;
+	var classify 	= window.Classy.classify;
+
+
+	function SearchFormView(searchForm, container, placeholder)
+	{
+		classify(this);
+
+		this._searchForm 		= searchForm;
+		this._placeholder 		= placeholder;
+		this._container 		= $(container);
+
+		this._searchInput 		= 'input[type="text"]';
+		this._clearButton 		= 'button.tcon';
+		this._animationClass 	= 'tcon-transform';
+
+		this.render();
+		this.bindEvents();
+	};
+
+	SearchFormView.prototype.clearInput = function (button)
+	{
+		this._container.find(this._searchInput).val('');
+		button.removeClass(this._animationClass);
+	};
+
+	SearchFormView.prototype.transformIcon = function (input)
+	{
+		var button = this._container.find(this._clearButton);
+
+		if (input.val().length > 0)
+		{
+			button.addClass(this._animationClass);
+		}
+		else
+		{
+			button.removeClass(this._animationClass);	
+		}
+	};
+
+	SearchFormView.prototype.bindEvents = function ()
+	{
+		var searchForm = this._searchForm;
+		
+		this._container.on('keyup', this._searchInput, function () 
+		{
+			searchForm.keyup($(this));
+		});
+
+		this._container.on('keydown', this._searchInput, function () 
+		{
+			searchForm.keydown($(this));
+		});
+
+		this._container.on('change', this._searchInput, function () 
+		{
+			searchForm.change($(this));
+		});
+
+		this._container.on('click', this._clearButton, function () 
+		{
+			searchForm.clear($(this));
+		});
+	};
+
+	SearchFormView.prototype.render = function ()
+	{
+		this._container.append(hbs('search-form', {
+			placeholder: this._placeholder
+		}));
+	};
+
+
+	this.SearchFormView = SearchFormView;
 });
 namespace('OUI.views', function (window) 
 {
@@ -2735,6 +2812,7 @@ namespace('OUI.components', function (window)
 	var Event       = window.Duct.Event;
 	var DialogView 	= window.OUI.views.DialogView;
 
+	var classify 	= window.Classy.classify;
 	var idGenerator = window.OUI.core.view.idGenerator;
 
 
@@ -2743,7 +2821,7 @@ namespace('OUI.components', function (window)
 	 */
 	function Dialog(okButtonText, cancelButtonText) 
 	{
-		Classy.classify(this);
+		classify(this);
 
 		this._id 			= idGenerator('oui-dialog');
 		
@@ -2799,12 +2877,10 @@ namespace('OUI.components', function (window)
 });
 namespace('OUI.components', function (window) 
 {
-	'use strict';
-
-
 	var Event       = window.Duct.Event;
 	var ModalView   = window.OUI.views.ModalView;
 	
+	var classify 	= window.Classy.classify;
 	var idGenerator = window.OUI.core.view.idGenerator;
 
 
@@ -2813,7 +2889,7 @@ namespace('OUI.components', function (window)
 	 */
 	function Modal(contents, className) 
 	{
-		Classy.classify(this);
+		classify(this);
 
 		this._id            = idGenerator('oui-modal');
 		
@@ -2871,12 +2947,84 @@ namespace('OUI.components', function (window)
 });
 namespace('OUI.components', function (window) 
 {
-	'use strict';
+	var Event 			= window.Duct.Event;
+	var SearchFormView 	= window.OUI.views.SearchFormView;
+
+	var classify 		= window.Classy.classify;
+	var idGenerator 	= window.OUI.core.view.idGenerator;
 
 
-	var Event = window.Duct.Event;	
-	var ToastView = window.OUI.views.ToastView;
+	function SearchForm(container, placeholder)
+	{
+		classify(this);
 
+		this._id 		= idGenerator('oui-search-form');
+
+		this._view 		= new SearchFormView(this, container, placeholder);
+
+		this._onKeyup 	= new Event('searchForm.onKeyup');
+		this._onKeydown = new Event('searchForm.onKeydown');
+		this._onChange 	= new Event('searchForm.onChange');
+		this._onClear 	= new Event('searchForm.onClear');
+
+		this.onClear(this._view.clearInput);
+		this.onKeyup(this._view.transformIcon);
+	}
+
+	SearchForm.prototype.getId = function ()
+	{
+		return this._id;
+	};
+
+	SearchForm.prototype.onKeyup = function (callback)
+	{
+		this._onKeyup.add(callback);
+	};
+
+	SearchForm.prototype.onKeydown = function (callback)
+	{
+		this._onKeydown.add(callback);
+	};
+
+	SearchForm.prototype.onChange = function (callback)
+	{
+		this._onChange.add(callback);
+	};
+
+	SearchForm.prototype.onClear = function (callback)
+	{
+		this._onClear.add(callback);
+	};
+
+	SearchForm.prototype.keyup = function (input)
+	{
+		this._onKeyup.trigger(input);
+	};
+
+	SearchForm.prototype.keydown = function (input)
+	{
+		this._onKeydown.trigger(input);
+	};
+
+	SearchForm.prototype.change = function (input)
+	{
+		this._onChange.trigger(input);
+	};
+
+	SearchForm.prototype.clear = function (button)
+	{
+		this._onClear.trigger(button);
+	};
+
+
+	this.SearchForm = SearchForm;
+});
+namespace('OUI.components', function (window) 
+{
+	var Event 		= window.Duct.Event;	
+	var ToastView 	= window.OUI.views.ToastView;
+
+	var classify	= window.Classy.classify;
 	var idGenerator = window.OUI.core.view.idGenerator;
 
 
@@ -2885,7 +3033,7 @@ namespace('OUI.components', function (window)
 	 */
 	function Toast(delay)
 	{
-		Classy.classify(this);
+		classify(this);
 
 		this._id 		= idGenerator('oui-toast');
 
@@ -2931,11 +3079,11 @@ namespace('OUI.components', function (window)
 });
 namespace('OUI.views', function (window) 
 {
-	var hbs 							= window.OUI.core.view.hbs;
-	var classify						= window.Classy.classify;
-	var FadeRemove 						= window.OUI.core.view.FadeRemove;
-	var BottomPosition	 				= window.OUI.core.pos.prepared.cornered.BottomPosition;
-	var TargetPosition					= window.OUI.core.pos.enum.TargetPosition;
+	var hbs 			= window.OUI.core.view.hbs;
+	var classify		= window.Classy.classify;
+	var FadeRemove 		= window.OUI.core.view.FadeRemove;
+	var BottomPosition	= window.OUI.core.pos.prepared.cornered.BottomPosition;
+	var TargetPosition	= window.OUI.core.pos.enum.TargetPosition;
 
 
 	function MenuView(menu, $toggleElement, contents, extraClass)
@@ -3020,10 +3168,11 @@ namespace('OUI.views', function (window)
 });
 namespace('OUI.views', function (window) 
 {
-	var classify		= window.Classy.classify;
 	var RoundPosition 	= window.OUI.core.pos.prepared.RoundPosition;
     var TargetPosition 	= window.OUI.core.pos.enum.TargetPosition;
     var TargetSide 		= window.OUI.core.pos.enum.TargetSide;
+
+    var classify		= window.Classy.classify;
 
 
 	/**
@@ -3125,9 +3274,10 @@ namespace('OUI.views', function (window)
 });
 namespace('OUI.components', function (window) 
 {
-	var Event 		= window.Duct.Event;	
+	var Event 		= window.Duct.Event;
 	var MenuView 	= window.OUI.views.MenuView;
 
+	var classify 	= window.Classy.classify;
 	var idGenerator = window.OUI.core.view.idGenerator;
 
 
@@ -3136,7 +3286,7 @@ namespace('OUI.components', function (window)
 	 */
 	function Menu($toggleElement, contents, extraClass)
 	{
-		Classy.classify(this);
+		classify(this);
 
 		this._id 			= idGenerator('oui-menu');
 		
@@ -3197,8 +3347,9 @@ namespace('OUI.components', function (window)
 });
 namespace('OUI.components', function (window) 
 {
-	var classify	= window.Classy.classify;
 	var TipView 	= window.OUI.views.TipView;
+
+	var classify	= window.Classy.classify;
 	var idGenerator = window.OUI.core.view.idGenerator;
 
 
@@ -3241,7 +3392,7 @@ namespace('OUI', function (window)
 	var Menu = window.OUI.components.Menu;
 	var Toast = window.OUI.components.Toast;
 	var Tip = window.OUI.components.Tip;
-
+	var SearchForm = window.OUI.components.SearchForm;
 	
 	var RoundPosition = window.OUI.core.pos.prepared.RoundPosition;
 	var TargetPosition = window.OUI.core.pos.enum.TargetPosition;
@@ -3334,5 +3485,13 @@ namespace('OUI', function (window)
 		$target.css({top: pos.coordinates.top, left: pos.coordinates.left});
 
 		$container.append($target);
+
+
+		var sFormContainer = $('div.search-form-container');
+		var sForm = new SearchForm(sFormContainer, 'Search ...');
+
+		sForm.onKeyup(function (c) {
+			console.log(c.val());
+		});
 	}
 });        
