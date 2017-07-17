@@ -1,6 +1,7 @@
 namespace('OUI.core.pos', function (window)
 {
-	var classify = window.Classy.classify; 
+	var is 			= window.Plankton.is;
+	var classify 	= window.Classy.classify; 
 	
 	
 	/**
@@ -21,7 +22,14 @@ namespace('OUI.core.pos', function (window)
 	
 	Area.prototype.getName = function () 
 	{
-		return this.areaName + '-' + this.positionName;	
+		var name = this.areaName;
+		
+		if (is.string(this.positionName) && this.positionName.length > 0)
+		{
+			name = name + '-' + this.positionName;
+		}
+		
+		return name;	
 	};
 	
 	
