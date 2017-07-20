@@ -34,16 +34,16 @@ div.oui-tip {
 	}
 
 	&.right-center:after {
-		left: 100%;
-		top: 50%;
-		margin-top: -0.4rem;
-		border-left: 0.4rem solid opacify($colorDarkBlue, 0.5);
-	}
-
-	&.left-center:after {
 		right: 100%;
 		top: 50%;
 		margin-top: -0.4rem;
 		border-right: 0.4rem solid opacify($colorDarkBlue, 0.5);
+	}
+
+	&.left-center:after {
+		left: 100%;
+		top: 50%;
+		margin-top: -0.4rem;
+		border-left: 0.4rem solid opacify($colorDarkBlue, 0.5);
 	}
 }
