@@ -11,12 +11,12 @@ JavaScript:
 ```JavaScript
 var ListItems = OUI.components.list.ListItems;
 
-var items = new ListItems($('div.list-container'));
+var list = new ListItems($('div.list-container'));
 var template = window.Handlebars['template']['templateDir']['templateName'];
 
 getDataFromServer(function (json) 
 {
-	items.renderHbs(template, json.Items);
+	list.renderHbs(template, json.Items);
 });
 ```
 
@@ -33,11 +33,12 @@ Handlebars template:
 ```
 
 Items:
-```Json
+```JavaScript
+var items =
 [
 	{id: 'item-1'},
 	{id: 'item-2'}
-]
+];
 ```
 
 ## Events

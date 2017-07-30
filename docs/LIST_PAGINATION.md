@@ -14,9 +14,9 @@ var ListPagination = OUI.components.list.ListPagination;
 
 var container = $('div.pagination');
 var params = { '_page': 0, '_count': 10 };
-var numItems = 60;
+var total = 60;
 
-var pagination = new ListPagination(container, params, numItems;
+var pagination = new ListPagination(container, params, total);
 ```
 
 HTML:

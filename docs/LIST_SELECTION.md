@@ -42,13 +42,13 @@ HTML:
 ```
 
 ## Methods
-### select([itemIds]);
-Select one or multiple items.
+### select([ itemIds ])
+Select one or multiple items by Id.
 
-### deselect([itemIds]);
-Deselect one or multiple items.
+### deselect([ itemIds ])
+Deselect one or multiple items by Id.
 
-### getSelected();
+### getSelected()
 Will return an array of selected item Ids.
 
 ## Events
