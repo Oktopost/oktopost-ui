@@ -16,15 +16,15 @@ namespace('OUI.components', function (window)
 
 		this._id 			= idGenerator('oui-dialog');
 		
-		this._dialogView 	= new DialogView(this, okButtonText, cancelButtonText);
+		this._view 			= new DialogView(this, okButtonText, cancelButtonText);
 
 		this._onCancel 		= new Event('dialog.onCancel');
 		this._onConfirm 	= new Event('dialog.onConfirm');
 		this._onOpen 		= new Event('dialog.onOpen');
 
-		this.onOpen(this._dialogView.bindEvents);
-		this.onCancel(this._dialogView.remove);
-		this.onConfirm(this._dialogView.remove);
+		this.onOpen(this._view.bindEvents);
+		this.onCancel(this._view.remove);
+		this.onConfirm(this._view.remove);
 	}
 
 	Dialog.prototype.getId = function ()
@@ -49,8 +49,8 @@ namespace('OUI.components', function (window)
 
 	Dialog.prototype.open = function (message) 
 	{
-		this._dialogView.show(message);
-		this._onOpen.trigger(this._dialogView.getContainer());
+		this._view.show(message);
+		this._onOpen.trigger(this._view.getContainer());
 	};
 
 	Dialog.prototype.confirm = function () 

@@ -3005,15 +3005,15 @@ namespace('OUI.components', function (window)
 
 		this._id 			= idGenerator('oui-dialog');
 		
-		this._dialogView 	= new DialogView(this, okButtonText, cancelButtonText);
+		this._view 			= new DialogView(this, okButtonText, cancelButtonText);
 
 		this._onCancel 		= new Event('dialog.onCancel');
 		this._onConfirm 	= new Event('dialog.onConfirm');
 		this._onOpen 		= new Event('dialog.onOpen');
 
-		this.onOpen(this._dialogView.bindEvents);
-		this.onCancel(this._dialogView.remove);
-		this.onConfirm(this._dialogView.remove);
+		this.onOpen(this._view.bindEvents);
+		this.onCancel(this._view.remove);
+		this.onConfirm(this._view.remove);
 	}
 
 	Dialog.prototype.getId = function ()
@@ -3038,8 +3038,8 @@ namespace('OUI.components', function (window)
 
 	Dialog.prototype.open = function (message) 
 	{
-		this._dialogView.show(message);
-		this._onOpen.trigger(this._dialogView.getContainer());
+		this._view.show(message);
+		this._onOpen.trigger(this._view.getContainer());
 	};
 
 	Dialog.prototype.confirm = function () 
@@ -3073,14 +3073,14 @@ namespace('OUI.components', function (window)
 
 		this._id            = idGenerator('oui-modal');
 		
-		this._modalView     = new ModalView(this, contents, className);
+		this._view     		= new ModalView(this, contents, className);
 
 		this._onBeforeOpen 	= new Event('modal.beforeOpen');
 		this._onAfterOpen 	= new Event('modal.afterOpen');
 		this._onBeforeClose = new Event('modal.beforeClose');
 		this._onAfterClose 	= new Event('modal.afterClose');
 
-		this.onAfterOpen(this._modalView.onOpen);
+		this.onAfterOpen(this._view.onOpen);
 	};
 
 	Modal.prototype.getId = function ()
@@ -3111,14 +3111,14 @@ namespace('OUI.components', function (window)
 	Modal.prototype.open = function() 
 	{
 		this._onBeforeOpen.trigger(this._id);
-		this._modalView.show();
-		this._onAfterOpen.trigger(this._modalView.getContainer());
+		this._view.show();
+		this._onAfterOpen.trigger(this._view.getContainer());
 	};
 
 	Modal.prototype.close = function() 
 	{
-		this._onBeforeClose.trigger(this._modalView.getContainer());
-		this._modalView.remove();
+		this._onBeforeClose.trigger(this._view.getContainer());
+		this._view.remove();
 		this._onAfterClose.trigger(this._id);
 	};
 
@@ -3217,12 +3217,12 @@ namespace('OUI.components', function (window)
 
 		this._id 		= idGenerator('oui-toast');
 
-		this._toastView = new ToastView(this, delay);
+		this._view 		= new ToastView(this, delay);
 				
 		this._onAdd 	= new Event('toast.onAdd');
 		this._onDismiss = new Event('toast.onDismiss');
 
-		this.onAdd(this._toastView.bindDismiss);
+		this.onAdd(this._view.bindDismiss);
 	};
 
 
@@ -3244,13 +3244,13 @@ namespace('OUI.components', function (window)
 
 	Toast.prototype.add = function (message)
 	{
-		this._toastView.show(message);
+		this._view.show(message);
 		this._onAdd.trigger(this._id);
 	};
 
 	Toast.prototype.dismiss = function ()
 	{
-		this._toastView.remove();
+		this._view.remove();
 		this._onDismiss.trigger(this._id);
 	};
 
@@ -3493,42 +3493,38 @@ namespace('OUI.views', function (window)
 {
 	var hbs 			= window.OUI.core.view.hbs;
 	var classify		= window.Classy.classify;
+	var obj 			= window.Plankton.obj;
 	
 	var BottomPosition	= window.OUI.core.pos.prepared.cornered.BottomPosition;
 	var TargetPosition	= window.OUI.core.pos.enum.TargetPosition;
 
 
-	function MenuView(menu, $toggleElement, contents, extraClass)
+	function MenuView(menu, $toggleElement, contents, extraClass, positionConfig)
 	{
 		classify(this);
 
 		extraClass = extraClass || '';
 
-		this._menu 			= menu;
-		this._toggleElement = $toggleElement;
-		this._contents 		= contents;
-		this._extraClass 	= extraClass;
-		this._underlay 		= 'div.oui-menu-underlay';
+		this._menu 				= menu;
+		this._toggleElement 	= $toggleElement;
+		this._contents 			= contents;
+		this._extraClass 		= extraClass;
+		this._underlay 			= 'div.oui-menu-underlay';
+		this._positionConfig	= positionConfig || {};
+
+		this._bindOpen();
 	};
 
-	MenuView.prototype.initEvent = function ()
+
+	MenuView.prototype._bindOpen = function ()
 	{
-		var menu = this._menu;
-
-		this._toggleElement.on('click', function (e) {
-			e.preventDefault();
-			menu.open();
-		});
+		this._toggleElement.on('click', this._menu.open);
 	};
+
 
 	MenuView.prototype.bindRemove = function ()
 	{
-		var menu = this._menu;
-
-		this.getContainer().on('click', this._underlay, function () 
-		{
-			menu.close();
-		});
+		this.getContainer().on('click', this._underlay, this._menu.close);
 	};
 
 	MenuView.prototype.getContainer = function ()
@@ -3554,17 +3550,17 @@ namespace('OUI.views', function (window)
 		var $target 	= $container.find('div.wrapper');
 		var $related 	= this._toggleElement;
 		
-		var options = {
+		var baseConfig = {
 			container: $container,
-			containerOffset: 0,
+			containerOffset: 10,
 			relatedElement: $related,
 			relatedOffset: 0,
 			targetElement: $target,
 			targetOffset: 0,
 			initialPosition: TargetPosition.center
 		};
-		
-		var pos = BottomPosition.get(options);
+
+		var pos = BottomPosition.get(obj.merge(baseConfig, this._positionConfig));
 
 		$target.offset(
 		{
@@ -3585,12 +3581,13 @@ namespace('OUI.views', function (window)
     var TargetSide 		= window.OUI.core.pos.enum.TargetSide;
 
     var classify		= window.Classy.classify;
+    var obj 			= window.Plankton.obj;
 
 
 	/**
 	 * @class OUI.views.TipView
 	 */
-	function TipView(tip, baseName)
+	function TipView(tip, baseName, positionConfig)
 	{
 		classify(this);
 
@@ -3600,6 +3597,8 @@ namespace('OUI.views', function (window)
 		this._tipSelector 		= '*[data-' + baseName + ']';
 		this._tipContentAttr 	= 'title';
 		this._invisibleClass 	= 'invisible';
+
+		this._positionConfig	= positionConfig || {};
 	};
 
 
@@ -3615,13 +3614,16 @@ namespace('OUI.views', function (window)
 
 	TipView.prototype._getPosition = function ($related, $target)
 	{
-		var options = {			
+		var baseConfig = 
+		{			
 			relatedElement:  $related,
 		    targetElement: $target,
 		    relatedOffset: 10,
 		    initialPosition: TargetPosition.center,
 		    initialSide: TargetSide.bottom
 		};
+
+		var options = obj.merge(baseConfig, this._positionConfig);
 
 		return RoundPosition.get(options);
 	};
@@ -3696,22 +3698,20 @@ namespace('OUI.components', function (window)
 	/**
 	 * @class OUI.components.Menu
 	 */
-	function Menu($toggleElement, contents, extraClass)
+	function Menu($toggleElement, contents, extraClass, positionConfig)
 	{
 		classify(this);
 
 		this._id 			= idGenerator('oui-menu');
 		
-		this._menuView 		= new MenuView(this, $toggleElement, contents, extraClass);
+		this._view 			= new MenuView(this, $toggleElement, contents, extraClass, positionConfig);
 		
 		this._onBeforeOpen 	= new Event('menu.onBeforeOpen');
 		this._onAfterOpen 	= new Event('menu.onAfterOpen');
 		this._onBeforeClose = new Event('menu.onBeforeClose');
 		this._onAfterClose 	= new Event('menu.onAfterClose');
-
-		this._menuView.initEvent();
-
-		this.onAfterOpen(this._menuView.bindRemove);
+		
+		this.onAfterOpen(this._view.bindRemove);
 	};
 
 	
@@ -3743,14 +3743,14 @@ namespace('OUI.components', function (window)
 	Menu.prototype.open = function ()
 	{
 		this._onBeforeOpen.trigger(this._id);
-		this._menuView.show();
-		this._onAfterOpen.trigger(this._menuView.getContainer());
+		this._view.show();
+		this._onAfterOpen.trigger(this._view.getContainer());
 	};
 
 	Menu.prototype.close = function ()
 	{
-		this._onBeforeClose.trigger(this._menuView.getContainer());
-		this._menuView.remove();
+		this._onBeforeClose.trigger(this._view.getContainer());
+		this._view.remove();
 		this._onAfterClose.trigger(this._id);
 	};
 
@@ -3768,14 +3768,14 @@ namespace('OUI.components', function (window)
 	/**
 	 * @class OUI.components.Tip
 	 */
-	function Tip(baseName)
+	function Tip(baseName, positionConfig)
 	{
 		classify(this);
 
 		this._id 		= idGenerator(baseName);
-		this._tipView 	= new TipView(this, baseName);
+		this._view 		= new TipView(this, baseName, positionConfig);
 
-		this._tipView.bindHover();
+		this._view.bindHover();
 	};
 
 
@@ -3786,12 +3786,12 @@ namespace('OUI.components', function (window)
 
 	Tip.prototype.add = function ($element)
 	{
-		this._tipView.show($element);
+		this._view.show($element);
 	};
 
 	Tip.prototype.remove = function ()
 	{
-		this._tipView.remove();
+		this._view.remove();
 	};
 
 

@@ -2,42 +2,38 @@ namespace('OUI.views', function (window)
 {
 	var hbs 			= window.OUI.core.view.hbs;
 	var classify		= window.Classy.classify;
+	var obj 			= window.Plankton.obj;
 	
 	var BottomPosition	= window.OUI.core.pos.prepared.cornered.BottomPosition;
 	var TargetPosition	= window.OUI.core.pos.enum.TargetPosition;
 
 
-	function MenuView(menu, $toggleElement, contents, extraClass)
+	function MenuView(menu, $toggleElement, contents, extraClass, positionConfig)
 	{
 		classify(this);
 
 		extraClass = extraClass || '';
 
-		this._menu 			= menu;
-		this._toggleElement = $toggleElement;
-		this._contents 		= contents;
-		this._extraClass 	= extraClass;
-		this._underlay 		= 'div.oui-menu-underlay';
+		this._menu 				= menu;
+		this._toggleElement 	= $toggleElement;
+		this._contents 			= contents;
+		this._extraClass 		= extraClass;
+		this._underlay 			= 'div.oui-menu-underlay';
+		this._positionConfig	= positionConfig || {};
+
+		this._bindOpen();
 	};
 
-	MenuView.prototype.initEvent = function ()
+
+	MenuView.prototype._bindOpen = function ()
 	{
-		var menu = this._menu;
-
-		this._toggleElement.on('click', function (e) {
-			e.preventDefault();
-			menu.open();
-		});
+		this._toggleElement.on('click', this._menu.open);
 	};
+
 
 	MenuView.prototype.bindRemove = function ()
 	{
-		var menu = this._menu;
-
-		this.getContainer().on('click', this._underlay, function () 
-		{
-			menu.close();
-		});
+		this.getContainer().on('click', this._underlay, this._menu.close);
 	};
 
 	MenuView.prototype.getContainer = function ()
@@ -63,17 +59,17 @@ namespace('OUI.views', function (window)
 		var $target 	= $container.find('div.wrapper');
 		var $related 	= this._toggleElement;
 		
-		var options = {
+		var baseConfig = {
 			container: $container,
-			containerOffset: 0,
+			containerOffset: 10,
 			relatedElement: $related,
 			relatedOffset: 0,
 			targetElement: $target,
 			targetOffset: 0,
 			initialPosition: TargetPosition.center
 		};
-		
-		var pos = BottomPosition.get(options);
+
+		var pos = BottomPosition.get(obj.merge(baseConfig, this._positionConfig));
 
 		$target.offset(
 		{

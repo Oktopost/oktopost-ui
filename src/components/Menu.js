@@ -10,22 +10,20 @@ namespace('OUI.components', function (window)
 	/**
 	 * @class OUI.components.Menu
 	 */
-	function Menu($toggleElement, contents, extraClass)
+	function Menu($toggleElement, contents, extraClass, positionConfig)
 	{
 		classify(this);
 
 		this._id 			= idGenerator('oui-menu');
 		
-		this._menuView 		= new MenuView(this, $toggleElement, contents, extraClass);
+		this._view 			= new MenuView(this, $toggleElement, contents, extraClass, positionConfig);
 		
 		this._onBeforeOpen 	= new Event('menu.onBeforeOpen');
 		this._onAfterOpen 	= new Event('menu.onAfterOpen');
 		this._onBeforeClose = new Event('menu.onBeforeClose');
 		this._onAfterClose 	= new Event('menu.onAfterClose');
-
-		this._menuView.initEvent();
-
-		this.onAfterOpen(this._menuView.bindRemove);
+		
+		this.onAfterOpen(this._view.bindRemove);
 	};
 
 	
@@ -57,14 +55,14 @@ namespace('OUI.components', function (window)
 	Menu.prototype.open = function ()
 	{
 		this._onBeforeOpen.trigger(this._id);
-		this._menuView.show();
-		this._onAfterOpen.trigger(this._menuView.getContainer());
+		this._view.show();
+		this._onAfterOpen.trigger(this._view.getContainer());
 	};
 
 	Menu.prototype.close = function ()
 	{
-		this._onBeforeClose.trigger(this._menuView.getContainer());
-		this._menuView.remove();
+		this._onBeforeClose.trigger(this._view.getContainer());
+		this._view.remove();
 		this._onAfterClose.trigger(this._id);
 	};
 

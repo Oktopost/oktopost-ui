@@ -5,12 +5,13 @@ namespace('OUI.views', function (window)
     var TargetSide 		= window.OUI.core.pos.enum.TargetSide;
 
     var classify		= window.Classy.classify;
+    var obj 			= window.Plankton.obj;
 
 
 	/**
 	 * @class OUI.views.TipView
 	 */
-	function TipView(tip, baseName)
+	function TipView(tip, baseName, positionConfig)
 	{
 		classify(this);
 
@@ -20,6 +21,8 @@ namespace('OUI.views', function (window)
 		this._tipSelector 		= '*[data-' + baseName + ']';
 		this._tipContentAttr 	= 'title';
 		this._invisibleClass 	= 'invisible';
+
+		this._positionConfig	= positionConfig || {};
 	};
 
 
@@ -35,13 +38,16 @@ namespace('OUI.views', function (window)
 
 	TipView.prototype._getPosition = function ($related, $target)
 	{
-		var options = {			
+		var baseConfig = 
+		{			
 			relatedElement:  $related,
 		    targetElement: $target,
 		    relatedOffset: 10,
 		    initialPosition: TargetPosition.center,
 		    initialSide: TargetSide.bottom
 		};
+
+		var options = obj.merge(baseConfig, this._positionConfig);
 
 		return RoundPosition.get(options);
 	};
