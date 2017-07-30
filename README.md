@@ -19,6 +19,10 @@ Place the following files in your HTML template:
 4. [Toast](docs/TOAST.md)
 5. [Tip](docs/TIP.md)
 6. [Search Form](docs/SEARCH_FORM.md)
+7. List
+	- [List Items](docs/LIST_ITEMS.md)
+	- [List Pagination](docs/LIST_PAGINATION.md)
+	- [List Selection](docs/LIST_SELECTION.md)
 
 ## Helpers
 1. [View Helpers](docs/VIEW.md)

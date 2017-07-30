@@ -14,9 +14,8 @@ var result = require('oktopost-namespace').getDependencies(
 	() => {},
 	(root) =>
 	{
-		var a = root.OUI.index;
+		var a = root.OUI.includes;
 	});
-
 
 const files = {
 	

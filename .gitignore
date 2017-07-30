@@ -20,6 +20,9 @@ npm-debug.log
 !/build/tmp/.gitkeep
 
 
-# Local files
+# Local Files
 /test.js
 /.namespace.json
+
+# Example Folder
+/example/
