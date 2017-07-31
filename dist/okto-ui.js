@@ -1008,15 +1008,15 @@ namespace('OUI.views', function (window)
 	var classify 	= window.Classy.classify;
 
 
-	function SearchFormView(searchForm, container, placeholder)
+	function SearchFormView(form, container, placeholder)
 	{
 		classify(this);
 
-		this._searchForm 		= searchForm;
+		this._form 				= form;
 		this._placeholder 		= placeholder;
 		this._container 		= $(container);
 
-		this._searchInput 		= 'input[type="text"]';
+		this._input 			= 'input[type="text"]';
 		this._clearButton 		= 'button.tcon';
 		this._animationClass 	= 'tcon-transform';
 
@@ -1024,15 +1024,22 @@ namespace('OUI.views', function (window)
 		this.bindEvents();
 	};
 
-	SearchFormView.prototype.clearInput = function (button)
+
+	SearchFormView.prototype.getValue = function ()
 	{
-		this._container.find(this._searchInput).val('');
-		button.removeClass(this._animationClass);
+		return this._container.find(this._input).val();
 	};
 
-	SearchFormView.prototype.transformIcon = function (input)
+	SearchFormView.prototype.clearInput = function ()
 	{
-		var button = this._container.find(this._clearButton);
+		this._container.find(this._input).val('');
+		this._container.find(this._clearButton).removeClass(this._animationClass);
+	};
+
+	SearchFormView.prototype.transformIcon = function ()
+	{
+		var button 	= this._container.find(this._clearButton);
+		var input 	= this._container.find(this._input);
 
 		if (input.val().length > 0)
 		{
@@ -1046,27 +1053,10 @@ namespace('OUI.views', function (window)
 
 	SearchFormView.prototype.bindEvents = function ()
 	{
-		var searchForm = this._searchForm;
-		
-		this._container.on('keyup', this._searchInput, function () 
-		{
-			searchForm.keyup($(this));
-		});
-
-		this._container.on('keydown', this._searchInput, function () 
-		{
-			searchForm.keydown($(this));
-		});
-
-		this._container.on('change', this._searchInput, function () 
-		{
-			searchForm.change($(this));
-		});
-
-		this._container.on('click', this._clearButton, function () 
-		{
-			searchForm.clear($(this));
-		});
+		this._container.on('keyup', this._input, this._form.keyup);
+		this._container.on('keydown', this._input, this._form.keydown);
+		this._container.on('change', this._input, this._form.change);
+		this._container.on('click', this._clearButton, this._form.clear);
 	};
 
 	SearchFormView.prototype.render = function ()
@@ -1982,12 +1972,12 @@ namespace('OUI.views.list', function (window)
 	/**
 	 * @class OUI.views.list.ListItemsView
 	 */
-	function ListItemsView(listItems, $container) 
+	function ListItemsView(listItems, container) 
 	{
 		classify(this);
 
 		this._listItems = listItems;
-		this._container = $container;
+		this._container = $(container);
 	};
 
 
@@ -2019,12 +2009,12 @@ namespace('OUI.views.list', function (window)
 	/**
 	 * @class OUI.views.list.ListPaginationView
 	 */
-	function ListPaginationView(listPagination, $container) 
+	function ListPaginationView(listPagination, container) 
 	{
 		classify(this);
 
 		this._pagination 	= listPagination;
-		this._container 	= $container;
+		this._container 	= $(container);
 
 		this._nextSelector	= 'a[data-next]';
 		this._prevSelector 	= 'a[data-prev]';
@@ -3156,6 +3146,16 @@ namespace('OUI.components', function (window)
 		return this._id;
 	};
 
+	SearchForm.prototype.getValue = function ()
+	{
+		return this._view.getValue();
+	};
+
+	SearchForm.prototype.hasValue = function ()
+	{
+		return this.getValue().length > 0;
+	};
+
 	SearchForm.prototype.onKeyup = function (callback)
 	{
 		this._onKeyup.add(callback);
@@ -3266,13 +3266,13 @@ namespace('OUI.components.list', function (window)
 
 
 	/**
-	 * @class OUI.components.list.ListItems
+	 * @class window.OUI.components.list.ListItems
 	 */
-	function ListItems($container) 
+	function ListItems(container) 
 	{
 		classify(this);
 		
-		this._view 		= new ListItemsView(this, $container);
+		this._view 		= new ListItemsView(this, container);
 		this._onRender 	= new Event('ListItems.onRender');
 	};
 
@@ -3282,9 +3282,9 @@ namespace('OUI.components.list', function (window)
 		this._onRender.add(callback);
 	};
 
-	ListItems.prototype.renderHbs = function (template, items) 
+	ListItems.prototype.render = function (template, items) 
 	{
-		this._view.renderHbs(template, items);
+		this._view.render(template, items);
 		this._onRender.trigger(this._view.getContainer());
 	};
 
@@ -3301,16 +3301,16 @@ namespace('OUI.components.list', function (window)
 
 
 	/**
-	 * @class OUI.components.list.ListPagination
+	 * @class window.OUI.components.list.ListPagination
 	 */
-	function ListPagination($container, params, total) 
+	function ListPagination(container, params, total) 
 	{
 		classify(this);
 
 		this._params 	= obj.merge({ '_page': 0,'_count': 20 }, params);
 		this._total		= total;
 		
-		this._view 		= new ListPaginationView(this, $container);
+		this._view 		= new ListPaginationView(this, container);
 
 		this._onNext 	= new Event('ListPagination.onNext');
 		this._onPrev 	= new Event('ListPagination.onPrev');
@@ -3412,12 +3412,12 @@ namespace('OUI.components.list', function (window)
 	var Event 				= window.Duct.Event;
 	var ListSelectionView 	= window.OUI.views.list.ListSelectionView;
 
-	var array 				= window.Plankton.array;
+	var foreach 			= window.Plankton.foreach;
 	var classify 			= window.Classy.classify;
 
 
 	/**
-	 * @class OUI.components.list.ListSelection
+	 * @class window.OUI.components.list.ListSelection
 	 */
 	function ListSelection(itemsSelector) 
 	{
@@ -3473,12 +3473,12 @@ namespace('OUI.components.list', function (window)
 
 	ListSelection.prototype.select = function (itemIds)
 	{
-		array.forEach(itemIds, this._selectItem);
+		foreach(itemIds, this._selectItem);
 	};
 
 	ListSelection.prototype.deselect = function (itemIds)
 	{
-		array.forEach(itemIds, this._deselectItem);
+		foreach(itemIds, this._deselectItem);
 	};
 
 	ListSelection.prototype.getSelected = function ()

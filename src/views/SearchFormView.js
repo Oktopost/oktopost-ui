@@ -4,15 +4,15 @@ namespace('OUI.views', function (window)
 	var classify 	= window.Classy.classify;
 
 
-	function SearchFormView(searchForm, container, placeholder)
+	function SearchFormView(form, container, placeholder)
 	{
 		classify(this);
 
-		this._searchForm 		= searchForm;
+		this._form 				= form;
 		this._placeholder 		= placeholder;
 		this._container 		= $(container);
 
-		this._searchInput 		= 'input[type="text"]';
+		this._input 			= 'input[type="text"]';
 		this._clearButton 		= 'button.tcon';
 		this._animationClass 	= 'tcon-transform';
 
@@ -20,15 +20,22 @@ namespace('OUI.views', function (window)
 		this.bindEvents();
 	};
 
-	SearchFormView.prototype.clearInput = function (button)
+
+	SearchFormView.prototype.getValue = function ()
 	{
-		this._container.find(this._searchInput).val('');
-		button.removeClass(this._animationClass);
+		return this._container.find(this._input).val();
 	};
 
-	SearchFormView.prototype.transformIcon = function (input)
+	SearchFormView.prototype.clearInput = function ()
 	{
-		var button = this._container.find(this._clearButton);
+		this._container.find(this._input).val('');
+		this._container.find(this._clearButton).removeClass(this._animationClass);
+	};
+
+	SearchFormView.prototype.transformIcon = function ()
+	{
+		var button 	= this._container.find(this._clearButton);
+		var input 	= this._container.find(this._input);
 
 		if (input.val().length > 0)
 		{
@@ -42,27 +49,10 @@ namespace('OUI.views', function (window)
 
 	SearchFormView.prototype.bindEvents = function ()
 	{
-		var searchForm = this._searchForm;
-		
-		this._container.on('keyup', this._searchInput, function () 
-		{
-			searchForm.keyup($(this));
-		});
-
-		this._container.on('keydown', this._searchInput, function () 
-		{
-			searchForm.keydown($(this));
-		});
-
-		this._container.on('change', this._searchInput, function () 
-		{
-			searchForm.change($(this));
-		});
-
-		this._container.on('click', this._clearButton, function () 
-		{
-			searchForm.clear($(this));
-		});
+		this._container.on('keyup', this._input, this._form.keyup);
+		this._container.on('keydown', this._input, this._form.keydown);
+		this._container.on('change', this._input, this._form.change);
+		this._container.on('click', this._clearButton, this._form.clear);
 	};
 
 	SearchFormView.prototype.render = function ()

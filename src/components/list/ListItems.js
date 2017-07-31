@@ -7,13 +7,13 @@ namespace('OUI.components.list', function (window)
 
 
 	/**
-	 * @class OUI.components.list.ListItems
+	 * @class window.OUI.components.list.ListItems
 	 */
-	function ListItems($container) 
+	function ListItems(container) 
 	{
 		classify(this);
 		
-		this._view 		= new ListItemsView(this, $container);
+		this._view 		= new ListItemsView(this, container);
 		this._onRender 	= new Event('ListItems.onRender');
 	};
 
@@ -23,9 +23,9 @@ namespace('OUI.components.list', function (window)
 		this._onRender.add(callback);
 	};
 
-	ListItems.prototype.renderHbs = function (template, items) 
+	ListItems.prototype.render = function (template, items) 
 	{
-		this._view.renderHbs(template, items);
+		this._view.render(template, items);
 		this._onRender.trigger(this._view.getContainer());
 	};
 

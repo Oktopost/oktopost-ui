@@ -3,12 +3,12 @@ namespace('OUI.components.list', function (window)
 	var Event 				= window.Duct.Event;
 	var ListSelectionView 	= window.OUI.views.list.ListSelectionView;
 
-	var array 				= window.Plankton.array;
+	var foreach 			= window.Plankton.foreach;
 	var classify 			= window.Classy.classify;
 
 
 	/**
-	 * @class OUI.components.list.ListSelection
+	 * @class window.OUI.components.list.ListSelection
 	 */
 	function ListSelection(itemsSelector) 
 	{
@@ -64,12 +64,12 @@ namespace('OUI.components.list', function (window)
 
 	ListSelection.prototype.select = function (itemIds)
 	{
-		array.forEach(itemIds, this._selectItem);
+		foreach(itemIds, this._selectItem);
 	};
 
 	ListSelection.prototype.deselect = function (itemIds)
 	{
-		array.forEach(itemIds, this._deselectItem);
+		foreach(itemIds, this._deselectItem);
 	};
 
 	ListSelection.prototype.getSelected = function ()

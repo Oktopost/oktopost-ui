@@ -7,12 +7,12 @@ namespace('OUI.views.list', function (window)
 	/**
 	 * @class OUI.views.list.ListItemsView
 	 */
-	function ListItemsView(listItems, $container) 
+	function ListItemsView(listItems, container) 
 	{
 		classify(this);
 
 		this._listItems = listItems;
-		this._container = $container;
+		this._container = $(container);
 	};
 
 

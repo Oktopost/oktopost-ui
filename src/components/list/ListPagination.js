@@ -8,16 +8,16 @@ namespace('OUI.components.list', function (window)
 
 
 	/**
-	 * @class OUI.components.list.ListPagination
+	 * @class window.OUI.components.list.ListPagination
 	 */
-	function ListPagination($container, params, total) 
+	function ListPagination(container, params, total) 
 	{
 		classify(this);
 
 		this._params 	= obj.merge({ '_page': 0,'_count': 20 }, params);
 		this._total		= total;
 		
-		this._view 		= new ListPaginationView(this, $container);
+		this._view 		= new ListPaginationView(this, container);
 
 		this._onNext 	= new Event('ListPagination.onNext');
 		this._onPrev 	= new Event('ListPagination.onPrev');

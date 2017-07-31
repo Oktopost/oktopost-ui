@@ -12,11 +12,10 @@ JavaScript:
 ```JavaScript
 var ListPagination = OUI.components.list.ListPagination;
 
-var container = $('div.pagination');
 var params = { '_page': 0, '_count': 10 };
 var total = 60;
 
-var pagination = new ListPagination(container, params, total);
+var pagination = new ListPagination('div.pagination', params, total);
 ```
 
 HTML:

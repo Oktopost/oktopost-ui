@@ -11,12 +11,11 @@ JavaScript:
 ```JavaScript
 var ListItems = OUI.components.list.ListItems;
 
-var list = new ListItems($('div.list-container'));
+var list = new ListItems('div.list-container');
 var template = window.Handlebars['template']['templateDir']['templateName'];
 
-getDataFromServer(function (json) 
-{
-	list.renderHbs(template, json.Items);
+getDataFromServer(function (items) {
+	list.render(template, items);
 });
 ```
 

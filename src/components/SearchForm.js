@@ -29,6 +29,16 @@ namespace('OUI.components', function (window)
 		return this._id;
 	};
 
+	SearchForm.prototype.getValue = function ()
+	{
+		return this._view.getValue();
+	};
+
+	SearchForm.prototype.hasValue = function ()
+	{
+		return this.getValue().length > 0;
+	};
+
 	SearchForm.prototype.onKeyup = function (callback)
 	{
 		this._onKeyup.add(callback);

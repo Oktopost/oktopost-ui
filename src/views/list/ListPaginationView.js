@@ -8,12 +8,12 @@ namespace('OUI.views.list', function (window)
 	/**
 	 * @class OUI.views.list.ListPaginationView
 	 */
-	function ListPaginationView(listPagination, $container) 
+	function ListPaginationView(listPagination, container) 
 	{
 		classify(this);
 
 		this._pagination 	= listPagination;
-		this._container 	= $container;
+		this._container 	= $(container);
 
 		this._nextSelector	= 'a[data-next]';
 		this._prevSelector 	= 'a[data-prev]';
