@@ -6,7 +6,9 @@ namespace('OUI.includes', function (window)
 	var SearchForm 	= window.OUI.components.SearchForm;
 	var Tip 		= window.OUI.components.Tip;
 	var Toast 		= window.OUI.components.Toast;
+	var Wrapper 	= window.OUI.components.Wrapper;
 
+	var ListMediator 	= window.OUI.components.list.ListMediator;
 	var ListItems 		= window.OUI.components.list.ListItems;
 	var ListPagination 	= window.OUI.components.list.ListPagination;
 	var ListSelection 	= window.OUI.components.list.ListSelection;

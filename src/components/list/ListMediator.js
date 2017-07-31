@@ -84,4 +84,7 @@ namespace('OUI.components.list', function (window)
 			this._items.render(data, this._template);	
 		}
 	};
+
+
+	this.ListMediator = ListMediator;
 });
