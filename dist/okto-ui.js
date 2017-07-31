@@ -2762,11 +2762,13 @@ namespace('OUI.views.list', function (window)
 
 	ListItemsView.prototype.render = function (template, items)
 	{
-		this._container.empty();
+		var container = this._container;
+
+		container.empty();
 		
 		foreach(items, function (item) 
 		{
-			this._container.append(template.hbs(item));
+			container.append(template.hbs(item));
 		});
 	};
 
