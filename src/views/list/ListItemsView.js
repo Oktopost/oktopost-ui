@@ -1,7 +1,7 @@
 namespace('OUI.views.list', function (window) 
 {
 	var classify 	= window.Classy.classify;
-	var array 		= window.Plankton.array;
+	var foreach 	= window.Plankton.foreach;
 
 
 	/**
@@ -21,11 +21,11 @@ namespace('OUI.views.list', function (window)
 		return this._container;
 	};
 
-	ListItemsView.prototype.renderHbs = function (template, items)
+	ListItemsView.prototype.render = function (template, items)
 	{
 		this._container.empty();
 		
-		array.forEach(items, function (item) 
+		foreach(items, function (item) 
 		{
 			this._container.append(template.hbs(item));
 		});
