@@ -21,7 +21,7 @@ namespace('OUI.views.list', function (window)
 		return this._container;
 	};
 
-	ListItemsView.prototype.render = function (template, items)
+	ListItemsView.prototype.render = function (items, template)
 	{
 		var container = this._container;
 

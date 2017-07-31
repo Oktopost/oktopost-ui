@@ -23,9 +23,9 @@ namespace('OUI.components.list', function (window)
 		this._onRender.add(callback);
 	};
 
-	ListItems.prototype.render = function (template, items) 
+	ListItems.prototype.render = function (items, template) 
 	{
-		this._view.render(template, items);
+		this._view.render(items, template);
 		this._onRender.trigger(this._view.getContainer());
 	};
 
