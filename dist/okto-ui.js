@@ -3367,7 +3367,7 @@ namespace('OUI.components', function (window)
 
 	Wrapper.prototype.onRender = function (callback)
 	{
-		this._onAdd.add(callback);
+		this._onRender.add(callback);
 	};
 
 	Wrapper.prototype.render = function (params)
