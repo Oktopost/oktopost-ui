@@ -7,21 +7,19 @@ namespace('OUI.components', function (window)
 	var idGenerator 	= window.OUI.core.view.idGenerator;
 
 
-	function SearchForm(container, placeholder)
+	function SearchForm(container, value, placeholder)
 	{
 		classify(this);
 
 		this._id 		= idGenerator('oui-search-form');
 
-		this._view 		= new SearchFormView(this, container, placeholder);
+		this._view 		= new SearchFormView(this, container, value, placeholder);
 
-		this._onKeyup 	= new Event('searchForm.onKeyup');
-		this._onKeydown = new Event('searchForm.onKeydown');
-		this._onChange 	= new Event('searchForm.onChange');
+		this._onInput 	= new Event('searchForm.onInput');
 		this._onClear 	= new Event('searchForm.onClear');
 
 		this.onClear(this._view.clearInput);
-		this.onKeyup(this._view.transformIcon);
+		this.onInput(this._view.transformIcon);
 	}
 
 	SearchForm.prototype.getId = function ()
@@ -39,19 +37,9 @@ namespace('OUI.components', function (window)
 		return this.getValue().length > 0;
 	};
 
-	SearchForm.prototype.onKeyup = function (callback)
+	SearchForm.prototype.onInput = function (callback)
 	{
-		this._onKeyup.add(callback);
-	};
-
-	SearchForm.prototype.onKeydown = function (callback)
-	{
-		this._onKeydown.add(callback);
-	};
-
-	SearchForm.prototype.onChange = function (callback)
-	{
-		this._onChange.add(callback);
+		this._onInput.add(callback);
 	};
 
 	SearchForm.prototype.onClear = function (callback)
@@ -59,21 +47,11 @@ namespace('OUI.components', function (window)
 		this._onClear.add(callback);
 	};
 
-	SearchForm.prototype.keyup = function (input)
+	SearchForm.prototype.input = function (input)
 	{
-		this._onKeyup.trigger(input);
+		this._onInput.trigger(input);
 	};
-
-	SearchForm.prototype.keydown = function (input)
-	{
-		this._onKeydown.trigger(input);
-	};
-
-	SearchForm.prototype.change = function (input)
-	{
-		this._onChange.trigger(input);
-	};
-
+	
 	SearchForm.prototype.clear = function (button)
 	{
 		this._onClear.trigger(button);

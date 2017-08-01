@@ -175,8 +175,10 @@ namespace('Classy', function()
 		var count		= 0;
 		
 		
-		for (var key in target) {
-			if (target.hasOwnProperty(key) && !(target[key] instanceof Object)) {
+		for (var key in target)
+		{
+			if (target.hasOwnProperty(key) && !(target[key] instanceof Object))
+			{
 				keys.push(key);
 				map[key] = true;
 				
@@ -217,28 +219,6 @@ namespace('Classy', function()
 		
 		
 		return target;
-	};
-});
-namespace('Classy', function()
-{
-	/**
-	 * @name Classy.classify
-	 * 
-	 * @param {*} object
-	 * @param {function()=} init
-	 */
-	this.classify = function classify(object, init) {
-		for (var key in object) {
-			if (typeof object[key] === 'function') {
-				object[key] = object[key].bind(object);
-			}
-		}
-		
-		if (typeof init !== 'undefined') {
-			init.call(object);
-		}
-		
-		return object;
 	};
 });
 namespace('OUI.core.view', function (window) 
@@ -651,178 +631,51 @@ namespace('Plankton', function()
 	
 	this.is = is;
 });
-namespace('OUI.core.pos', function (window)
+namespace('Classy', function(root)
 {
-	var is 			= window.Plankton.is;
-	var classify 	= window.Classy.classify; 
+	var is = root.Plankton.is;
 	
 	
-	/**
-	 * @class OUI.core.pos.Area
-	 */
-	function Area(box, initial, areaName, positionName) 
-	{	
-		classify(this);
+	function getProto(target)
+	{
+		if (typeof Object.getPrototypeOf === 'function')
+			return Object.getPrototypeOf(target);
 		
-		/** @type {OUI.core.pos.Box} */
-		this.box = box;
+		if (typeof target.constructor !== 'undefined' && target.constructor.prototype !== 'undefined')
+			return target.constructor.prototype;
 		
-		this.initial = initial;
-		this.areaName = areaName;
-		this.positionName = positionName;
+		if (typeof target.__proto__ !== 'undefined')
+			return target.__proto__;
+		
+		return {};
 	}
 	
 	
-	Area.prototype.getName = function () 
-	{
-		var name = this.areaName;
-		
-		if (is.string(this.positionName) && this.positionName.length > 0)
-		{
-			name = name + '-' + this.positionName;
-		}
-		
-		return name;	
-	};
-	
-	
-	this.Area = Area;
-});
-namespace('OUI.core.pos', function (window) 
-{
-	var classify = window.Classy.classify;
-	
-	
 	/**
-	 * @class OUI.core.pos.Box
+	 * @name Classy.classify
+	 * 
+	 * @param {*} object
+	 * @param {function()=} init
 	 */
-	var Box = function (point, size) 
+	this.classify = function classify(object, init)
 	{
-		classify(this);
+		var proto = getProto(object);
 		
-		/** @type {OUI.core.pos.Point} */
-		this._point = point;
-
-		/** @type {OUI.core.pos.Point} */
-		this._size = size;
-	};	
-	
-	
-	Box.prototype._debug = function () 
-	{
-		console.log(this.x(), this.y(), this.w(), this.h());	
-	};
-	
-	Box.prototype._isIntersectHorizontal = function (x, w)
-	{
-		return !(this.x()+this.w() <= x || x+w <= this.x());
-	};
-
-	Box.prototype._isIntersectVertical = function (y, h)
-	{
-		return !(this.y()+this.h() <= y || y+h <= this.y());
-	};
-	
-	Box.prototype._crossHorizontalBorder = function (x, w)
-	{
-		return ((this.x() < x) && (this.x() + this.w() >= x)) || 
-			(((this.x() + this.w()) > (x + w)) && (this.x() >= x));
-	};
-
-	Box.prototype._crossVerticalBorder = function (y, h)
-	{
-		return ((this.y() < y) && (this.y() + this.h() >= y)) || 
-			((this.y() + this.h() > y + h) && (this.y() >= y));
-	};
-	
-	Box.prototype._intersectHorizontal = function (x, w) 
-	{
-		if (x > this.x())
+		for (var key in proto)
 		{
-			var widthSubtract = x - this.x();
-			this._point.x = x;
-			this._size.x -= widthSubtract > 0 ? widthSubtract : -widthSubtract; 
+			if (typeof proto[key] === 'function')
+			{
+				object[key] = proto[key].bind(object);
+			}
 		}
 		
-		if ((x + w) < (this.x() + this.w()))
+		if (typeof init !== 'undefined')
 		{
-			this._size.x = x + w - this.x();
-		}
-	};
-	
-	Box.prototype._intersectVertical = function (y, h) 
-	{
-		if (y > this.y())
-		{
-			var heightSubtract = y - this.y();
-			this._point.y = y;
-			this._size.y -= heightSubtract > 0 ? heightSubtract : -heightSubtract; 
+			init.call(object);
 		}
 		
-		if ((y + h) < (this.y() + this.h()))
-		{
-			this._size.y = y + h - this.y();
-		}
+		return object;
 	};
-		
-	
-	Box.prototype.x = function ()
-	{
-		return this._point.x;	
-	};
-
-	Box.prototype.y = function ()
-	{
-		return this._point.y;	
-	};
-
-	Box.prototype.w = function ()
-	{
-		return this._size.x;	
-	};
-		
-	Box.prototype.h = function ()
-	{
-		return this._size.y;	
-	};
-	
-	Box.prototype.isIntersect = function (box) 
-	{
-		return this._isIntersectHorizontal(box.x(), box.w()) && this._isIntersectVertical(box.y(), box.h());
-	};
-	
-	Box.prototype.isCrossBorder = function (box) 
-	{
-		return this._crossHorizontalBorder(box.x(), box.w()) || this._crossVerticalBorder(box.y(), box.h());
-	};
-	
-	Box.prototype.intersect = function (box) 
-	{
-		this._intersectHorizontal(box.x(), box.w());
-		this._intersectVertical(box.y(), box.h());
-	};
-	
-	
-	this.Box = Box;
-});
-namespace('OUI.core.pos', function (window)
-{
-	var classify = window.Classy.classify; 
-	
-	
-	/**
-	 * @class OUI.core.pos.Point
-	 */
-	function Point(x, y) 
-	{	
-		classify(this);
-		
-		this.x = x;
-		this.y = y;
-	}
-	
-	
-	this.Point = Point;
 });
 namespace('OUI.core.pos.enum', function (window)
 {
@@ -862,303 +715,6 @@ namespace('OUI.core.pos.enum', function (window)
 	
 	
 	this.TargetSide = Enum(TargetSide);
-});
-namespace('OUI.views', function (window) 
-{
-	var hbs 		= window.OUI.core.view.hbs;
-	var classify 	= window.Classy.classify;
-	var fadeRemove 	= window.OUI.core.view.fadeRemove;
-
-
-	/**
-	 * @class OUI.views.DialogView
-	 */
-	function DialogView(dialog, okButtonText, cancelButtonText) 
-	{
-		classify(this);
-
-		this._dialog 			= dialog;
-		this._okButtonText 		= okButtonText || 'OK';
-		this._cancelButtonText 	= cancelButtonText || 'Cancel';
-		this._okButton 			= 'a.ok-button';
-		this._cancelButton 		= 'a.cancel-button';
-	}
-
-
-	DialogView.prototype.getContainer = function ()
-	{
-		return $('#' + this._dialog.getId());
-	};
-
-	DialogView.prototype.bindEvents = function ()
-	{
-		var dialog = this._dialog;
-		var $container = this.getContainer();
-
-		$container.find(this._okButton).on('click', function (e) {
-			e.preventDefault();
-			dialog.confirm();
-		});
-
-		$container.find(this._cancelButton).on('click', function (e) {
-			e.preventDefault();
-			dialog.cancel();
-		});
-	};
-
-	DialogView.prototype.show = function (message)
-	{
-		$('body').append(hbs('dialog', {
-			id: this._dialog.getId(),
-			message: message,
-			okButtonText: this._okButtonText,
-			cancelButtonText: this._cancelButtonText
-		}));
-	};
-
-	DialogView.prototype.remove = function ()
-	{
-		fadeRemove(this.getContainer());
-	};
-
-	
-	this.DialogView = DialogView;
-});
-namespace('OUI.views', function (window) 
-{
-	var hbs 		= window.OUI.core.view.hbs;
-	var classify 	= window.Classy.classify;
-
-	/**
-	 * @class OUI.views.ModalView
-	 */
-	function ModalView(modal, contents, className) 
-	{
-		classify(this);
-
-		className = className || '';
-
-		this._modal 		= modal;
-		this._underlay 		= 'div.oui-modal-underlay';
-		this._closeButton 	= 'a[data-oui-modal-close]';
-		
-		this._escapeEvent 	= 'keyup.' + modal.getId();
-
-		this._className		= className;
-		this._contents		= contents;
-	};
-	
-
-	ModalView.prototype._close = function ()
-	{
-		$(document).off(this._escapeEvent);
-		this._modal.close();
-	};
-
-
-	ModalView.prototype.getContainer = function ()
-	{
-		return $('#' + this._modal.getId());
-	};
-
-	ModalView.prototype.onOpen = function ()
-	{
-		var modalView = this;
-		var selectors = this._closeButton + ',' + this._underlay;
-
-		$(document).on(this._escapeEvent, function (e) 
-		{
-			if (e.keyCode === 27) 
-				modalView._close();
-		});
-
-		this.getContainer().on('click', selectors, function (e) 
-		{
-			e.preventDefault();
-			modalView._close();
-		});
-	};
-
-	ModalView.prototype.show = function () 
-	{
-		var position = {
-			top: 20,
-			left: 20
-		};
-
-		$('body').append(hbs('modal', {
-			id: this._modal.getId(),
-			contents: this._contents,
-			extraClass: this._className,
-			position: position
-		}));
-	};
-
-	ModalView.prototype.remove = function ()
-	{
-		this.getContainer().remove();
-	};
-
-	
-	this.ModalView = ModalView;
-});
-namespace('OUI.views', function (window) 
-{
-	var hbs 		= window.OUI.core.view.hbs;
-	var classify 	= window.Classy.classify;
-
-
-	function SearchFormView(form, container, placeholder)
-	{
-		classify(this);
-
-		this._form 				= form;
-		this._placeholder 		= placeholder;
-		this._container 		= $(container);
-
-		this._input 			= 'input[type="text"]';
-		this._clearButton 		= 'button.tcon';
-		this._animationClass 	= 'tcon-transform';
-
-		this.render();
-		this.bindEvents();
-	};
-
-
-	SearchFormView.prototype.getValue = function ()
-	{
-		return this._container.find(this._input).val();
-	};
-
-	SearchFormView.prototype.clearInput = function ()
-	{
-		this._container.find(this._input).val('');
-		this._container.find(this._clearButton).removeClass(this._animationClass);
-	};
-
-	SearchFormView.prototype.transformIcon = function ()
-	{
-		var button 	= this._container.find(this._clearButton);
-		var input 	= this._container.find(this._input);
-
-		if (input.val().length > 0)
-		{
-			button.addClass(this._animationClass);
-		}
-		else
-		{
-			button.removeClass(this._animationClass);	
-		}
-	};
-
-	SearchFormView.prototype.bindEvents = function ()
-	{
-		this._container.on('keyup', this._input, this._form.keyup);
-		this._container.on('keydown', this._input, this._form.keydown);
-		this._container.on('change', this._input, this._form.change);
-		this._container.on('click', this._clearButton, this._form.clear);
-	};
-
-	SearchFormView.prototype.render = function ()
-	{
-		this._container.append(hbs('search-form', {
-			placeholder: this._placeholder
-		}));
-	};
-
-
-	this.SearchFormView = SearchFormView;
-});
-namespace('OUI.views', function (window) 
-{
-	var hbs 		= window.OUI.core.view.hbs;
-	var fadeRemove 	= window.OUI.core.view.fadeRemove;
-	var classify 	= window.Classy.classify;
-	
-
-	/**
-	 * @class OUI.views.ToastView
-	 */
-	function ToastView(toast, delay)
-	{
-		classify(this);
-
-		delay = delay || 5000;
-
-		this._toast 	= toast;
-		this._delay 	= delay;
-
-		this._dismiss 	= 'a[data-oui-dismiss]';
-	};
-
-	ToastView.prototype.bindDismiss = function ()
-	{
-		var toast = this._toast;
-
-		this.getContainer().on('click', this._dismiss, function (e) {
-			e.preventDefault();
-			toast.dismiss();
-		});
-	};
-
-	ToastView.prototype.show = function (message)
-	{
-		this._onAdd.add(callback);
-	};
-
-	ToastView.prototype.getContainer = function ()
-	{
-		return $('#' + this._toast.getId());
-	};
-
-	ToastView.prototype.show = function (message)
-	{
-		var view = this;
-
-		$('body').append(hbs('toast', {
-			message: message,
-			id: this._toast.getId()
-		}));
-
-		setTimeout(function () {
-			fadeRemove(view.getContainer());
-		}, this._delay);
-	};
-
-	ToastView.prototype.remove = function ()
-	{
-		fadeRemove(this.getContainer());
-	};
-
-
-	this.ToastView = ToastView;
-});
-namespace('OUI.views', function (window) 
-{
-	var classify 	= window.Classy.classify;
-
-
-	/**
-	 * @class OUI.views.WrapperView
-	 */
-	function WrapperView(wrapper, container, template) 
-	{
-		classify(this);
-
-		this._wrapper 	= wrapper;
-		this._container = $(container);
-		this._template 	= template;
-	};
-
-
-	WrapperView.prototype.render = function (params)
-	{
-		params = params || {};
-		return this._container.empty().append(this._template.hbs(params));
-	};
-
-
-	this.WrapperView = WrapperView;
 });
 namespace('Plankton', function(root) {
 	'use strict';
@@ -1772,223 +1328,535 @@ namespace('Plankton', function (root)
 	
 	this.obj = obj;
 });
-namespace('OUI.core.pos', function (window) 
+namespace('OUI.core.events', function (window)
+{
+	var classify = window.Classy.classify;
+
+
+	function DeferCallback(threshold, callback)
+	{
+		classify(this);
+
+		this._threshold 		= threshold;
+		this._callback 			= callback;
+		this._callbackTimeout 	= null;
+	}
+
+
+	/**
+	 * Execute the callback function in defer time
+	 * @param {*} data
+	 */
+	DeferCallback.prototype.deferAction = function (data) 
+	{
+		clearTimeout(this._callbackTimeout);
+		this._callbackTimeout = setTimeout(this._callback.bind(null, data), this._threshold);
+	};
+
+	/**
+	 * Cancel previous and execute the call immediately
+	 * @param {*} data
+	 */
+	DeferCallback.prototype.executeAction = function (data) 
+	{
+		clearTimeout(this._callbackTimeout);
+		this._callback(data);
+	};
+
+	/**
+	 * Prevents the callback to execute if it is now deferred
+	 */
+	DeferCallback.prototype.cancel = function () 
+	{
+		clearTimeout(this._callbackTimeout);
+	};
+
+	/**
+	 * @param {int} threshold
+	 */
+	DeferCallback.prototype.setThreshold = function (threshold) 
+	{
+		this._threshold = threshold;
+	};
+
+	/**
+	 * @param {Function} callback
+	 */
+	DeferCallback.prototype.setCallback = function (callback) 
+	{
+		this._callback = callback;
+	};
+
+
+	this.DeferCallback = DeferCallback;
+});
+namespace('OUI.core.pos', function (window)
 {
 	var is 			= window.Plankton.is;
 	var classify 	= window.Classy.classify; 
-	var Box 		= window.OUI.core.pos.Box;
-	var Point		= window.OUI.core.pos.Point;
 	
 	
 	/**
-	 * @class OUI.core.pos.Positioner
+	 * @class OUI.core.pos.Area
 	 */
-	var Positioner = function (data) 
+	function Area(box, initial, areaName, positionName) 
+	{	
+		classify(this);
+		
+		/** @type {OUI.core.pos.Box} */
+		this.box = box;
+		
+		this.initial = initial;
+		this.areaName = areaName;
+		this.positionName = positionName;
+	}
+	
+	
+	Area.prototype.getName = function () 
+	{
+		var name = this.areaName;
+		
+		if (is.string(this.positionName) && this.positionName.length > 0)
+		{
+			name = name + '-' + this.positionName;
+		}
+		
+		return name;	
+	};
+	
+	
+	this.Area = Area;
+});
+namespace('OUI.core.pos', function (window) 
+{
+	var classify = window.Classy.classify;
+	
+	
+	/**
+	 * @class OUI.core.pos.Box
+	 */
+	var Box = function (point, size) 
 	{
 		classify(this);
 		
-		this.container = data.container;
-		this.related = data.related;
-		this.target = data.target;
-		this.areas = data.areas;
+		/** @type {OUI.core.pos.Point} */
+		this._point = point;
+
+		/** @type {OUI.core.pos.Point} */
+		this._size = size;
+	};	
+	
+	
+	Box.prototype._debug = function () 
+	{
+		console.log(this.x(), this.y(), this.w(), this.h());	
+	};
+	
+	Box.prototype._isIntersectHorizontal = function (x, w)
+	{
+		return !(this.x()+this.w() <= x || x+w <= this.x());
+	};
+
+	Box.prototype._isIntersectVertical = function (y, h)
+	{
+		return !(this.y()+this.h() <= y || y+h <= this.y());
+	};
+	
+	Box.prototype._crossHorizontalBorder = function (x, w)
+	{
+		return ((this.x() < x) && (this.x() + this.w() >= x)) || 
+			(((this.x() + this.w()) > (x + w)) && (this.x() >= x));
+	};
+
+	Box.prototype._crossVerticalBorder = function (y, h)
+	{
+		return ((this.y() < y) && (this.y() + this.h() >= y)) || 
+			((this.y() + this.h() > y + h) && (this.y() >= y));
+	};
+	
+	Box.prototype._intersectHorizontal = function (x, w) 
+	{
+		if (x > this.x())
+		{
+			var widthSubtract = x - this.x();
+			this._point.x = x;
+			this._size.x -= widthSubtract > 0 ? widthSubtract : -widthSubtract; 
+		}
 		
-		this.absolutePosition = null;
-		this.relativePosition = null;
+		if ((x + w) < (this.x() + this.w()))
+		{
+			this._size.x = x + w - this.x();
+		}
+	};
+	
+	Box.prototype._intersectVertical = function (y, h) 
+	{
+		if (y > this.y())
+		{
+			var heightSubtract = y - this.y();
+			this._point.y = y;
+			this._size.y -= heightSubtract > 0 ? heightSubtract : -heightSubtract; 
+		}
+		
+		if ((y + h) < (this.y() + this.h()))
+		{
+			this._size.y = y + h - this.y();
+		}
+	};
+		
+	
+	Box.prototype.x = function ()
+	{
+		return this._point.x;	
+	};
+
+	Box.prototype.y = function ()
+	{
+		return this._point.y;	
+	};
+
+	Box.prototype.w = function ()
+	{
+		return this._size.x;	
+	};
+		
+	Box.prototype.h = function ()
+	{
+		return this._size.y;	
+	};
+	
+	Box.prototype.isIntersect = function (box) 
+	{
+		return this._isIntersectHorizontal(box.x(), box.w()) && this._isIntersectVertical(box.y(), box.h());
+	};
+	
+	Box.prototype.isCrossBorder = function (box) 
+	{
+		return this._crossHorizontalBorder(box.x(), box.w()) || this._crossVerticalBorder(box.y(), box.h());
+	};
+	
+	Box.prototype.intersect = function (box) 
+	{
+		this._intersectHorizontal(box.x(), box.w());
+		this._intersectVertical(box.y(), box.h());
 	};
 	
 	
-	Positioner.prototype._checkParams = function () 
+	this.Box = Box;
+});
+namespace('OUI.core.pos', function (window)
+{
+	var classify = window.Classy.classify; 
+	
+	
+	/**
+	 * @class OUI.core.pos.Point
+	 */
+	function Point(x, y) 
 	{	
-		if (is.false(this.areas) || is.empty(this.areas))
-			return false;
+		classify(this);
 		
-		if (!is.object(this.related))
-			return false;
-		
-		if (!is.object(this.target))
-			return false;
-		
-		return (is.object(this.container));
-	};
+		this.x = x;
+		this.y = y;
+	}
 	
-	Positioner.prototype._transformTarget = function (box, initialX, initialY) 
-	{
-		initialX = initialX || 0;
-		initialY = initialY || 0;
-		
-		var newX = box.x() + initialX;
-		var newY = box.y() + initialY;
-		
-		return new Box(new Point(newX, newY), new Point(this.target.w(), this.target.h()));
-	};
 	
-	Positioner.prototype._prepareArea = function (area) 
-	{
-		if (!area.box.isIntersect(this.container))
-		{
-			return false;
-		}
-		
-		if (area.box.isCrossBorder(this.container))
-		{
-			var originalX = area.box.x();
-			var originalY = area.box.y();
-			
-			area.box.intersect(this.container);
+	this.Point = Point;
+});
+namespace('OUI.views', function (window) 
+{
+	var hbs 		= window.OUI.core.view.hbs;
+	var classify 	= window.Classy.classify;
+	var fadeRemove 	= window.OUI.core.view.fadeRemove;
 
-			this._subtractInitial(area, originalX, originalY);
-		}
-		
-		return !(area.box.w() < this.target.w() || area.box.h() < this.target.h());
-	};
-	
-	Positioner.prototype._subtractInitial = function (area, originalX, originalY) 
-	{
-		area.initial.x = area.initial.x + originalX - area.box.x();
-		
-		area.initial.y = area.initial.y + originalY - area.box.y();
-	};
-	
-	Positioner.prototype._moveX = function (target, box) 
-	{
-		return -(target.x() + target.w() - box.x() - box.w());
-	};
-	
-	Positioner.prototype._moveY = function (target, box) 
-	{
-		return -(target.y() + target.h() - box.y() - box.h());
-	};
-	
-	Positioner.prototype._putInArea = function (box, moveX, moveY, area) 
-	{
-		var target = this._transformTarget(box, moveX, moveY);
-	
-		while (target.isCrossBorder(area.box))
-		{
-			target = this._transformTarget(target, this._moveX(target, box), this._moveY(target, box));
 
-			if (target.x() <= 0 || target.y() <= 0)
-			{
-				return false;
-			}
-		}
+	/**
+	 * @class OUI.views.DialogView
+	 */
+	function DialogView(dialog, okButtonText, cancelButtonText) 
+	{
+		classify(this);
+
+		this._dialog 			= dialog;
+		this._okButtonText 		= okButtonText || 'OK';
+		this._cancelButtonText 	= cancelButtonText || 'Cancel';
+		this._okButton 			= 'a.ok-button';
+		this._cancelButton 		= 'a.cancel-button';
+	}
+
+
+	DialogView.prototype.getContainer = function ()
+	{
+		return $('#' + this._dialog.getId());
+	};
+
+	DialogView.prototype.bindEvents = function ()
+	{
+		var dialog = this._dialog;
+		var $container = this.getContainer();
+
+		$container.find(this._okButton).on('click', function (e) {
+			e.preventDefault();
+			dialog.confirm();
+		});
+
+		$container.find(this._cancelButton).on('click', function (e) {
+			e.preventDefault();
+			dialog.cancel();
+		});
+	};
+
+	DialogView.prototype.show = function (message)
+	{
+		$('body').append(hbs('dialog', {
+			id: this._dialog.getId(),
+			message: message,
+			okButtonText: this._okButtonText,
+			cancelButtonText: this._cancelButtonText
+		}));
+	};
+
+	DialogView.prototype.remove = function ()
+	{
+		fadeRemove(this.getContainer());
+	};
+
+	
+	this.DialogView = DialogView;
+});
+namespace('OUI.views', function (window) 
+{
+	var hbs 		= window.OUI.core.view.hbs;
+	var classify 	= window.Classy.classify;
+
+	/**
+	 * @class OUI.views.ModalView
+	 */
+	function ModalView(modal, contents, className) 
+	{
+		classify(this);
+
+		className = className || '';
+
+		this._modal 		= modal;
+		this._underlay 		= 'div.oui-modal-underlay';
+		this._closeButton 	= 'a[data-oui-modal-close]';
 		
-		return target;
+		this._escapeEvent 	= 'keyup.' + modal.getId();
+
+		this._className		= className;
+		this._contents		= contents;
 	};
 	
-	Positioner.prototype._putInInitialPoint = function (area) 
+
+	ModalView.prototype._close = function ()
 	{
-		var target = this._transformTarget(area.box, area.initial.x, area.initial.y);
-		
-		if (!target.isCrossBorder(area.box))
-		{
-			return target;
-		}
-		
-		return false;
+		$(document).off(this._escapeEvent);
+		this._modal.close();
 	};
-	
-	Positioner.prototype._tryPutTargetInArea = function (area, isInitial) 
+
+
+	ModalView.prototype.getContainer = function ()
 	{
-		if (!this._prepareArea(area))
+		return $('#' + this._modal.getId());
+	};
+
+	ModalView.prototype.onOpen = function ()
+	{
+		var modalView = this;
+		var selectors = this._closeButton + ',' + this._underlay;
+
+		$(document).on(this._escapeEvent, function (e) 
 		{
-			return false;
-		}
-		
-		var target = null;
-		
-		if (isInitial)
+			if (e.keyCode === 27) 
+				modalView._close();
+		});
+
+		this.getContainer().on('click', selectors, function (e) 
 		{
-			target = this._putInInitialPoint(area);
+			e.preventDefault();
+			modalView._close();
+		});
+	};
+
+	ModalView.prototype.show = function () 
+	{
+		var position = {
+			top: 20,
+			left: 20
+		};
+
+		$('body').append(hbs('modal', {
+			id: this._modal.getId(),
+			contents: this._contents,
+			extraClass: this._className,
+			position: position
+		}));
+	};
+
+	ModalView.prototype.remove = function ()
+	{
+		this.getContainer().remove();
+	};
+
+	
+	this.ModalView = ModalView;
+});
+namespace('OUI.views', function (window) 
+{
+	var hbs 		= window.OUI.core.view.hbs;
+	var classify 	= window.Classy.classify;
+
+
+	function SearchFormView(form, container, value, placeholder)
+	{
+		classify(this);
+
+		this._form 				= form;
+		this._container 		= $(container);
+
+		this._input 			= 'input[type="text"]';
+		this._clearButton 		= 'button.tcon';
+		this._animationClass 	= 'tcon-transform';
+
+		this.render(value, placeholder);
+		this.bindEvents();
+	};
+
+
+	SearchFormView.prototype.getValue = function ()
+	{
+		return this._container.find(this._input).val();
+	};
+
+	SearchFormView.prototype.clearInput = function ()
+	{
+		this._container.find(this._input).val('');
+		this._container.find(this._clearButton).removeClass(this._animationClass);
+	};
+
+	SearchFormView.prototype.transformIcon = function ()
+	{
+		var button 	= this._container.find(this._clearButton);
+		var input 	= this._container.find(this._input);
+
+		if (input.val().length > 0)
+		{
+			button.addClass(this._animationClass);
 		}
 		else
-		{		
-			target = this._putInArea(area.box, area.initial.x, area.initial.y, area);
+		{
+			button.removeClass(this._animationClass);	
 		}
+	};
 
-		
-		if (!is.true(target))
-		{
-			return false;
-		}
-		
-		this.absolutePosition = new Point(target.x(), target.y());
-		this.relativePosition = new Point(target.x() - this.related.x(), target.y() - this.related.y());
-		
-		return true;
-	};
-	
-	Positioner.prototype._load = function (isInitial) 
+	SearchFormView.prototype.bindEvents = function ()
 	{
-		var index;
-		
-		for (index = 0; index < this.areas.length; ++index)
-		{
-			if (this._tryPutTargetInArea(this.areas[index], isInitial))
-			{
-				break;
-			}
-		}
-		
-		return this.areas[index];
+		this._container.on('input', this._input, this._form.input);
+		this._container.on('click', this._clearButton, this._form.clear);
 	};
-		
-	
-	Positioner.prototype.getPosition = function (isRelative) 
+
+	SearchFormView.prototype.render = function (value, placeholder)
 	{
-		isRelative = isRelative || false;
-		
-		if (!this._checkParams())
-		{
-			return false;
-		}
-		
-		var targetArea = this._load(true);
-		
-		if (is.null(this.absolutePosition))
-		{
-			targetArea = this._load(false);
-			if (is.object(targetArea))
-			{
-				targetArea.positionName = '';
-			}
-		}
-		
-		if (is.null(this.absolutePosition))
-		{
-			console.log('Error: impossible to put target in a correct position');
-			
-			this.areas[0].positionName = 'nonpositioned';
-			
-			return {
-				name: null,
-				coordinates: {
-					x: this.areas[0].box.x(),
-					y:  this.areas[0].box.y()
-				}
-			};
-		}
-		
-		var x = this.absolutePosition.x;
-		var y = this.absolutePosition.y;
-		
-		if (isRelative)
-		{
-			x = this.relativePosition.x;
-			y = this.relativePosition.y;
-		}
-		
-		return {
-			name: targetArea.getName(),
-			coordinates: {
-				x: x,
-				y: y
-			}
-		}
+		this._container.append(hbs('search-form', {
+			placeholder: placeholder,
+			value: value
+		}));
 	};
+
+
+	this.SearchFormView = SearchFormView;
+});
+namespace('OUI.views', function (window) 
+{
+	var hbs 		= window.OUI.core.view.hbs;
+	var fadeRemove 	= window.OUI.core.view.fadeRemove;
+	var classify 	= window.Classy.classify;
 	
-	
-	this.Positioner = Positioner;
+
+	/**
+	 * @class OUI.views.ToastView
+	 */
+	function ToastView(toast, delay)
+	{
+		classify(this);
+
+		delay = delay || 5000;
+
+		this._toast 	= toast;
+		this._delay 	= delay;
+
+		this._dismiss 	= 'a[data-oui-dismiss]';
+	};
+
+	ToastView.prototype.bindDismiss = function ()
+	{
+		var toast = this._toast;
+
+		this.getContainer().on('click', this._dismiss, function (e) {
+			e.preventDefault();
+			toast.dismiss();
+		});
+	};
+
+	ToastView.prototype.show = function (message)
+	{
+		this._onAdd.add(callback);
+	};
+
+	ToastView.prototype.getContainer = function ()
+	{
+		return $('#' + this._toast.getId());
+	};
+
+	ToastView.prototype.show = function (message)
+	{
+		var view = this;
+
+		$('body').append(hbs('toast', {
+			message: message,
+			id: this._toast.getId()
+		}));
+
+		setTimeout(function () {
+			fadeRemove(view.getContainer());
+		}, this._delay);
+	};
+
+	ToastView.prototype.remove = function ()
+	{
+		fadeRemove(this.getContainer());
+	};
+
+
+	this.ToastView = ToastView;
+});
+namespace('OUI.views', function (window) 
+{
+	var classify 	= window.Classy.classify;
+
+
+	/**
+	 * @class OUI.views.WrapperView
+	 */
+	function WrapperView(wrapper, container, template) 
+	{
+		classify(this);
+
+		this._wrapper 	= wrapper;
+		this._container = $(container);
+		this._template 	= template;
+	};
+
+
+	WrapperView.prototype.render = function (params)
+	{
+		params = params || {};
+		return this._container.empty().append(this._template.hbs(params));
+	};
+
+
+	this.WrapperView = WrapperView;
 });
 namespace('OUI.views.list', function (window) 
 {
@@ -2308,6 +2176,483 @@ namespace('Duct.Debug', function (root)
 	
 	
 	this.EventDebug = EventDebug;
+});
+namespace('Duct', function (root)
+{
+	var func		= root.Plankton.func;
+	var foreach		= root.Plankton.foreach;
+	
+	
+	/**
+	 * @name {Duct.Trigger}
+	 * @alias {Trigger}
+	 */
+	var Trigger = {
+		
+		asyncHandle: function (callbacks, args, next)
+		{
+			foreach(callbacks, function(callback)
+			{
+				func.async.do(function() 
+				{
+					next([callback], args);
+				});
+			});
+		},
+		
+		asyncTrigger: function (callbacks, args, next)
+		{
+			func.async.do(function() 
+			{
+				next(callbacks, args);
+			});
+		},
+		
+	};
+	
+	
+	this.Trigger = Trigger;
+});
+namespace('OUI.core.pos', function (window) 
+{
+	var is 			= window.Plankton.is;
+	var classify 	= window.Classy.classify; 
+	var Box 		= window.OUI.core.pos.Box;
+	var Point		= window.OUI.core.pos.Point;
+	
+	
+	/**
+	 * @class OUI.core.pos.Positioner
+	 */
+	var Positioner = function (data) 
+	{
+		classify(this);
+		
+		this.container = data.container;
+		this.related = data.related;
+		this.target = data.target;
+		this.areas = data.areas;
+		
+		this.absolutePosition = null;
+		this.relativePosition = null;
+	};
+	
+	
+	Positioner.prototype._checkParams = function () 
+	{	
+		if (is.false(this.areas) || is.empty(this.areas))
+			return false;
+		
+		if (!is.object(this.related))
+			return false;
+		
+		if (!is.object(this.target))
+			return false;
+		
+		return (is.object(this.container));
+	};
+	
+	Positioner.prototype._transformTarget = function (box, initialX, initialY) 
+	{
+		initialX = initialX || 0;
+		initialY = initialY || 0;
+		
+		var newX = box.x() + initialX;
+		var newY = box.y() + initialY;
+		
+		return new Box(new Point(newX, newY), new Point(this.target.w(), this.target.h()));
+	};
+	
+	Positioner.prototype._prepareArea = function (area) 
+	{
+		if (!area.box.isIntersect(this.container))
+		{
+			return false;
+		}
+		
+		if (area.box.isCrossBorder(this.container))
+		{
+			var originalX = area.box.x();
+			var originalY = area.box.y();
+			
+			area.box.intersect(this.container);
+
+			this._subtractInitial(area, originalX, originalY);
+		}
+		
+		return !(area.box.w() < this.target.w() || area.box.h() < this.target.h());
+	};
+	
+	Positioner.prototype._subtractInitial = function (area, originalX, originalY) 
+	{
+		area.initial.x = area.initial.x + originalX - area.box.x();
+		
+		area.initial.y = area.initial.y + originalY - area.box.y();
+	};
+	
+	Positioner.prototype._moveX = function (target, box) 
+	{
+		return -(target.x() + target.w() - box.x() - box.w());
+	};
+	
+	Positioner.prototype._moveY = function (target, box) 
+	{
+		return -(target.y() + target.h() - box.y() - box.h());
+	};
+	
+	Positioner.prototype._putInArea = function (box, moveX, moveY, area) 
+	{
+		var target = this._transformTarget(box, moveX, moveY);
+	
+		while (target.isCrossBorder(area.box))
+		{
+			target = this._transformTarget(target, this._moveX(target, box), this._moveY(target, box));
+
+			if (target.x() <= 0 || target.y() <= 0)
+			{
+				return false;
+			}
+		}
+		
+		return target;
+	};
+	
+	Positioner.prototype._putInInitialPoint = function (area) 
+	{
+		var target = this._transformTarget(area.box, area.initial.x, area.initial.y);
+		
+		if (!target.isCrossBorder(area.box))
+		{
+			return target;
+		}
+		
+		return false;
+	};
+	
+	Positioner.prototype._tryPutTargetInArea = function (area, isInitial) 
+	{
+		if (!this._prepareArea(area))
+		{
+			return false;
+		}
+		
+		var target = null;
+		
+		if (isInitial)
+		{
+			target = this._putInInitialPoint(area);
+		}
+		else
+		{		
+			target = this._putInArea(area.box, area.initial.x, area.initial.y, area);
+		}
+
+		
+		if (!is.true(target))
+		{
+			return false;
+		}
+		
+		this.absolutePosition = new Point(target.x(), target.y());
+		this.relativePosition = new Point(target.x() - this.related.x(), target.y() - this.related.y());
+		
+		return true;
+	};
+	
+	Positioner.prototype._load = function (isInitial) 
+	{
+		var index;
+		
+		for (index = 0; index < this.areas.length; ++index)
+		{
+			if (this._tryPutTargetInArea(this.areas[index], isInitial))
+			{
+				break;
+			}
+		}
+		
+		return this.areas[index];
+	};
+		
+	
+	Positioner.prototype.getPosition = function (isRelative) 
+	{
+		isRelative = isRelative || false;
+		
+		if (!this._checkParams())
+		{
+			return false;
+		}
+		
+		var targetArea = this._load(true);
+		
+		if (is.null(this.absolutePosition))
+		{
+			targetArea = this._load(false);
+			if (is.object(targetArea))
+			{
+				targetArea.positionName = '';
+			}
+		}
+		
+		if (is.null(this.absolutePosition))
+		{
+			console.log('Error: impossible to put target in a correct position');
+			
+			this.areas[0].positionName = 'nonpositioned';
+			
+			return {
+				name: null,
+				coordinates: {
+					x: this.areas[0].box.x(),
+					y:  this.areas[0].box.y()
+				}
+			};
+		}
+		
+		var x = this.absolutePosition.x;
+		var y = this.absolutePosition.y;
+		
+		if (isRelative)
+		{
+			x = this.relativePosition.x;
+			y = this.relativePosition.y;
+		}
+		
+		return {
+			name: targetArea.getName(),
+			coordinates: {
+				x: x,
+				y: y
+			}
+		}
+	};
+	
+	
+	this.Positioner = Positioner;
+});
+namespace('OUI.views.list', function (window) 
+{
+	var classify 	= window.Classy.classify;
+	var foreach 	= window.Plankton.foreach;
+
+
+	/**
+	 * @class OUI.views.list.ListItemsView
+	 */
+	function ListItemsView(listItems, container) 
+	{
+		classify(this);
+
+		this._listItems = listItems;
+		this._container = $(container);
+	};
+
+
+	ListItemsView.prototype.getContainer = function ()
+	{
+		return this._container;
+	};
+
+	ListItemsView.prototype.render = function (items, template)
+	{
+		var container = this._container;
+
+		container.empty();
+		
+		foreach(items, function (item) 
+		{
+			container.append(template.hbs(item));
+		});
+	};
+
+	
+	this.ListItemsView = ListItemsView;
+});
+namespace('Duct', function (root)
+{
+	var Trigger		= root.Duct.Trigger;
+	var EventDebug	= root.Duct.Debug.EventDebug;
+	
+	var func		= root.Plankton.func;
+	var foreach		= root.Plankton.foreach;
+	var classify	= root.Classy.classify;
+	
+	
+	/**
+	 * @template T
+	 * 
+	 * @constructor
+	 * @class Duct.Event
+	 * 
+	 * @property {Array<T>} _callbacks
+	 * @property {string} _name
+	 * @property {function(err)} _errorHandler
+	 * 
+	 * @param {string} name
+	 * @param {EventDebug=} debug
+	 */
+	function Event(name, debug)
+	{
+		classify(this);
+		
+		this._callbacks	= [];
+		this._name		= name || '';
+		this._debug		= debug || Event.DEFAULT_DEBUG;
+		this._trigger	= this._defaultTrigger;
+		
+		this._errorHandler = function(err)
+		{
+			console.error('Error when executing event ' + this._name, err);
+		};
+	}
+	
+	
+	/**
+	 * 
+	 * @param {array} callbacks
+	 * @param {array} callbackArgs
+	 * @private
+	 */
+	Event.prototype._defaultTrigger = function (callbacks, callbackArgs)
+	{
+		foreach(callbacks, 
+			function(callback)
+			{
+				this._triggerCallback(callback, callbackArgs);
+			}, 
+			this);
+	};
+	
+	/**
+	 * @param {Function} callback
+	 * @param {Array} callbackArgs
+	 * @private
+	 */
+	Event.prototype._triggerCallback = function (callback, callbackArgs)
+	{
+		if (this._callbacks === null) return;
+		
+		var wrappedCallback = func.safe(callback, this._errorHandler); 
+		wrappedCallback.apply(null, callbackArgs);
+	};
+	
+	
+	/**
+	 * @returns {string}
+	 */
+	Event.prototype.name = function ()
+	{
+		return this._name;
+	};
+	
+	/**
+	 * @param {function(err)} handler
+	 */
+	Event.prototype.setErrorHandler = function (handler)
+	{
+		this._errorHandler = handler;
+	};
+	
+	Event.prototype.clear = function ()
+	{
+		if (this._callbacks !== null)
+			this._callbacks = [];
+	};
+	
+	/**
+	 * @template T
+	 * @param {T} callback
+	 * @return {Event}
+	 */
+	Event.prototype.add = function (callback)
+	{
+		if (this._callbacks !== null)
+			this._callbacks.push(callback);
+		
+		return this;
+	};
+	
+	/**
+	 * @template T
+	 * @param {T} callback
+	 * @return {Event}
+	 */
+	Event.prototype.remove = function (callback)
+	{
+		if (this._callbacks === null) return this;
+		
+		var index = this._callbacks.indexOf(callback);
+		
+		if (index >= 0)
+		{
+			this._callbacks.splice(index, 1);
+		}
+		
+		return this;
+	};
+	
+	/**
+	 * @returns {Number}
+	 */
+	Event.prototype.count = function ()
+	{
+		return this._callbacks.length;
+	};
+	
+	/**
+	 * @template T
+	 * @type T
+	 */
+	Event.prototype.trigger = function()
+	{
+		if (this._callbacks === null) return this;
+		
+		var callbackArgs = [].slice.apply(arguments);
+		
+		this._debug.onTrigger(this, callbackArgs);
+		this._trigger(this._callbacks.concat(), callbackArgs);
+	};
+	
+	/**
+	 * @param {Function} triggerCallback
+	 */
+	Event.prototype.addTrigger = function (triggerCallback)
+	{
+		var next = this._trigger;
+		this._trigger = function (callbacks, args) { triggerCallback(callbacks, args, next); };
+	};
+	
+	/**
+	 * @param {boolean=false} triggerOnly If true, only the trigger called asynchonisuly, but all of the handlers,
+	 * called one after another.
+	 */
+	Event.prototype.async = function (triggerOnly)
+	{
+		if (triggerOnly === true)
+			this.addTrigger(Trigger.asyncTrigger);
+		else
+			this.addTrigger(Trigger.asyncHandle);
+	};
+	
+	/**
+	 * @return {boolean}
+	 */
+	Event.prototype.isDestroyed = function ()
+	{
+		return this._callbacks === null;
+	};
+	
+	Event.prototype.destroy = function ()
+	{
+		this._callbacks = null;
+	};
+	
+	
+	Event.DEFAULT_DEBUG = new EventDebug();
+	
+	
+	this.Event = Event;
 });
 namespace('OUI.core.pos.prepared', function (window) 
 {
@@ -2737,275 +3082,6 @@ namespace('OUI.core.pos.prepared', function (window)
 
 	this.BasePreparedWithOffsets = BasePreparedWithOffsets;
 });
-namespace('OUI.views.list', function (window) 
-{
-	var classify 	= window.Classy.classify;
-	var foreach 	= window.Plankton.foreach;
-
-
-	/**
-	 * @class OUI.views.list.ListItemsView
-	 */
-	function ListItemsView(listItems, container) 
-	{
-		classify(this);
-
-		this._listItems = listItems;
-		this._container = $(container);
-	};
-
-
-	ListItemsView.prototype.getContainer = function ()
-	{
-		return this._container;
-	};
-
-	ListItemsView.prototype.render = function (items, template)
-	{
-		var container = this._container;
-
-		container.empty();
-		
-		foreach(items, function (item) 
-		{
-			container.append(template.hbs(item));
-		});
-	};
-
-	
-	this.ListItemsView = ListItemsView;
-});
-namespace('Duct', function (root)
-{
-	var EventDebug = root.Duct.Debug.EventDebug;
-	
-	var func	= root.Plankton.func;
-	var foreach	= root.Plankton.foreach;
-	
-	
-	/**
-	 * @template T
-	 * 
-	 * @constructor
-	 * @class Duct.Event
-	 * 
-	 * @property {Array<T>} _callbacks
-	 * @property {string} _name
-	 * @property {function(err)} _errorHandler
-	 * 
-	 * @param {string} name
-	 * @param {EventDebug=} debug
-	 */
-	function Event(name, debug)
-	{
-		this._callbacks	= [];
-		this._name		= name || '';
-		this._debug		= debug || Event.DEFAULT_DEBUG;
-		
-		
-		this._errorHandler = function(err)
-		{
-			console.error('Error when executing event ' + this._name, err);
-		};
-	}
-	
-	
-	/**
-	 * @param {Function} callback
-	 * @param {Array} callbackArgs
-	 * @private
-	 */
-	Event.prototype._triggerCallback = function (callback, callbackArgs)
-	{
-		var wrappedCallback = func.safe(callback, this._errorHandler);
-		wrappedCallback = func.async(wrappedCallback); 
-		wrappedCallback.apply(null, callbackArgs);
-	};
-	
-	
-	/**
-	 * @returns {string}
-	 */
-	Event.prototype.name = function ()
-	{
-		return this._name;
-	};
-	
-	/**
-	 * @param {function(err)} handler
-	 */
-	Event.prototype.setErrorHandler = function (handler)
-	{
-		this._errorHandler = handler;
-	};
-	
-	Event.prototype.clear = function()
-	{
-		this._callbacks = [];
-	};
-	
-	/**
-	 * @template T
-	 * @param {T} callback
-	 * @return {Event}
-	 */
-	Event.prototype.add = function (callback)
-	{
-		this._callbacks.push(callback);
-		return this;
-	};
-	
-	/**
-	 * @template T
-	 * @param {T} callback
-	 * @return {Event}
-	 */
-	Event.prototype.remove = function (callback)
-	{
-		var index = this._callbacks.indexOf(callback);
-		
-		if (index >= 0)
-		{
-			this._callbacks.splice(index, 1);
-		}
-		
-		return this;
-	};
-	
-	/**
-	 * @returns {Number}
-	 */
-	Event.prototype.count = function count()
-	{
-		return this._callbacks.length;
-	};
-	
-	/**
-	 * @template T
-	 * @type T
-	 */
-	Event.prototype.trigger = function()
-	{
-		var callbackArgs = [].slice.apply(arguments);
-		var self = this;
-		
-		this._debug.onTrigger(this, callbackArgs);
-		
-		func.async.do(
-			function() 
-			{
-				foreach(self._callbacks, function(callback)
-				{
-					self._triggerCallback(callback, callbackArgs);
-				});
-			});
-	};
-	
-	
-	Event.DEFAULT_DEBUG = new EventDebug();
-	
-	
-	this.Event = Event;
-});
-namespace('OUI.core.pos.prepared', function (window) 
-{
-	var classify				= window.Classy.classify;
-	var TargetSide 				= window.OUI.core.pos.enum.TargetSide;
-	var TargetPosition 			= window.OUI.core.pos.enum.TargetPosition;
-	var BasePreparedWithOffsets = window.OUI.core.pos.prepared.BasePreparedWithOffsets;
-
-	
-	var defaults = {
-		initialSide: TargetSide.top,
-		initialPosition: TargetPosition.center
-	};
-	
-
-	/**
-	 * @class OUI.core.pos.prepared.RoundPosition
-	 */
-	function RoundPosition(options)
-	{
-		classify(this);
-
-		BasePreparedWithOffsets.call(this, options, defaults);
-		
-		this._availableSides = [
-			TargetSide.top,
-			TargetSide.right,
-			TargetSide.bottom,
-			TargetSide.left,
-		];
-	}
-	
-	
-	RoundPosition.get = function (options) 
-	{
-		var roundPosition = new RoundPosition(options);
-		return roundPosition.getPosition();
-	};
-	
-
-	RoundPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
-	RoundPosition.prototype.constructor = RoundPosition;
-	
-	
-	RoundPosition.prototype._getAvailableSides = function () 
-	{
-		return this._availableSides;	
-	};
-	
-	
-	this.RoundPosition = RoundPosition;
-});
-namespace('OUI.core.pos.prepared.cornered', function (window) 
-{
-	var classify				= window.Classy.classify;
-	var TargetSide 				= window.OUI.core.pos.enum.TargetSide;
-	var TargetPosition 			= window.OUI.core.pos.enum.TargetPosition;
-	var BasePreparedWithOffsets = window.OUI.core.pos.prepared.BasePreparedWithOffsets;
-	
-	
-	var defaults = {
-		initialSide: TargetSide.bottom,
-		initialPosition: TargetPosition.center
-	};
-	
-	
-	/**
-	 * @class OUI.core.pos.prepared.cornered.BottomPosition
-	 */
-	function BottomPosition(options)
-	{
-		classify(this);
-		
-		BasePreparedWithOffsets.call(this, options, defaults);
-		
-		this._availableSides = [
-			TargetSide.bottom
-		];
-	}
-	
-	
-	BottomPosition.get = function (options) 
-	{
-		var bottomPosition = new BottomPosition(options);
-		return bottomPosition.getPosition();
-	};
-	
-
-	BottomPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
-	BottomPosition.prototype.constructor = BottomPosition;
-	
-	
-	BottomPosition.prototype._getAvailableSides = function () 
-	{
-		return this._availableSides;	
-	};
-		
-	
-	this.BottomPosition = BottomPosition;
-});
 namespace('OUI.components', function (window) 
 {
 	var Event       = window.Duct.Event;
@@ -3153,21 +3229,19 @@ namespace('OUI.components', function (window)
 	var idGenerator 	= window.OUI.core.view.idGenerator;
 
 
-	function SearchForm(container, placeholder)
+	function SearchForm(container, value, placeholder)
 	{
 		classify(this);
 
 		this._id 		= idGenerator('oui-search-form');
 
-		this._view 		= new SearchFormView(this, container, placeholder);
+		this._view 		= new SearchFormView(this, container, value, placeholder);
 
-		this._onKeyup 	= new Event('searchForm.onKeyup');
-		this._onKeydown = new Event('searchForm.onKeydown');
-		this._onChange 	= new Event('searchForm.onChange');
+		this._onInput 	= new Event('searchForm.onInput');
 		this._onClear 	= new Event('searchForm.onClear');
 
 		this.onClear(this._view.clearInput);
-		this.onKeyup(this._view.transformIcon);
+		this.onInput(this._view.transformIcon);
 	}
 
 	SearchForm.prototype.getId = function ()
@@ -3185,19 +3259,9 @@ namespace('OUI.components', function (window)
 		return this.getValue().length > 0;
 	};
 
-	SearchForm.prototype.onKeyup = function (callback)
+	SearchForm.prototype.onInput = function (callback)
 	{
-		this._onKeyup.add(callback);
-	};
-
-	SearchForm.prototype.onKeydown = function (callback)
-	{
-		this._onKeydown.add(callback);
-	};
-
-	SearchForm.prototype.onChange = function (callback)
-	{
-		this._onChange.add(callback);
+		this._onInput.add(callback);
 	};
 
 	SearchForm.prototype.onClear = function (callback)
@@ -3205,21 +3269,11 @@ namespace('OUI.components', function (window)
 		this._onClear.add(callback);
 	};
 
-	SearchForm.prototype.keyup = function (input)
+	SearchForm.prototype.input = function (input)
 	{
-		this._onKeyup.trigger(input);
+		this._onInput.trigger(input);
 	};
-
-	SearchForm.prototype.keydown = function (input)
-	{
-		this._onKeydown.trigger(input);
-	};
-
-	SearchForm.prototype.change = function (input)
-	{
-		this._onChange.trigger(input);
-	};
-
+	
 	SearchForm.prototype.clear = function (button)
 	{
 		this._onClear.trigger(button);
@@ -3552,6 +3606,206 @@ namespace('OUI.components.list', function (window)
 
 	this.ListSelection = ListSelection;
 });
+namespace('OUI.core.pos.prepared', function (window) 
+{
+	var classify				= window.Classy.classify;
+	var TargetSide 				= window.OUI.core.pos.enum.TargetSide;
+	var TargetPosition 			= window.OUI.core.pos.enum.TargetPosition;
+	var BasePreparedWithOffsets = window.OUI.core.pos.prepared.BasePreparedWithOffsets;
+
+	
+	var defaults = {
+		initialSide: TargetSide.top,
+		initialPosition: TargetPosition.center
+	};
+	
+
+	/**
+	 * @class OUI.core.pos.prepared.RoundPosition
+	 */
+	function RoundPosition(options)
+	{
+		classify(this);
+
+		BasePreparedWithOffsets.call(this, options, defaults);
+		
+		this._availableSides = [
+			TargetSide.top,
+			TargetSide.right,
+			TargetSide.bottom,
+			TargetSide.left,
+		];
+	}
+	
+	
+	RoundPosition.get = function (options) 
+	{
+		var roundPosition = new RoundPosition(options);
+		return roundPosition.getPosition();
+	};
+	
+
+	RoundPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
+	RoundPosition.prototype.constructor = RoundPosition;
+	
+	
+	RoundPosition.prototype._getAvailableSides = function () 
+	{
+		return this._availableSides;	
+	};
+	
+	
+	this.RoundPosition = RoundPosition;
+});
+namespace('OUI.core.pos.prepared.cornered', function (window) 
+{
+	var classify				= window.Classy.classify;
+	var TargetSide 				= window.OUI.core.pos.enum.TargetSide;
+	var TargetPosition 			= window.OUI.core.pos.enum.TargetPosition;
+	var BasePreparedWithOffsets = window.OUI.core.pos.prepared.BasePreparedWithOffsets;
+	
+	
+	var defaults = {
+		initialSide: TargetSide.bottom,
+		initialPosition: TargetPosition.center
+	};
+	
+	
+	/**
+	 * @class OUI.core.pos.prepared.cornered.BottomPosition
+	 */
+	function BottomPosition(options)
+	{
+		classify(this);
+		
+		BasePreparedWithOffsets.call(this, options, defaults);
+		
+		this._availableSides = [
+			TargetSide.bottom
+		];
+	}
+	
+	
+	BottomPosition.get = function (options) 
+	{
+		var bottomPosition = new BottomPosition(options);
+		return bottomPosition.getPosition();
+	};
+	
+
+	BottomPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
+	BottomPosition.prototype.constructor = BottomPosition;
+	
+	
+	BottomPosition.prototype._getAvailableSides = function () 
+	{
+		return this._availableSides;	
+	};
+		
+	
+	this.BottomPosition = BottomPosition;
+});
+namespace('OUI.components.list', function (window) 
+{
+	var is 			= window.Plankton.is;
+	var classify 	= window.Classy.classify;
+
+	var ListPagination 	= window.OUI.components.list.ListPagination;
+	var ListSelection 	= window.OUI.components.list.ListSelection;
+	var ListItems 		= window.OUI.components.list.ListItems;
+	var SearchForm 		= window.OUI.components.SearchForm;
+	var Wrapper 		= window.OUI.components.Wrapper;
+
+	var DeferCallback 	= window.OUI.core.events.DeferCallback;
+
+
+	/**
+	 * @class window.OUI.components.list.ListMediator
+	 */
+	function ListMediator()
+	{
+		classify(this);
+
+		this._pagination 	= null;
+		this._selection 	= null;
+		this._items 		= null;
+		this._search 		= null;
+
+		this._template 		= null;
+		this._nullstate 	= null;
+	};
+
+
+	ListMediator.prototype.getSelection = function ()
+	{
+		return this._selection;
+	};
+
+	ListMediator.prototype.getPagination = function ()
+	{
+		return this._pagination;
+	};
+
+	ListMediator.prototype.getSearch = function ()
+	{
+		return this._search;
+	};
+
+	ListMediator.prototype.setPagination = function (container, params, total)
+	{
+		this._pagination = new ListPagination(container, params, total);
+	};
+
+	ListMediator.prototype.setSearch = function (container, placeholder)
+	{
+		this._search = new SearchForm(container, placeholder);
+	};
+
+	ListMediator.prototype.setSearchCallback = function (callback)
+	{
+		if (is.null(this._search)) throw new Error("Search must be defined");
+
+		var deferredCallback = new DeferCallback(300, callback);
+
+		this._search.onInput(deferredCallback.deferAction);
+	};
+
+	ListMediator.prototype.setItems = function (container, template)
+	{
+		this._items = new ListItems(container);
+		this._template = template;
+	};
+
+	ListMediator.prototype.setNullstate = function (container, template)
+	{
+		this._nullstate = new Wrapper(container, template);
+	};
+
+	ListMediator.prototype.onRenderNullstate = function (callback)
+	{
+		this._nullstate.onRender(callback);
+	};
+
+	ListMediator.prototype.onRender = function (callback)
+	{
+		this._items.onRender(callback);
+	};
+
+	ListMediator.prototype.render = function (data)
+	{
+		if (data.length === 0 && (is.false(this._search) || !this._search.hasValue()))
+		{
+			this._nullstate.render(data);
+		}
+		else
+		{
+			this._items.render(data, this._template);	
+		}
+	};
+
+
+	this.ListMediator = ListMediator;
+});
 namespace('OUI.views', function (window) 
 {
 	var hbs 			= window.OUI.core.view.hbs;
@@ -3859,94 +4113,4 @@ namespace('OUI.components', function (window)
 
 
 	this.Tip = Tip;
-});
-namespace('OUI.components.list', function (window) 
-{
-	var is 			= window.Plankton.is;
-	var classify 	= window.Classy.classify;
-
-	var ListPagination 	= window.OUI.components.list.ListPagination;
-	var ListSelection 	= window.OUI.components.list.ListSelection;
-	var ListItems 		= window.OUI.components.list.ListItems;
-	var SearchForm 		= window.OUI.components.SearchForm;
-	var Wrapper 		= window.OUI.components.Wrapper;
-
-
-	/**
-	 * @class window.OUI.components.list.ListMediator
-	 */
-	function ListMediator()
-	{
-		classify(this);
-
-		this._pagination 	= null;
-		this._selection 	= null;
-		this._items 		= null;
-		this._search 		= null;
-
-		this._template 		= null;
-		this._nullstate 	= null;
-	};
-
-
-	ListMediator.prototype.getSelection = function ()
-	{
-		return this._selection;
-	};
-
-	ListMediator.prototype.getPagination = function ()
-	{
-		return this._pagination;
-	};
-
-	ListMediator.prototype.getSearch = function ()
-	{
-		return this._search;
-	};
-
-	ListMediator.prototype.setPagination = function (container, params, total)
-	{
-		this._pagination = new ListPagination(container, params, total);
-	};
-
-	ListMediator.prototype.setSearch = function (container, placeholder)
-	{
-		this._search = new SearchForm(container, placeholder);
-	};
-
-	ListMediator.prototype.setItems = function (container, template)
-	{
-		this._items = new ListItems(container);
-		this._template = template;
-	};
-
-	ListMediator.prototype.setNullstate = function (container, template)
-	{
-		this._nullstate = new Wrapper(container, template);
-	};
-
-	ListMediator.prototype.onRenderNullstate = function (callback)
-	{
-		this._nullstate.onRender(callback);
-	};
-
-	ListMediator.prototype.onRender = function (callback)
-	{
-		this._items.onRender(callback);
-	};
-
-	ListMediator.prototype.render = function (data)
-	{
-		if (data.length === 0 && (is.false(this._search) || !this._search.hasValue()))
-		{
-			this._nullstate.render(data);
-		}
-		else
-		{
-			this._items.render(data, this._template);	
-		}
-	};
-
-
-	this.ListMediator = ListMediator;
 });

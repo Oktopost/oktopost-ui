@@ -9,6 +9,8 @@ namespace('OUI.components.list', function (window)
 	var SearchForm 		= window.OUI.components.SearchForm;
 	var Wrapper 		= window.OUI.components.Wrapper;
 
+	var DeferCallback 	= window.OUI.core.events.DeferCallback;
+
 
 	/**
 	 * @class window.OUI.components.list.ListMediator
@@ -50,6 +52,15 @@ namespace('OUI.components.list', function (window)
 	ListMediator.prototype.setSearch = function (container, placeholder)
 	{
 		this._search = new SearchForm(container, placeholder);
+	};
+
+	ListMediator.prototype.setSearchCallback = function (callback)
+	{
+		if (is.null(this._search)) throw new Error("Search must be defined");
+
+		var deferredCallback = new DeferCallback(300, callback);
+
+		this._search.onInput(deferredCallback.deferAction);
 	};
 
 	ListMediator.prototype.setItems = function (container, template)

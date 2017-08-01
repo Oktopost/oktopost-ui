@@ -18,7 +18,5 @@ HTML:
 ```
 
 ## Events
-1. onKeyup
-2. onKeydown
-3. onChange
-4. onClear
+1. onInput
+2. onClear

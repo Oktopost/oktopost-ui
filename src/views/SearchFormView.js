@@ -4,19 +4,18 @@ namespace('OUI.views', function (window)
 	var classify 	= window.Classy.classify;
 
 
-	function SearchFormView(form, container, placeholder)
+	function SearchFormView(form, container, value, placeholder)
 	{
 		classify(this);
 
 		this._form 				= form;
-		this._placeholder 		= placeholder;
 		this._container 		= $(container);
 
 		this._input 			= 'input[type="text"]';
 		this._clearButton 		= 'button.tcon';
 		this._animationClass 	= 'tcon-transform';
 
-		this.render();
+		this.render(value, placeholder);
 		this.bindEvents();
 	};
 
@@ -49,16 +48,15 @@ namespace('OUI.views', function (window)
 
 	SearchFormView.prototype.bindEvents = function ()
 	{
-		this._container.on('keyup', this._input, this._form.keyup);
-		this._container.on('keydown', this._input, this._form.keydown);
-		this._container.on('change', this._input, this._form.change);
+		this._container.on('input', this._input, this._form.input);
 		this._container.on('click', this._clearButton, this._form.clear);
 	};
 
-	SearchFormView.prototype.render = function ()
+	SearchFormView.prototype.render = function (value, placeholder)
 	{
 		this._container.append(hbs('search-form', {
-			placeholder: this._placeholder
+			placeholder: placeholder,
+			value: value
 		}));
 	};
 
