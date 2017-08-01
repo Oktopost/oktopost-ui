@@ -58,6 +58,11 @@ namespace('OUI.views', function (window)
 			placeholder: placeholder,
 			value: value
 		}));
+
+		if (value.length)
+		{
+			this._container.find(this._clearButton).addClass(this._animationClass);
+		}
 	};
 
 

@@ -17,6 +17,11 @@ namespace('OUI.components.list', function (window)
 		this._onRender 	= new Event('ListItems.onRender');
 	};
 
+
+	ListItems.prototype.getContainer = function ()
+	{
+		return this._view.getContainer();
+	};
 	
 	ListItems.prototype.onRender = function (callback)
 	{
@@ -26,7 +31,7 @@ namespace('OUI.components.list', function (window)
 	ListItems.prototype.render = function (items, template) 
 	{
 		this._view.render(items, template);
-		this._onRender.trigger(this._view.getContainer());
+		this._onRender.trigger(this.getContainer());
 	};
 
 

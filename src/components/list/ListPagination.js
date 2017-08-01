@@ -80,6 +80,8 @@ namespace('OUI.components.list', function (window)
 
 	ListPagination.prototype.setCount = function (count)
 	{
+		if (count === this.getCount()) return;
+		
 		this.setParam('_count', count);
 		this._view.render();
 	};
@@ -91,6 +93,8 @@ namespace('OUI.components.list', function (window)
 
 	ListPagination.prototype.setTotal = function (total)
 	{
+		if (total === this._total) return;
+
 		this._total = total;
 		this._view.render();
 	};
