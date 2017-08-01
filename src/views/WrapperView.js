@@ -16,6 +16,11 @@ namespace('OUI.views', function (window)
 	};
 
 
+	WrapperView.prototype.getContainer = function ()
+	{
+		return this._container;
+	};
+
 	WrapperView.prototype.render = function (params)
 	{
 		params = params || {};

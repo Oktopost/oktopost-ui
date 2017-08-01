@@ -1854,6 +1854,11 @@ namespace('OUI.views', function (window)
 	};
 
 
+	WrapperView.prototype.getContainer = function ()
+	{
+		return this._container;
+	};
+
 	WrapperView.prototype.render = function (params)
 	{
 		params = params || {};
@@ -3364,6 +3369,11 @@ namespace('OUI.components', function (window)
 		this._onRender 	= new Event('Wrapper.onRender');
 	};
 
+
+	Wrapper.prototype.getContainer = function ()
+	{
+		return this._view.getContainer();
+	};
 
 	Wrapper.prototype.onRender = function (callback)
 	{

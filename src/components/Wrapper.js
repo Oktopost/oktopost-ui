@@ -18,6 +18,11 @@ namespace('OUI.components', function (window)
 	};
 
 
+	Wrapper.prototype.getContainer = function ()
+	{
+		return this._view.getContainer();
+	};
+
 	Wrapper.prototype.onRender = function (callback)
 	{
 		this._onRender.add(callback);
