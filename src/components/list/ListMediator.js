@@ -57,6 +57,7 @@ namespace('OUI.components.list', function (window)
 
 	ListMediator.prototype._hideContainer = function ()
 	{
+		this._searchNullstate.getContainer().removeClass(this._hiddenClass);
 		this._getContainer().addClass(this._hiddenClass);
 	};
 
@@ -87,12 +88,6 @@ namespace('OUI.components.list', function (window)
 		this._searchParam = searchParam;
 	};
 
-	ListMediator.prototype.setSearchNullstate = function (container, template)
-	{
-		this._searchNullstate = new Wrapper(container, template);
-		this._searchNullstate.onRender(this._hideContainer);
-	};
-
 	ListMediator.prototype.setSearchCallback = function (callback)
 	{
 		if (is.null(this._search)) throw new Error("Search must be defined");
@@ -103,6 +98,12 @@ namespace('OUI.components.list', function (window)
 
 		this._search.onInput(deferredCallback.deferAction);
 		this._search.onClear(deferredCallback.deferAction);
+	};
+
+	ListMediator.prototype.setSearchNullstate = function (container, template)
+	{
+		this._searchNullstate = new Wrapper(container, template);
+		this._searchNullstate.onRender(this._hideContainer);
 	};
 
 	ListMediator.prototype.setItems = function (container, template)
@@ -144,6 +145,8 @@ namespace('OUI.components.list', function (window)
 		else
 		{
 			this._getContainer().removeClass(this._hiddenClass);
+			this._searchNullstate.getContainer().addClass(this._hiddenClass);
+			
 			this._items.render(data.Items, this._template);	
 		}
 	};
