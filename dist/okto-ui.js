@@ -3756,9 +3756,9 @@ namespace('OUI.components.list', function (window)
 		this._pagination = new ListPagination(container, params, total);
 	};
 
-	ListMediator.prototype.setSearch = function (container, placeholder)
+	ListMediator.prototype.setSearch = function (container, value, placeholder)
 	{
-		this._search = new SearchForm(container, placeholder);
+		this._search = new SearchForm(container, value, placeholder);
 	};
 
 	ListMediator.prototype.setSearchCallback = function (callback)
