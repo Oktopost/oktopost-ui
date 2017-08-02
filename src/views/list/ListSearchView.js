@@ -6,15 +6,21 @@ namespace('OUI.views.list', function (window)
 	/**
 	 * @class OUI.views.list.ListSearchView
 	 */
-	function ListSearchView(search, container)
+	function ListSearchView()
 	{
 		classify(this);
 		
-		this._itemsContainer 		= $(container);
-		this._itemsWrapper			= this.getItemsWrapper();
+		this._itemsContainer 		= null;
+		this._itemsWrapper			= null;
 		this._nullstateContainer 	= null;
 	}
 
+
+	ListSearchView.prototype.setItemsContainer = function (container)
+	{
+		this._itemsContainer 	= $(container);
+		this._itemsWrapper 		= this.getItemsWrapper();
+	};
 
 	ListSearchView.prototype.getItemsWrapper = function ()
 	{

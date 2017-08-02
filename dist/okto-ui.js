@@ -1970,15 +1970,21 @@ namespace('OUI.views.list', function (window)
 	/**
 	 * @class OUI.views.list.ListSearchView
 	 */
-	function ListSearchView(search, container)
+	function ListSearchView()
 	{
 		classify(this);
 		
-		this._itemsContainer 		= $(container);
-		this._itemsWrapper			= this.getItemsWrapper();
+		this._itemsContainer 		= null;
+		this._itemsWrapper			= null;
 		this._nullstateContainer 	= null;
 	}
 
+
+	ListSearchView.prototype.setItemsContainer = function (container)
+	{
+		this._itemsContainer 	= $(container);
+		this._itemsWrapper 		= this.getItemsWrapper();
+	};
 
 	ListSearchView.prototype.getItemsWrapper = function ()
 	{
@@ -4027,12 +4033,13 @@ namespace('OUI.components.list', function (window)
 		param = param || 'q';
 		placeholder = placeholder || 'Search';
 
-		this._view 			= new ListSearchView(this, container);
+		this._view 			= new ListSearchView();
 		this._searchForm 	= new SearchForm(container, value, param, placeholder);
-		this._nullstate 	= null;		
+		this._nullstate 	= null;
 
 		this._onSearch 		= new Event('ListSearch.onSearch');
-	};
+	}
+
 
 	ListSearch.prototype.getParam = function ()
 	{
@@ -4052,6 +4059,11 @@ namespace('OUI.components.list', function (window)
 	ListSearch.prototype.getNullstate = function ()
 	{
 		return this._nullstate;
+	};
+
+	ListSearch.prototype.setItemsContainer = function (container)
+	{
+		this._view.setItemsContainer(container);
 	};
 
 	ListSearch.prototype.setNullstate = function (container, template)

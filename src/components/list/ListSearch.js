@@ -21,12 +21,13 @@ namespace('OUI.components.list', function (window)
 		param = param || 'q';
 		placeholder = placeholder || 'Search';
 
-		this._view 			= new ListSearchView(this, container);
+		this._view 			= new ListSearchView();
 		this._searchForm 	= new SearchForm(container, value, param, placeholder);
-		this._nullstate 	= null;		
+		this._nullstate 	= null;
 
 		this._onSearch 		= new Event('ListSearch.onSearch');
-	};
+	}
+
 
 	ListSearch.prototype.getParam = function ()
 	{
@@ -46,6 +47,11 @@ namespace('OUI.components.list', function (window)
 	ListSearch.prototype.getNullstate = function ()
 	{
 		return this._nullstate;
+	};
+
+	ListSearch.prototype.setItemsContainer = function (container)
+	{
+		this._view.setItemsContainer(container);
 	};
 
 	ListSearch.prototype.setNullstate = function (container, template)
