@@ -3996,7 +3996,7 @@ namespace('OUI.components.list', function (window)
 			}
 		}
 		else
-		{			
+		{
 			this._items.render(data.Items, this._template);	
 		}
 	};
@@ -4023,6 +4023,9 @@ namespace('OUI.components.list', function (window)
 	function ListSearch(container, value, param, placeholder) 
 	{
 		classify(this);
+
+		param = param || 'q';
+		placeholder = placeholder || 'Search';
 
 		this._view 			= new ListSearchView(this, container);
 		this._searchForm 	= new SearchForm(container, value, param, placeholder);
@@ -4055,6 +4058,8 @@ namespace('OUI.components.list', function (window)
 	{
 		this._nullstate = new Wrapper(container, template);
 		this._nullstate.onRender(this._view.showNullstate);
+
+		this._view.setNullstate(container);
 
 		this.onSearch(this._view.hideNullstate);
 	};

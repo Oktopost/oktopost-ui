@@ -18,6 +18,9 @@ namespace('OUI.components.list', function (window)
 	{
 		classify(this);
 
+		param = param || 'q';
+		placeholder = placeholder || 'Search';
+
 		this._view 			= new ListSearchView(this, container);
 		this._searchForm 	= new SearchForm(container, value, param, placeholder);
 		this._nullstate 	= null;		
@@ -49,6 +52,8 @@ namespace('OUI.components.list', function (window)
 	{
 		this._nullstate = new Wrapper(container, template);
 		this._nullstate.onRender(this._view.showNullstate);
+
+		this._view.setNullstate(container);
 
 		this.onSearch(this._view.hideNullstate);
 	};

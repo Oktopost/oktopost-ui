@@ -120,7 +120,7 @@ namespace('OUI.components.list', function (window)
 			}
 		}
 		else
-		{			
+		{
 			this._items.render(data.Items, this._template);	
 		}
 	};
