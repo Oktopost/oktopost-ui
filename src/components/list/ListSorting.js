@@ -9,23 +9,25 @@ namespace('OUI.components.list', function (window)
 	/**
 	 * @class window.OUI.components.list.ListSorting
 	 */
-	function ListSorting(selector, params) 
+	function ListSorting() 
 	{
 		classify(this);
 		
-		this._view 			= new ListSortingView(this, selector);
-		this._onSetOrder 	= new Event('ListSorting.onSetOrder');
-	};
+		this._view 		= new ListSortingView(this);
+		this._onSort 	= new Event('ListSorting.onSort');
 
+		this.onSort(this._view.setActive);
+	}
 	
-	ListSorting.prototype.onSetOrder = function (callback)
+
+	ListSorting.prototype.onSort = function (callback) 
 	{
-		
+		this._onSort.add(callback);
 	};
 
-	ListSorting.prototype.setOrder = function (orderBy, orderWay) 
+	ListSorting.prototype.sort = function (elem) 
 	{
-
+		this._onSort.trigger(elem);
 	};
 
 

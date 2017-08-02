@@ -6,10 +6,9 @@ namespace('OUI.components.list', function (window)
 	var ListPagination 	= window.OUI.components.list.ListPagination;
 	var ListSelection 	= window.OUI.components.list.ListSelection;
 	var ListItems 		= window.OUI.components.list.ListItems;
-	var SearchForm 		= window.OUI.components.SearchForm;
-	var Wrapper 		= window.OUI.components.Wrapper;
+	var ListSorting 	= window.OUI.components.list.ListSorting;
 
-	var DeferCallback 	= window.OUI.core.events.DeferCallback;
+	var Wrapper 		= window.OUI.components.Wrapper;
 
 
 	/**
@@ -19,48 +18,37 @@ namespace('OUI.components.list', function (window)
 	{
 		classify(this);
 
-		this._pagination 		= null;
-		this._selection 		= null;
-		this._items 			= null;
-		this._search 			= null;
-		this._searchParam 		= null;
-		this._searchCallback	= null;
-		this._searchNullstate	= null;
+		this._pagination 	= null;
+		this._selection 	= null;
+		this._items 		= null;
+		this._search 		= null;
+		this._template 		= null;
+		this._nullstate 	= null;
 
-		this._template 			= null;
-		this._nullstate 		= null;
-		this._hiddenClass		= 'hidden';
-	};
+		this._sorting 		= new ListSorting();
+	}
 
 
-	ListMediator.prototype._resetPaginationAndSearchCallback = function ()
+	ListMediator.prototype.highlightSearchTerm = function ()
 	{
-		var value = this._search.getValue();
+		var term 		= this._search.getValue();
+		var container 	= this._items.getContainer();
 
-		this._pagination.setPage(0);
-		this._pagination.setParam(this._searchParam, value);
-
-		this._searchCallback(value);
-	};
-
-	ListMediator.prototype._getContainer = function ()
-	{
-		var container = this._items.getContainer();
-
-		if (container.parent()[0].tagName === 'TABLE')
+		if (term.length)
 		{
-			return container.parent();
+			container.highlight(term);
 		}
-
-		return container;
+		else
+		{
+			container.unhighlight();
+		}
 	};
 
-	ListMediator.prototype._hideContainer = function ()
+	ListMediator.prototype.resetPaginationLinks = function ()
 	{
-		this._searchNullstate.getContainer().removeClass(this._hiddenClass);
-		this._getContainer().addClass(this._hiddenClass);
+		this._pagination.setPage(0);
+		this._pagination.setParam(this._search.getParam(), this._search.getValue());
 	};
-
 
 	ListMediator.prototype.getSelection = function ()
 	{
@@ -82,28 +70,12 @@ namespace('OUI.components.list', function (window)
 		this._pagination = new ListPagination(container, params, total);
 	};
 
-	ListMediator.prototype.setSearch = function (container, value, placeholder, searchParam)
+	ListMediator.prototype.setSearch = function (searchComponent)
 	{
-		this._search = new SearchForm(container, value, placeholder);
-		this._searchParam = searchParam;
-	};
+		this._search = searchComponent;
+		this._search.onSearch(this.resetPaginationLinks);
 
-	ListMediator.prototype.setSearchCallback = function (callback)
-	{
-		if (is.null(this._search)) throw new Error("Search must be defined");
-
-		this._searchCallback = callback;
-
-		var deferredCallback = new DeferCallback(300, this._resetPaginationAndSearchCallback);
-
-		this._search.onInput(deferredCallback.deferAction);
-		this._search.onClear(deferredCallback.deferAction);
-	};
-
-	ListMediator.prototype.setSearchNullstate = function (container, template)
-	{
-		this._searchNullstate = new Wrapper(container, template);
-		this._searchNullstate.onRender(this._hideContainer);
+		this._items.onRender(this.highlightSearchTerm);
 	};
 
 	ListMediator.prototype.setItems = function (container, template)
@@ -127,15 +99,20 @@ namespace('OUI.components.list', function (window)
 		this._items.onRender(callback);
 	};
 
+	ListMediator.prototype.onSort = function (callback)
+	{
+		this._sorting.onSort(callback);
+	};
+
 	ListMediator.prototype.render = function (data)
 	{
 		this._pagination.setTotal(data.Total);
-
+		
 		if (data.Items.length === 0)
 		{
 			if (is(this._search) && this._search.hasValue())
 			{
-				this._searchNullstate.render({ value: this._search.getValue() });
+				this._search.showNullstate();
 			}
 			else
 			{
@@ -143,10 +120,7 @@ namespace('OUI.components.list', function (window)
 			}
 		}
 		else
-		{
-			this._getContainer().removeClass(this._hiddenClass);
-			this._searchNullstate.getContainer().addClass(this._hiddenClass);
-			
+		{			
 			this._items.render(data.Items, this._template);	
 		}
 	};

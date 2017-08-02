@@ -4,7 +4,7 @@ namespace('OUI.views', function (window)
 	var classify 	= window.Classy.classify;
 
 
-	function SearchFormView(form, container, value, placeholder)
+	function SearchFormView(form, container, value, param, placeholder)
 	{
 		classify(this);
 
@@ -15,7 +15,7 @@ namespace('OUI.views', function (window)
 		this._clearButton 		= 'button.tcon';
 		this._animationClass 	= 'tcon-transform';
 
-		this.render(value, placeholder);
+		this.render(value, param, placeholder);
 		this.bindEvents();
 	};
 
@@ -52,11 +52,12 @@ namespace('OUI.views', function (window)
 		this._container.on('click', this._clearButton, this._form.clear);
 	};
 
-	SearchFormView.prototype.render = function (value, placeholder)
+	SearchFormView.prototype.render = function (value, param, placeholder)
 	{
 		this._container.append(hbs('search-form', {
-			placeholder: placeholder,
-			value: value
+			value: value,
+			param: param,
+			placeholder: placeholder			
 		}));
 
 		if (value.length)

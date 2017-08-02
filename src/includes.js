@@ -12,4 +12,6 @@ namespace('OUI.includes', function (window)
 	var ListItems 		= window.OUI.components.list.ListItems;
 	var ListPagination 	= window.OUI.components.list.ListPagination;
 	var ListSelection 	= window.OUI.components.list.ListSelection;
+	var ListSorting 	= window.OUI.components.list.ListSorting;
+	var ListSearch 		= window.OUI.components.list.ListSearch;
 });

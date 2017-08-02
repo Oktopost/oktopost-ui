@@ -16,6 +16,7 @@
   ],
   "dependencies": {
     "jquery": "^3.2.1",
-    "handlebars": "3.0.3"
+    "handlebars": "3.0.3",
+    "jquery-highlight": "^3.4.0"
   }
 }

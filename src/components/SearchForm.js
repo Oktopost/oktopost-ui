@@ -7,13 +7,14 @@ namespace('OUI.components', function (window)
 	var idGenerator 	= window.OUI.core.view.idGenerator;
 
 
-	function SearchForm(container, value, placeholder)
+	function SearchForm(container, value, param, placeholder)
 	{
 		classify(this);
 
 		this._id 		= idGenerator('oui-search-form');
 
-		this._view 		= new SearchFormView(this, container, value, placeholder);
+		this._view 		= new SearchFormView(this, container, value, param, placeholder);
+		this._param		= param;
 
 		this._onInput 	= new Event('searchForm.onInput');
 		this._onClear 	= new Event('searchForm.onClear');
@@ -35,6 +36,11 @@ namespace('OUI.components', function (window)
 	SearchForm.prototype.hasValue = function ()
 	{
 		return this.getValue().length > 0;
+	};
+
+	SearchForm.prototype.getParam = function ()
+	{
+		return this._param;
 	};
 
 	SearchForm.prototype.onInput = function (callback)

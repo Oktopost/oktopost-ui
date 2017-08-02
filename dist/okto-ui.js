@@ -1708,7 +1708,7 @@ namespace('OUI.views', function (window)
 	var classify 	= window.Classy.classify;
 
 
-	function SearchFormView(form, container, value, placeholder)
+	function SearchFormView(form, container, value, param, placeholder)
 	{
 		classify(this);
 
@@ -1719,7 +1719,7 @@ namespace('OUI.views', function (window)
 		this._clearButton 		= 'button.tcon';
 		this._animationClass 	= 'tcon-transform';
 
-		this.render(value, placeholder);
+		this.render(value, param, placeholder);
 		this.bindEvents();
 	};
 
@@ -1756,11 +1756,12 @@ namespace('OUI.views', function (window)
 		this._container.on('click', this._clearButton, this._form.clear);
 	};
 
-	SearchFormView.prototype.render = function (value, placeholder)
+	SearchFormView.prototype.render = function (value, param, placeholder)
 	{
 		this._container.append(hbs('search-form', {
-			placeholder: placeholder,
-			value: value
+			value: value,
+			param: param,
+			placeholder: placeholder			
 		}));
 
 		if (value.length)
@@ -1963,6 +1964,50 @@ namespace('OUI.views.list', function (window)
 });
 namespace('OUI.views.list', function (window) 
 {
+	var classify = window.Classy.classify;
+
+
+	/**
+	 * @class OUI.views.list.ListSearchView
+	 */
+	function ListSearchView(search, container)
+	{
+		classify(this);
+		
+		this._itemsContainer 		= $(container);
+		this._itemsWrapper			= this.getItemsWrapper();
+		this._nullstateContainer 	= null;
+	}
+
+
+	ListSearchView.prototype.getItemsWrapper = function ()
+	{
+		var container = this._itemsContainer;
+		return container.parent()[0].tagName === 'TABLE' ? container.parent() : container;
+	};
+
+	ListSearchView.prototype.setNullstate = function (container)
+	{
+		this._nullstateContainer = $(container);
+	};
+
+	ListSearchView.prototype.hideNullstate = function ()
+	{
+		this._itemsWrapper.removeClass('hidden');
+		this._nullstateContainer.empty().addClass('hidden');
+	};
+
+	ListSearchView.prototype.showNullstate = function ()
+	{
+		this._itemsWrapper.addClass('hidden');
+		this._nullstateContainer.removeClass('hidden');
+	};
+
+	
+	this.ListSearchView = ListSearchView;
+});
+namespace('OUI.views.list', function (window) 
+{
 	var classify 	= window.Classy.classify;
 	var array 		= window.Plankton.array;
 
@@ -2003,6 +2048,65 @@ namespace('OUI.views.list', function (window)
 
 	
 	this.ListSelectionView = ListSelectionView;
+});
+namespace('OUI.views.list', function (window) 
+{
+	var classify 		= window.Classy.classify;
+	var URLSearchParams = window.URLSearchParams;
+
+
+	/**
+	 * @class OUI.views.list.ListSortingView
+	 */
+	function ListSortingView(sorting, selector)
+	{
+		classify(this);
+
+		this._sorting = sorting;
+
+		this._sortColumns = $('a.sortable');
+		this._sortColumns.on('click', this.updateLink);
+	}
+
+
+	ListSortingView.prototype.getSearchParams = function ()
+	{
+		var searchParams = window.location.search.slice(1);
+
+		if (searchParams.length === 0)
+		{
+			searchParams = '_page=&_order=';
+		}
+
+		return new URLSearchParams(searchParams);
+	};
+
+
+	ListSortingView.prototype.setActive = function (elem)
+	{
+		this._sortColumns.removeClass('active');
+		elem.addClass('active');
+	};
+
+	ListSortingView.prototype.updateLink = function (event)
+	{
+		event.preventDefault();
+
+		var target 	= $(event.target);
+		var path 	= window.location.pathname;
+		var order 	= target.data();
+		var params 	= this.getSearchParams();
+		
+		params.set('_page', 0);
+		params.set('_order', order.orderBy + ',' + (order.orderWay === 1 ? 0 : 1));
+
+		target.attr('href', path + '?' + params.toString());
+
+		this._sorting.sort(target);
+	};
+
+	
+	this.ListSortingView = ListSortingView;
 });
 namespace('Plankton', function (root) 
 {
@@ -3239,13 +3343,14 @@ namespace('OUI.components', function (window)
 	var idGenerator 	= window.OUI.core.view.idGenerator;
 
 
-	function SearchForm(container, value, placeholder)
+	function SearchForm(container, value, param, placeholder)
 	{
 		classify(this);
 
 		this._id 		= idGenerator('oui-search-form');
 
-		this._view 		= new SearchFormView(this, container, value, placeholder);
+		this._view 		= new SearchFormView(this, container, value, param, placeholder);
+		this._param		= param;
 
 		this._onInput 	= new Event('searchForm.onInput');
 		this._onClear 	= new Event('searchForm.onClear');
@@ -3267,6 +3372,11 @@ namespace('OUI.components', function (window)
 	SearchForm.prototype.hasValue = function ()
 	{
 		return this.getValue().length > 0;
+	};
+
+	SearchForm.prototype.getParam = function ()
+	{
+		return this._param;
 	};
 
 	SearchForm.prototype.onInput = function (callback)
@@ -3630,6 +3740,41 @@ namespace('OUI.components.list', function (window)
 
 	this.ListSelection = ListSelection;
 });
+namespace('OUI.components.list', function (window) 
+{
+	var Event 			= window.Duct.Event;
+	var ListSortingView = window.OUI.views.list.ListSortingView;
+
+	var classify 		= window.Classy.classify;
+
+
+	/**
+	 * @class window.OUI.components.list.ListSorting
+	 */
+	function ListSorting() 
+	{
+		classify(this);
+		
+		this._view 		= new ListSortingView(this);
+		this._onSort 	= new Event('ListSorting.onSort');
+
+		this.onSort(this._view.setActive);
+	}
+	
+
+	ListSorting.prototype.onSort = function (callback) 
+	{
+		this._onSort.add(callback);
+	};
+
+	ListSorting.prototype.sort = function (elem) 
+	{
+		this._onSort.trigger(elem);
+	};
+
+
+	this.ListSorting = ListSorting;
+});
 namespace('OUI.core.pos.prepared', function (window) 
 {
 	var classify				= window.Classy.classify;
@@ -3737,10 +3882,9 @@ namespace('OUI.components.list', function (window)
 	var ListPagination 	= window.OUI.components.list.ListPagination;
 	var ListSelection 	= window.OUI.components.list.ListSelection;
 	var ListItems 		= window.OUI.components.list.ListItems;
-	var SearchForm 		= window.OUI.components.SearchForm;
-	var Wrapper 		= window.OUI.components.Wrapper;
+	var ListSorting 	= window.OUI.components.list.ListSorting;
 
-	var DeferCallback 	= window.OUI.core.events.DeferCallback;
+	var Wrapper 		= window.OUI.components.Wrapper;
 
 
 	/**
@@ -3750,48 +3894,37 @@ namespace('OUI.components.list', function (window)
 	{
 		classify(this);
 
-		this._pagination 		= null;
-		this._selection 		= null;
-		this._items 			= null;
-		this._search 			= null;
-		this._searchParam 		= null;
-		this._searchCallback	= null;
-		this._searchNullstate	= null;
+		this._pagination 	= null;
+		this._selection 	= null;
+		this._items 		= null;
+		this._search 		= null;
+		this._template 		= null;
+		this._nullstate 	= null;
 
-		this._template 			= null;
-		this._nullstate 		= null;
-		this._hiddenClass		= 'hidden';
-	};
+		this._sorting 		= new ListSorting();
+	}
 
 
-	ListMediator.prototype._resetPaginationAndSearchCallback = function ()
+	ListMediator.prototype.highlightSearchTerm = function ()
 	{
-		var value = this._search.getValue();
+		var term 		= this._search.getValue();
+		var container 	= this._items.getContainer();
 
-		this._pagination.setPage(0);
-		this._pagination.setParam(this._searchParam, value);
-
-		this._searchCallback(value);
-	};
-
-	ListMediator.prototype._getContainer = function ()
-	{
-		var container = this._items.getContainer();
-
-		if (container.parent()[0].tagName === 'TABLE')
+		if (term.length)
 		{
-			return container.parent();
+			container.highlight(term);
 		}
-
-		return container;
+		else
+		{
+			container.unhighlight();
+		}
 	};
 
-	ListMediator.prototype._hideContainer = function ()
+	ListMediator.prototype.resetPaginationLinks = function ()
 	{
-		this._searchNullstate.getContainer().removeClass(this._hiddenClass);
-		this._getContainer().addClass(this._hiddenClass);
+		this._pagination.setPage(0);
+		this._pagination.setParam(this._search.getParam(), this._search.getValue());
 	};
-
 
 	ListMediator.prototype.getSelection = function ()
 	{
@@ -3813,28 +3946,12 @@ namespace('OUI.components.list', function (window)
 		this._pagination = new ListPagination(container, params, total);
 	};
 
-	ListMediator.prototype.setSearch = function (container, value, placeholder, searchParam)
+	ListMediator.prototype.setSearch = function (searchComponent)
 	{
-		this._search = new SearchForm(container, value, placeholder);
-		this._searchParam = searchParam;
-	};
+		this._search = searchComponent;
+		this._search.onSearch(this.resetPaginationLinks);
 
-	ListMediator.prototype.setSearchCallback = function (callback)
-	{
-		if (is.null(this._search)) throw new Error("Search must be defined");
-
-		this._searchCallback = callback;
-
-		var deferredCallback = new DeferCallback(300, this._resetPaginationAndSearchCallback);
-
-		this._search.onInput(deferredCallback.deferAction);
-		this._search.onClear(deferredCallback.deferAction);
-	};
-
-	ListMediator.prototype.setSearchNullstate = function (container, template)
-	{
-		this._searchNullstate = new Wrapper(container, template);
-		this._searchNullstate.onRender(this._hideContainer);
+		this._items.onRender(this.highlightSearchTerm);
 	};
 
 	ListMediator.prototype.setItems = function (container, template)
@@ -3858,15 +3975,20 @@ namespace('OUI.components.list', function (window)
 		this._items.onRender(callback);
 	};
 
+	ListMediator.prototype.onSort = function (callback)
+	{
+		this._sorting.onSort(callback);
+	};
+
 	ListMediator.prototype.render = function (data)
 	{
 		this._pagination.setTotal(data.Total);
-
+		
 		if (data.Items.length === 0)
 		{
 			if (is(this._search) && this._search.hasValue())
 			{
-				this._searchNullstate.render({ value: this._search.getValue() });
+				this._search.showNullstate();
 			}
 			else
 			{
@@ -3874,16 +3996,84 @@ namespace('OUI.components.list', function (window)
 			}
 		}
 		else
-		{
-			this._getContainer().removeClass(this._hiddenClass);
-			this._searchNullstate.getContainer().addClass(this._hiddenClass);
-			
+		{			
 			this._items.render(data.Items, this._template);	
 		}
 	};
 
 
 	this.ListMediator = ListMediator;
+});
+namespace('OUI.components.list', function (window) 
+{
+	var Event 			= window.Duct.Event;
+	var ListSearchView 	= window.OUI.views.list.ListSearchView;
+
+	var is 				= window.Plankton.is;
+	var classify 		= window.Classy.classify;
+
+	var DeferCallback 	= window.OUI.core.events.DeferCallback;
+	var SearchForm 		= window.OUI.components.SearchForm;
+	var Wrapper 		= window.OUI.components.Wrapper;
+
+
+	/**
+	 * @class window.OUI.components.list.ListSearch
+	 */
+	function ListSearch(container, value, param, placeholder) 
+	{
+		classify(this);
+
+		this._view 			= new ListSearchView(this, container);
+		this._searchForm 	= new SearchForm(container, value, param, placeholder);
+		this._nullstate 	= null;		
+
+		this._onSearch 		= new Event('ListSearch.onSearch');
+	};
+
+	ListSearch.prototype.getParam = function ()
+	{
+		return this._searchForm.getParam();
+	};
+
+	ListSearch.prototype.getValue = function ()
+	{
+		return this._searchForm.getValue();
+	};
+
+	ListSearch.prototype.hasValue = function ()
+	{
+		return this.getValue().length > 0;
+	};
+
+	ListSearch.prototype.getNullstate = function ()
+	{
+		return this._nullstate;
+	};
+
+	ListSearch.prototype.setNullstate = function (container, template)
+	{
+		this._nullstate = new Wrapper(container, template);
+		this._nullstate.onRender(this._view.showNullstate);
+
+		this.onSearch(this._view.hideNullstate);
+	};
+
+	ListSearch.prototype.onSearch = function (callback)
+	{
+		var deferredCallback = new DeferCallback(300, callback);
+
+		this._searchForm.onInput(deferredCallback.deferAction);
+		this._searchForm.onClear(deferredCallback.deferAction);
+	};
+
+	ListSearch.prototype.showNullstate = function ()
+	{
+		this._nullstate.render({ value: this.getValue() });
+	};
+
+
+	this.ListSearch = ListSearch;
 });
 namespace('OUI.views', function (window) 
 {
