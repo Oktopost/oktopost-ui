@@ -2088,17 +2088,19 @@ namespace('OUI.views.list', function (window)
 	};
 
 
-	ListSortingView.prototype.setActive = function (elem)
+	ListSortingView.prototype.setActive = function (w)
 	{
+		var elem = $(e.target);
+
 		this._sortColumns.removeClass('active');
 		elem.addClass('active');
 	};
 
-	ListSortingView.prototype.updateLink = function (event)
+	ListSortingView.prototype.updateLink = function (e)
 	{
-		event.preventDefault();
+		e.preventDefault();
 
-		var target 		= $(event.target);
+		var target 		= $(e.target);
 		var path 		= window.location.pathname;
 		var order 		= target.data();
 		var params 		= this.getSearchParams();
@@ -3775,9 +3777,9 @@ namespace('OUI.components.list', function (window)
 		this._onSort.add(callback);
 	};
 
-	ListSorting.prototype.sort = function (event) 
+	ListSorting.prototype.sort = function (e) 
 	{
-		this._onSort.trigger(event);
+		this._onSort.trigger(e);
 	};
 
 

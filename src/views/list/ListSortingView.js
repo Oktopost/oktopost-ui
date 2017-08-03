@@ -31,17 +31,19 @@ namespace('OUI.views.list', function (window)
 	};
 
 
-	ListSortingView.prototype.setActive = function (elem)
+	ListSortingView.prototype.setActive = function (w)
 	{
+		var elem = $(e.target);
+
 		this._sortColumns.removeClass('active');
 		elem.addClass('active');
 	};
 
-	ListSortingView.prototype.updateLink = function (event)
+	ListSortingView.prototype.updateLink = function (e)
 	{
-		event.preventDefault();
+		e.preventDefault();
 
-		var target 		= $(event.target);
+		var target 		= $(e.target);
 		var path 		= window.location.pathname;
 		var order 		= target.data();
 		var params 		= this.getSearchParams();
