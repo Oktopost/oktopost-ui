@@ -2594,7 +2594,7 @@ namespace('OUI.views.list', function (window)
 		var container = this._container;
 
 		container.empty();
-		container.removeClass(this._loadingClass);
+		this.getItemsWrapper().removeClass(this._loadingClass);
 		
 		foreach(items, function (item) 
 		{
