@@ -13,6 +13,8 @@ namespace('OUI.views.list', function (window)
 
 		this._listItems = listItems;
 		this._container = $(container);
+
+		this._loadingClass = 'loading';
 	}
 
 
@@ -26,6 +28,7 @@ namespace('OUI.views.list', function (window)
 		var container = this._container;
 
 		container.empty();
+		container.removeClass(this._loadingClass);
 		
 		foreach(items, function (item) 
 		{
@@ -43,6 +46,11 @@ namespace('OUI.views.list', function (window)
 		{
 			this._container.unhighlight();
 		}
+	};
+
+	ListItemsView.prototype.setLoading = function ()
+	{
+		this._container.addClass(this._loadingClass);
 	};
 
 	

@@ -2576,6 +2576,8 @@ namespace('OUI.views.list', function (window)
 
 		this._listItems = listItems;
 		this._container = $(container);
+
+		this._loadingClass = 'loading';
 	}
 
 
@@ -2589,6 +2591,7 @@ namespace('OUI.views.list', function (window)
 		var container = this._container;
 
 		container.empty();
+		container.removeClass(this._loadingClass);
 		
 		foreach(items, function (item) 
 		{
@@ -2606,6 +2609,11 @@ namespace('OUI.views.list', function (window)
 		{
 			this._container.unhighlight();
 		}
+	};
+
+	ListItemsView.prototype.setLoading = function ()
+	{
+		this._container.addClass(this._loadingClass);
 	};
 
 	
@@ -3558,7 +3566,7 @@ namespace('OUI.components.list', function (window)
 	};
 
 	ListItems.prototype.render = function (items, template) 
-	{
+	{		
 		this._view.render(items, template);
 		this._onRender.trigger(this.getContainer());
 	};
@@ -3566,6 +3574,11 @@ namespace('OUI.components.list', function (window)
 	ListItems.prototype.highlightTerm = function (term)
 	{
 		this._view.highlightTerm(term);
+	};
+
+	ListItems.prototype.setLoading = function ()
+	{
+		this._view.setLoading();
 	};
 
 
@@ -4063,6 +4076,11 @@ namespace('OUI.components.list', function (window)
 	ListMediator.prototype.onSearch = function (callback)
 	{
 		this._search.onSearch(callback);
+	};
+
+	ListMediator.prototype.setLoadingState = function ()
+	{
+		this._items.setLoading();
 	};
 
 	ListMediator.prototype.render = function (data)

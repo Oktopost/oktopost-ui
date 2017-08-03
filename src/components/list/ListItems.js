@@ -29,7 +29,7 @@ namespace('OUI.components.list', function (window)
 	};
 
 	ListItems.prototype.render = function (items, template) 
-	{
+	{		
 		this._view.render(items, template);
 		this._onRender.trigger(this.getContainer());
 	};
@@ -37,6 +37,11 @@ namespace('OUI.components.list', function (window)
 	ListItems.prototype.highlightTerm = function (term)
 	{
 		this._view.highlightTerm(term);
+	};
+
+	ListItems.prototype.setLoading = function ()
+	{
+		this._view.setLoading();
 	};
 
 

@@ -138,6 +138,11 @@ namespace('OUI.components.list', function (window)
 		this._search.onSearch(callback);
 	};
 
+	ListMediator.prototype.setLoadingState = function ()
+	{
+		this._items.setLoading();
+	};
+
 	ListMediator.prototype.render = function (data)
 	{
 		this._onBeforeRender.trigger(data);
