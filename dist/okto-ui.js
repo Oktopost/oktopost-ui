@@ -2580,7 +2580,7 @@ namespace('OUI.views.list', function (window)
 
 	ListItemsView.prototype.getItemsWrapper = function ()
 	{
-		var container = this._itemsContainer;
+		var container = this._container;
 		return container.parent()[0].tagName === 'TABLE' ? container.parent() : container;
 	};
 
