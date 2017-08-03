@@ -13,7 +13,7 @@ namespace('OUI.views.list', function (window)
 
 		this._listItems = listItems;
 		this._container = $(container);
-	};
+	}
 
 
 	ListItemsView.prototype.getContainer = function ()

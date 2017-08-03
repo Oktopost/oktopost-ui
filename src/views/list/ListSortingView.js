@@ -10,12 +10,9 @@ namespace('OUI.views.list', function (window)
 	{
 		classify(this);
 
-		selector = selector || 'a.sortable';
+		this._sorting = sorting;
 
-		this._sorting 	= sorting;
-		this._params 	= params;
-
-		this._sortColumns = $(selector);
+		this._sortColumns = $('a.sortable');
 		this._sortColumns.on('click', this.updateLink);
 	}
 
@@ -28,7 +25,16 @@ namespace('OUI.views.list', function (window)
 		this._sorting.setParam('_page', 0);
 		this._sorting.setParam('_order', order.orderBy + ',' + orderWay);
 
-		elem.attr('data-order-way', orderWay);
+		if (orderWay === 1)
+		{
+			elem.addClass('asc');
+		}
+		else 
+		{
+			elem.removeClass('asc');
+		}
+
+		elem.data('order-way', orderWay);
 	};
 
 	ListSortingView.prototype._updateLink = function (elem)

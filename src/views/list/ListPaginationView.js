@@ -20,7 +20,7 @@ namespace('OUI.views.list', function (window)
 
 		this._bindEvents();
 		this.render();
-	};
+	}
 
 
 	ListPaginationView.prototype._getLink = function (params)
@@ -84,7 +84,7 @@ namespace('OUI.views.list', function (window)
 
 
 	ListPaginationView.prototype.render = function ()
-	{
+	{		
 		this._container.empty().append(hbs('pagination', this._getViewParams()));		
 	};
 

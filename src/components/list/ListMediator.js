@@ -53,10 +53,11 @@ namespace('OUI.components.list', function (window)
 	
 	ListMediator.prototype.setSorting = function ()
 	{
-		var mediator = this;
-		var sorting = new ListSorting();
+		var mediator 	= this;
+		var params 		= obj.copy(this._params);
+		var sorting 	= new ListSorting(params);
 
-		this._sorting.onSort(function ()
+		sorting.onSort(function ()
 		{
 			mediator.setParam('_page', 0);
 			mediator.setParam('_order', sorting.getOrder());
@@ -72,10 +73,11 @@ namespace('OUI.components.list', function (window)
 
 	ListMediator.prototype.setPagination = function (container, total)
 	{
-		var pagination = new ListPagination(container, this._params, total);
+		var params 		= obj.copy(this._params);
+		var pagination 	= new ListPagination(container, params, total);
 
 		this._onUpdateParam.add(function (key, value) 
-		{		
+		{
 			pagination.setParam(key, value);
 		});
 
@@ -96,19 +98,19 @@ namespace('OUI.components.list', function (window)
 		this._search.onSearch(function (e) 
 		{
 			mediator.setParam('_page', 0);
-			mediator.setParam('q', event.target.value);
+			mediator.setParam('q', searchComponent.getValue());
 		});
 
 		this._items.onRender(function ()
 		{
-			mediator._items.highlightTerm(mediator.getParam['q']);
+			mediator._items.highlightTerm(mediator.getParam('q'));
 		});
 	};
 
 	ListMediator.prototype.setItems = function (container, template)
 	{
-		this._items = new ListItems(container);
-		this._template = template;
+		this._items 	= new ListItems(container);
+		this._template 	= template;
 	};
 
 	ListMediator.prototype.setNullstate = function (container, template)
@@ -129,6 +131,11 @@ namespace('OUI.components.list', function (window)
 	ListMediator.prototype.onSort = function (callback)
 	{
 		this._sorting.onSort(callback);
+	};
+
+	ListMediator.prototype.onSearch = function (callback)
+	{
+		this._search.onSearch(callback);
 	};
 
 	ListMediator.prototype.render = function (data)

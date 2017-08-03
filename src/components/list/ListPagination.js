@@ -24,7 +24,7 @@ namespace('OUI.components.list', function (window)
 		this._onChange 	= new Event('ListPagination.onChange');
 
 		this.onChange(this._view.render);
-	};
+	}
 
 
 	ListPagination.prototype.onNext = function (callback)
@@ -68,16 +68,6 @@ namespace('OUI.components.list', function (window)
 		}
 	};
 
-	
-	ListPagination.prototype.setParam = function (param, value)
-	{
-		if (this._params[param] != value) 
-		{
-			this._params[param] = value;
-			this._view.render();
-		}
-	};
-
 	ListPagination.prototype.setPage = function (page)
 	{
 		this.setParam('_page', page);
@@ -93,6 +83,15 @@ namespace('OUI.components.list', function (window)
 		if (total != this._total)
 		{
 			this._total = total;
+			this._view.render();
+		}
+	};
+
+	ListPagination.prototype.setParam = function (param, value)
+	{
+		if (this._params[param] != value) 
+		{
+			this._params[param] = value;
 			this._view.render();
 		}
 	};

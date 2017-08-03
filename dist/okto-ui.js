@@ -1721,7 +1721,7 @@ namespace('OUI.views', function (window)
 
 		this.render(value, param, placeholder);
 		this.bindEvents();
-	};
+	}
 
 
 	SearchFormView.prototype.getValue = function ()
@@ -1729,13 +1729,13 @@ namespace('OUI.views', function (window)
 		return this._container.find(this._input).val();
 	};
 
-	SearchFormView.prototype.clearInput = function ()
+	SearchFormView.prototype.clearInput = function (e)
 	{
 		this._container.find(this._input).val('');
 		this._container.find(this._clearButton).removeClass(this._animationClass);
 	};
 
-	SearchFormView.prototype.transformIcon = function ()
+	SearchFormView.prototype.transformIcon = function (e)
 	{
 		var button 	= this._container.find(this._clearButton);
 		var input 	= this._container.find(this._input);
@@ -1754,6 +1754,7 @@ namespace('OUI.views', function (window)
 	{
 		this._container.on('input', this._input, this._form.input);
 		this._container.on('click', this._clearButton, this._form.clear);
+		this._container.on('submit', function (e) { e.preventDefault(); });
 	};
 
 	SearchFormView.prototype.render = function (value, param, placeholder)
@@ -1891,7 +1892,7 @@ namespace('OUI.views.list', function (window)
 
 		this._bindEvents();
 		this.render();
-	};
+	}
 
 
 	ListPaginationView.prototype._getLink = function (params)
@@ -1955,7 +1956,7 @@ namespace('OUI.views.list', function (window)
 
 
 	ListPaginationView.prototype.render = function ()
-	{
+	{		
 		this._container.empty().append(hbs('pagination', this._getViewParams()));		
 	};
 
@@ -2067,12 +2068,9 @@ namespace('OUI.views.list', function (window)
 	{
 		classify(this);
 
-		selector = selector || 'a.sortable';
+		this._sorting = sorting;
 
-		this._sorting 	= sorting;
-		this._params 	= params;
-
-		this._sortColumns = $(selector);
+		this._sortColumns = $('a.sortable');
 		this._sortColumns.on('click', this.updateLink);
 	}
 
@@ -2085,7 +2083,16 @@ namespace('OUI.views.list', function (window)
 		this._sorting.setParam('_page', 0);
 		this._sorting.setParam('_order', order.orderBy + ',' + orderWay);
 
-		elem.attr('data-order-way', orderWay);
+		if (orderWay === 1)
+		{
+			elem.addClass('asc');
+		}
+		else 
+		{
+			elem.removeClass('asc');
+		}
+
+		elem.data('order-way', orderWay);
 	};
 
 	ListSortingView.prototype._updateLink = function (elem)
@@ -2569,7 +2576,7 @@ namespace('OUI.views.list', function (window)
 
 		this._listItems = listItems;
 		this._container = $(container);
-	};
+	}
 
 
 	ListItemsView.prototype.getContainer = function ()
@@ -3410,14 +3417,14 @@ namespace('OUI.components', function (window)
 		this._onClear.add(callback);
 	};
 
-	SearchForm.prototype.input = function (input)
+	SearchForm.prototype.input = function (event)
 	{
-		this._onInput.trigger(input);
+		this._onInput.trigger(event);
 	};
 	
-	SearchForm.prototype.clear = function (button)
+	SearchForm.prototype.clear = function (event)
 	{
-		this._onClear.trigger(button);
+		this._onClear.trigger(event);
 	};
 
 
@@ -3590,7 +3597,7 @@ namespace('OUI.components.list', function (window)
 		this._onChange 	= new Event('ListPagination.onChange');
 
 		this.onChange(this._view.render);
-	};
+	}
 
 
 	ListPagination.prototype.onNext = function (callback)
@@ -3634,16 +3641,6 @@ namespace('OUI.components.list', function (window)
 		}
 	};
 
-	
-	ListPagination.prototype.setParam = function (param, value)
-	{
-		if (this._params[param] != value) 
-		{
-			this._params[param] = value;
-			this._view.render();
-		}
-	};
-
 	ListPagination.prototype.setPage = function (page)
 	{
 		this.setParam('_page', page);
@@ -3659,6 +3656,15 @@ namespace('OUI.components.list', function (window)
 		if (total != this._total)
 		{
 			this._total = total;
+			this._view.render();
+		}
+	};
+
+	ListPagination.prototype.setParam = function (param, value)
+	{
+		if (this._params[param] != value) 
+		{
+			this._params[param] = value;
 			this._view.render();
 		}
 	};
@@ -3974,10 +3980,11 @@ namespace('OUI.components.list', function (window)
 	
 	ListMediator.prototype.setSorting = function ()
 	{
-		var mediator = this;
-		var sorting = new ListSorting();
+		var mediator 	= this;
+		var params 		= obj.copy(this._params);
+		var sorting 	= new ListSorting(params);
 
-		this._sorting.onSort(function ()
+		sorting.onSort(function ()
 		{
 			mediator.setParam('_page', 0);
 			mediator.setParam('_order', sorting.getOrder());
@@ -3993,10 +4000,11 @@ namespace('OUI.components.list', function (window)
 
 	ListMediator.prototype.setPagination = function (container, total)
 	{
-		var pagination = new ListPagination(container, this._params, total);
+		var params 		= obj.copy(this._params);
+		var pagination 	= new ListPagination(container, params, total);
 
 		this._onUpdateParam.add(function (key, value) 
-		{		
+		{
 			pagination.setParam(key, value);
 		});
 
@@ -4017,19 +4025,19 @@ namespace('OUI.components.list', function (window)
 		this._search.onSearch(function (e) 
 		{
 			mediator.setParam('_page', 0);
-			mediator.setParam('q', event.target.value);
+			mediator.setParam('q', searchComponent.getValue());
 		});
 
 		this._items.onRender(function ()
 		{
-			mediator._items.highlightTerm(mediator.getParam['q']);
+			mediator._items.highlightTerm(mediator.getParam('q'));
 		});
 	};
 
 	ListMediator.prototype.setItems = function (container, template)
 	{
-		this._items = new ListItems(container);
-		this._template = template;
+		this._items 	= new ListItems(container);
+		this._template 	= template;
 	};
 
 	ListMediator.prototype.setNullstate = function (container, template)
@@ -4050,6 +4058,11 @@ namespace('OUI.components.list', function (window)
 	ListMediator.prototype.onSort = function (callback)
 	{
 		this._sorting.onSort(callback);
+	};
+
+	ListMediator.prototype.onSearch = function (callback)
+	{
+		this._search.onSearch(callback);
 	};
 
 	ListMediator.prototype.render = function (data)

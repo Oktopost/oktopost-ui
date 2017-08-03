@@ -53,14 +53,14 @@ namespace('OUI.components', function (window)
 		this._onClear.add(callback);
 	};
 
-	SearchForm.prototype.input = function (input)
+	SearchForm.prototype.input = function (event)
 	{
-		this._onInput.trigger(input);
+		this._onInput.trigger(event);
 	};
 	
-	SearchForm.prototype.clear = function (button)
+	SearchForm.prototype.clear = function (event)
 	{
-		this._onClear.trigger(button);
+		this._onClear.trigger(event);
 	};
 
 
