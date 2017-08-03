@@ -41,17 +41,19 @@ namespace('OUI.views.list', function (window)
 	{
 		event.preventDefault();
 
-		var target 	= $(event.target);
-		var path 	= window.location.pathname;
-		var order 	= target.data();
-		var params 	= this.getSearchParams();
+		var target 		= $(event.target);
+		var path 		= window.location.pathname;
+		var order 		= target.data();
+		var params 		= this.getSearchParams();
+		var orderWay 	= order.orderWay === 1 ? 0 : 1;
 		
 		params.set('_page', 0);
-		params.set('_order', order.orderBy + ',' + (order.orderWay === 1 ? 0 : 1));
+		params.set('_order', order.orderBy + ',' + orderWay);
 
 		target.attr('href', path + '?' + params.toString());
+		target.data('order-way', orderWay);
 
-		this._sorting.sort(target);
+		this._sorting.sort(e);
 	};
 
 	

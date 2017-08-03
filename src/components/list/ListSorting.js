@@ -25,9 +25,9 @@ namespace('OUI.components.list', function (window)
 		this._onSort.add(callback);
 	};
 
-	ListSorting.prototype.sort = function (elem) 
+	ListSorting.prototype.sort = function (event) 
 	{
-		this._onSort.trigger(elem);
+		this._onSort.trigger(event);
 	};
 
 
