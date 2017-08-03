@@ -33,6 +33,18 @@ namespace('OUI.views.list', function (window)
 		});
 	};
 
+	ListItemsView.prototype.highlightTerm = function (term)
+	{
+		if (term.length)
+		{
+			this._container.highlight(term);
+		}
+		else
+		{
+			this._container.unhighlight();
+		}
+	};
+
 	
 	this.ListItemsView = ListItemsView;
 });

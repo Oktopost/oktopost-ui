@@ -14,7 +14,7 @@ namespace('OUI.components.list', function (window)
 	{
 		classify(this);
 
-		this._params 	= obj.merge({ '_page': 0,'_count': 20 }, params);
+		this._params 	= params;
 		this._total		= total;
 		
 		this._view 		= new ListPaginationView(this, container);
@@ -68,9 +68,38 @@ namespace('OUI.components.list', function (window)
 		}
 	};
 
+	
+	ListPagination.prototype.setParam = function (param, value)
+	{
+		if (this._params[param] != value) 
+		{
+			this._params[param] = value;
+			this._view.render();
+		}
+	};
+
 	ListPagination.prototype.setPage = function (page)
 	{
 		this.setParam('_page', page);
+	};
+
+	ListPagination.prototype.setCount = function (count)
+	{
+		this.setParam('_count', count);
+	};
+
+	ListPagination.prototype.setTotal = function (total)
+	{
+		if (total != this._total)
+		{
+			this._total = total;
+			this._view.render();
+		}
+	};
+
+	ListPagination.prototype.getParams = function ()
+	{
+		return this._params;
 	};
 
 	ListPagination.prototype.getPage = function ()
@@ -78,41 +107,14 @@ namespace('OUI.components.list', function (window)
 		return this._params['_page'];
 	};
 
-	ListPagination.prototype.setCount = function (count)
-	{
-		if (count === this.getCount()) return;
-		
-		this.setParam('_count', count);
-		this._view.render();
-	};
-
 	ListPagination.prototype.getCount = function ()
 	{
 		return this._params['_count'];
 	};
 
-	ListPagination.prototype.setTotal = function (total)
-	{
-		if (total === this._total) return;
-
-		this._total = total;
-		this._view.render();
-	};
-
 	ListPagination.prototype.getTotal = function ()
 	{
 		return this._total;
-	};
-
-	ListPagination.prototype.setParam = function (param, value)
-	{
-		this._params[param] = value;
-		this._view.render();
-	};
-
-	ListPagination.prototype.getParams = function ()
-	{
-		return this._params;
 	};
 
 

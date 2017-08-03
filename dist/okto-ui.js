@@ -2057,61 +2057,60 @@ namespace('OUI.views.list', function (window)
 });
 namespace('OUI.views.list', function (window) 
 {
-	var classify 		= window.Classy.classify;
-	var URLSearchParams = window.URLSearchParams;
+	var classify = window.Classy.classify;
 
 
 	/**
 	 * @class OUI.views.list.ListSortingView
 	 */
-	function ListSortingView(sorting, selector)
+	function ListSortingView(sorting, params, selector)
 	{
 		classify(this);
 
-		this._sorting = sorting;
+		selector = selector || 'a.sortable';
 
-		this._sortColumns = $('a.sortable');
+		this._sorting 	= sorting;
+		this._params 	= params;
+
+		this._sortColumns = $(selector);
 		this._sortColumns.on('click', this.updateLink);
 	}
 
 
-	ListSortingView.prototype.getSearchParams = function ()
+	ListSortingView.prototype._setOrder = function (elem)
 	{
-		var searchParams = window.location.search.slice(1);
+		var order 		= elem.data();
+		var orderWay 	= order.orderWay === 1 ? 0 : 1;
 
-		if (searchParams.length === 0)
-		{
-			searchParams = '_page=&_order=';
-		}
+		this._sorting.setParam('_page', 0);
+		this._sorting.setParam('_order', order.orderBy + ',' + orderWay);
 
-		return new URLSearchParams(searchParams);
+		elem.attr('data-order-way', orderWay);
 	};
 
+	ListSortingView.prototype._updateLink = function (elem)
+	{
+		var path 		= window.location.pathname;
+		var queryString = $.param(this._sorting.getParams());
 
+		elem.attr('href', path + (queryString.length ? '?' + queryString : ''));
+	};
+
+	
 	ListSortingView.prototype.setActive = function (e)
 	{
-		var elem = $(e.target);
-
 		this._sortColumns.removeClass('active');
-		elem.addClass('active');
+		$(e.target).addClass('active');
 	};
 
 	ListSortingView.prototype.updateLink = function (e)
 	{
 		e.preventDefault();
 
-		var target 		= $(e.target);
-		var path 		= window.location.pathname;
-		var order 		= target.data();
-		var params 		= this.getSearchParams();
-		var orderWay 	= order.orderWay === 1 ? 0 : 1;
+		var elem = $(e.target);
 		
-		params.set('_page', 0);
-		params.set('_order', order.orderBy + ',' + orderWay);
-
-		target.attr('href', path + '?' + params.toString());
-		target.data('order-way', orderWay);
-
+		this._setOrder(elem);
+		this._updateLink(elem);
 		this._sorting.sort(e);
 	};
 
@@ -2588,6 +2587,18 @@ namespace('OUI.views.list', function (window)
 		{
 			container.append(template.hbs(item));
 		});
+	};
+
+	ListItemsView.prototype.highlightTerm = function (term)
+	{
+		if (term.length)
+		{
+			this._container.highlight(term);
+		}
+		else
+		{
+			this._container.unhighlight();
+		}
 	};
 
 	
@@ -3545,6 +3556,11 @@ namespace('OUI.components.list', function (window)
 		this._onRender.trigger(this.getContainer());
 	};
 
+	ListItems.prototype.highlightTerm = function (term)
+	{
+		this._view.highlightTerm(term);
+	};
+
 
 	this.ListItems = ListItems;
 });
@@ -3564,7 +3580,7 @@ namespace('OUI.components.list', function (window)
 	{
 		classify(this);
 
-		this._params 	= obj.merge({ '_page': 0,'_count': 20 }, params);
+		this._params 	= params;
 		this._total		= total;
 		
 		this._view 		= new ListPaginationView(this, container);
@@ -3618,9 +3634,38 @@ namespace('OUI.components.list', function (window)
 		}
 	};
 
+	
+	ListPagination.prototype.setParam = function (param, value)
+	{
+		if (this._params[param] != value) 
+		{
+			this._params[param] = value;
+			this._view.render();
+		}
+	};
+
 	ListPagination.prototype.setPage = function (page)
 	{
 		this.setParam('_page', page);
+	};
+
+	ListPagination.prototype.setCount = function (count)
+	{
+		this.setParam('_count', count);
+	};
+
+	ListPagination.prototype.setTotal = function (total)
+	{
+		if (total != this._total)
+		{
+			this._total = total;
+			this._view.render();
+		}
+	};
+
+	ListPagination.prototype.getParams = function ()
+	{
+		return this._params;
 	};
 
 	ListPagination.prototype.getPage = function ()
@@ -3628,41 +3673,14 @@ namespace('OUI.components.list', function (window)
 		return this._params['_page'];
 	};
 
-	ListPagination.prototype.setCount = function (count)
-	{
-		if (count === this.getCount()) return;
-		
-		this.setParam('_count', count);
-		this._view.render();
-	};
-
 	ListPagination.prototype.getCount = function ()
 	{
 		return this._params['_count'];
 	};
 
-	ListPagination.prototype.setTotal = function (total)
-	{
-		if (total === this._total) return;
-
-		this._total = total;
-		this._view.render();
-	};
-
 	ListPagination.prototype.getTotal = function ()
 	{
 		return this._total;
-	};
-
-	ListPagination.prototype.setParam = function (param, value)
-	{
-		this._params[param] = value;
-		this._view.render();
-	};
-
-	ListPagination.prototype.getParams = function ()
-	{
-		return this._params;
 	};
 
 
@@ -3761,16 +3779,33 @@ namespace('OUI.components.list', function (window)
 	/**
 	 * @class window.OUI.components.list.ListSorting
 	 */
-	function ListSorting() 
+	function ListSorting(params) 
 	{
 		classify(this);
 		
-		this._view 		= new ListSortingView(this);
-		this._onSort 	= new Event('ListSorting.onSort');
+		this._params 	= params;
 
+		this._view 			= new ListSortingView(this);
+		this._onSort 		= new Event('ListSorting.onSort');
+		
 		this.onSort(this._view.setActive);
 	}
+
+
+	ListSorting.prototype.getOrder = function ()
+	{
+		return this._params['_order'];
+	};
 	
+	ListSorting.prototype.setParam = function (key, value)
+	{
+		this._params[key] = value;
+	};
+
+	ListSorting.prototype.getParams = function ()
+	{
+		return this._params;
+	};
 
 	ListSorting.prototype.onSort = function (callback) 
 	{
@@ -3887,7 +3922,10 @@ namespace('OUI.core.pos.prepared.cornered', function (window)
 namespace('OUI.components.list', function (window) 
 {
 	var is 			= window.Plankton.is;
+	var obj 		= window.Plankton.obj;
 	var classify 	= window.Classy.classify;
+
+	var Event 			= window.Duct.Event;
 
 	var ListPagination 	= window.OUI.components.list.ListPagination;
 	var ListSelection 	= window.OUI.components.list.ListSelection;
@@ -3900,68 +3938,92 @@ namespace('OUI.components.list', function (window)
 	/**
 	 * @class window.OUI.components.list.ListMediator
 	 */
-	function ListMediator()
+	function ListMediator(params)
 	{
 		classify(this);
 
+		this._params 		= obj.merge({ '_page': 0,'_count': 20 }, params);
 		this._pagination 	= null;
 		this._selection 	= null;
 		this._items 		= null;
 		this._search 		= null;
 		this._template 		= null;
 		this._nullstate 	= null;
+		this._sorting 		= null;
 
-		this._sorting 		= new ListSorting();
+		this._onUpdateParam 	= new Event('ListMediator.onUpdateParam');
+		this._onBeforeRender 	= new Event('ListMediator.onBeforeRender');
 	}
 
 
-	ListMediator.prototype.highlightSearchTerm = function ()
+	ListMediator.prototype.getParams = function ()
 	{
-		var term 		= this._search.getValue();
-		var container 	= this._items.getContainer();
+		return this._params;
+	};
 
-		if (term.length)
+	ListMediator.prototype.getParam = function (key)
+	{
+		return this._params[key];
+	};
+
+	ListMediator.prototype.setParam = function (key, value)
+	{
+		this._params[key] = value;
+		this._onUpdateParam.trigger(key, value);
+	};
+	
+	ListMediator.prototype.setSorting = function ()
+	{
+		var mediator = this;
+		var sorting = new ListSorting();
+
+		this._sorting.onSort(function ()
 		{
-			container.highlight(term);
-		}
-		else
+			mediator.setParam('_page', 0);
+			mediator.setParam('_order', sorting.getOrder());
+		});
+
+		this._onUpdateParam.add(function (key, value)
 		{
-			container.unhighlight();
-		}
+			sorting.setParam(key, value);
+		});
+
+		this._sorting = sorting;
 	};
 
-	ListMediator.prototype.resetPaginationLinks = function ()
+	ListMediator.prototype.setPagination = function (container, total)
 	{
-		this._pagination.setPage(0);
-		this._pagination.setParam(this._search.getParam(), this._search.getValue());
-	};
+		var pagination = new ListPagination(container, this._params, total);
 
-	ListMediator.prototype.getSelection = function ()
-	{
-		return this._selection;
-	};
+		this._onUpdateParam.add(function (key, value) 
+		{		
+			pagination.setParam(key, value);
+		});
 
-	ListMediator.prototype.getPagination = function ()
-	{
-		return this._pagination;
-	};
+		this._onBeforeRender.add(function (data)
+		{
+			pagination.setTotal(data.Total);
+		});
 
-	ListMediator.prototype.getSearch = function ()
-	{
-		return this._search;
-	};
-
-	ListMediator.prototype.setPagination = function (container, params, total)
-	{
-		this._pagination = new ListPagination(container, params, total);
+		this._pagination = pagination;
 	};
 
 	ListMediator.prototype.setSearch = function (searchComponent)
 	{
+		var mediator = this;
+		
 		this._search = searchComponent;
-		this._search.onSearch(this.resetPaginationLinks);
+		
+		this._search.onSearch(function (e) 
+		{
+			mediator.setParam('_page', 0);
+			mediator.setParam('q', event.target.value);
+		});
 
-		this._items.onRender(this.highlightSearchTerm);
+		this._items.onRender(function ()
+		{
+			mediator._items.highlightTerm(mediator.getParam['q']);
+		});
 	};
 
 	ListMediator.prototype.setItems = function (container, template)
@@ -3992,7 +4054,7 @@ namespace('OUI.components.list', function (window)
 
 	ListMediator.prototype.render = function (data)
 	{
-		this._pagination.setTotal(data.Total);
+		this._onBeforeRender.trigger(data);
 		
 		if (data.Items.length === 0)
 		{

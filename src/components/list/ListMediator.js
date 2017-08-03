@@ -1,7 +1,10 @@
 namespace('OUI.components.list', function (window) 
 {
 	var is 			= window.Plankton.is;
+	var obj 		= window.Plankton.obj;
 	var classify 	= window.Classy.classify;
+
+	var Event 			= window.Duct.Event;
 
 	var ListPagination 	= window.OUI.components.list.ListPagination;
 	var ListSelection 	= window.OUI.components.list.ListSelection;
@@ -14,68 +17,92 @@ namespace('OUI.components.list', function (window)
 	/**
 	 * @class window.OUI.components.list.ListMediator
 	 */
-	function ListMediator()
+	function ListMediator(params)
 	{
 		classify(this);
 
+		this._params 		= obj.merge({ '_page': 0,'_count': 20 }, params);
 		this._pagination 	= null;
 		this._selection 	= null;
 		this._items 		= null;
 		this._search 		= null;
 		this._template 		= null;
 		this._nullstate 	= null;
+		this._sorting 		= null;
 
-		this._sorting 		= new ListSorting();
+		this._onUpdateParam 	= new Event('ListMediator.onUpdateParam');
+		this._onBeforeRender 	= new Event('ListMediator.onBeforeRender');
 	}
 
 
-	ListMediator.prototype.highlightSearchTerm = function ()
+	ListMediator.prototype.getParams = function ()
 	{
-		var term 		= this._search.getValue();
-		var container 	= this._items.getContainer();
+		return this._params;
+	};
 
-		if (term.length)
+	ListMediator.prototype.getParam = function (key)
+	{
+		return this._params[key];
+	};
+
+	ListMediator.prototype.setParam = function (key, value)
+	{
+		this._params[key] = value;
+		this._onUpdateParam.trigger(key, value);
+	};
+	
+	ListMediator.prototype.setSorting = function ()
+	{
+		var mediator = this;
+		var sorting = new ListSorting();
+
+		this._sorting.onSort(function ()
 		{
-			container.highlight(term);
-		}
-		else
+			mediator.setParam('_page', 0);
+			mediator.setParam('_order', sorting.getOrder());
+		});
+
+		this._onUpdateParam.add(function (key, value)
 		{
-			container.unhighlight();
-		}
+			sorting.setParam(key, value);
+		});
+
+		this._sorting = sorting;
 	};
 
-	ListMediator.prototype.resetPaginationLinks = function ()
+	ListMediator.prototype.setPagination = function (container, total)
 	{
-		this._pagination.setPage(0);
-		this._pagination.setParam(this._search.getParam(), this._search.getValue());
-	};
+		var pagination = new ListPagination(container, this._params, total);
 
-	ListMediator.prototype.getSelection = function ()
-	{
-		return this._selection;
-	};
+		this._onUpdateParam.add(function (key, value) 
+		{		
+			pagination.setParam(key, value);
+		});
 
-	ListMediator.prototype.getPagination = function ()
-	{
-		return this._pagination;
-	};
+		this._onBeforeRender.add(function (data)
+		{
+			pagination.setTotal(data.Total);
+		});
 
-	ListMediator.prototype.getSearch = function ()
-	{
-		return this._search;
-	};
-
-	ListMediator.prototype.setPagination = function (container, params, total)
-	{
-		this._pagination = new ListPagination(container, params, total);
+		this._pagination = pagination;
 	};
 
 	ListMediator.prototype.setSearch = function (searchComponent)
 	{
+		var mediator = this;
+		
 		this._search = searchComponent;
-		this._search.onSearch(this.resetPaginationLinks);
+		
+		this._search.onSearch(function (e) 
+		{
+			mediator.setParam('_page', 0);
+			mediator.setParam('q', event.target.value);
+		});
 
-		this._items.onRender(this.highlightSearchTerm);
+		this._items.onRender(function ()
+		{
+			mediator._items.highlightTerm(mediator.getParam['q']);
+		});
 	};
 
 	ListMediator.prototype.setItems = function (container, template)
@@ -106,7 +133,7 @@ namespace('OUI.components.list', function (window)
 
 	ListMediator.prototype.render = function (data)
 	{
-		this._pagination.setTotal(data.Total);
+		this._onBeforeRender.trigger(data);
 		
 		if (data.Items.length === 0)
 		{

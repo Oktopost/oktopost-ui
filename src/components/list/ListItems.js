@@ -34,6 +34,11 @@ namespace('OUI.components.list', function (window)
 		this._onRender.trigger(this.getContainer());
 	};
 
+	ListItems.prototype.highlightTerm = function (term)
+	{
+		this._view.highlightTerm(term);
+	};
+
 
 	this.ListItems = ListItems;
 });

@@ -1,60 +1,59 @@
 namespace('OUI.views.list', function (window) 
 {
-	var classify 		= window.Classy.classify;
-	var URLSearchParams = window.URLSearchParams;
+	var classify = window.Classy.classify;
 
 
 	/**
 	 * @class OUI.views.list.ListSortingView
 	 */
-	function ListSortingView(sorting, selector)
+	function ListSortingView(sorting, params, selector)
 	{
 		classify(this);
 
-		this._sorting = sorting;
+		selector = selector || 'a.sortable';
 
-		this._sortColumns = $('a.sortable');
+		this._sorting 	= sorting;
+		this._params 	= params;
+
+		this._sortColumns = $(selector);
 		this._sortColumns.on('click', this.updateLink);
 	}
 
 
-	ListSortingView.prototype.getSearchParams = function ()
+	ListSortingView.prototype._setOrder = function (elem)
 	{
-		var searchParams = window.location.search.slice(1);
+		var order 		= elem.data();
+		var orderWay 	= order.orderWay === 1 ? 0 : 1;
 
-		if (searchParams.length === 0)
-		{
-			searchParams = '_page=&_order=';
-		}
+		this._sorting.setParam('_page', 0);
+		this._sorting.setParam('_order', order.orderBy + ',' + orderWay);
 
-		return new URLSearchParams(searchParams);
+		elem.attr('data-order-way', orderWay);
 	};
 
+	ListSortingView.prototype._updateLink = function (elem)
+	{
+		var path 		= window.location.pathname;
+		var queryString = $.param(this._sorting.getParams());
 
+		elem.attr('href', path + (queryString.length ? '?' + queryString : ''));
+	};
+
+	
 	ListSortingView.prototype.setActive = function (e)
 	{
-		var elem = $(e.target);
-
 		this._sortColumns.removeClass('active');
-		elem.addClass('active');
+		$(e.target).addClass('active');
 	};
 
 	ListSortingView.prototype.updateLink = function (e)
 	{
 		e.preventDefault();
 
-		var target 		= $(e.target);
-		var path 		= window.location.pathname;
-		var order 		= target.data();
-		var params 		= this.getSearchParams();
-		var orderWay 	= order.orderWay === 1 ? 0 : 1;
+		var elem = $(e.target);
 		
-		params.set('_page', 0);
-		params.set('_order', order.orderBy + ',' + orderWay);
-
-		target.attr('href', path + '?' + params.toString());
-		target.data('order-way', orderWay);
-
+		this._setOrder(elem);
+		this._updateLink(elem);
 		this._sorting.sort(e);
 	};
 
