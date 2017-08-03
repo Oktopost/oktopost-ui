@@ -2088,7 +2088,7 @@ namespace('OUI.views.list', function (window)
 	};
 
 
-	ListSortingView.prototype.setActive = function (w)
+	ListSortingView.prototype.setActive = function (e)
 	{
 		var elem = $(e.target);
 
