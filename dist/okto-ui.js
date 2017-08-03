@@ -1712,12 +1712,14 @@ namespace('OUI.views', function (window)
 	{
 		classify(this);
 
-		this._form 				= form;
-		this._container 		= $(container);
+		this._form 			= form;
+		this._container 	= $(container);
 
-		this._input 			= 'input[type="text"]';
-		this._clearButton 		= 'button.tcon';
-		this._animationClass 	= 'tcon-transform';
+		this._input 		= 'input[type="text"]';
+		this._clearButton 	= 'i.toggle-button';
+		
+		this._cancelIcon 	= 'icon-cancel-squared';
+		this._searchIcon	= 'icon-search';
 
 		this.render(value, param, placeholder);
 		this.bindEvents();
@@ -1731,8 +1733,10 @@ namespace('OUI.views', function (window)
 
 	SearchFormView.prototype.clearInput = function (e)
 	{
+		var button = this._container.find(this._clearButton);
+
 		this._container.find(this._input).val('');
-		this._container.find(this._clearButton).removeClass(this._animationClass);
+		button.removeClass(this._cancelIcon).addClass(this._searchIcon);
 	};
 
 	SearchFormView.prototype.transformIcon = function (e)
@@ -1740,14 +1744,7 @@ namespace('OUI.views', function (window)
 		var button 	= this._container.find(this._clearButton);
 		var input 	= this._container.find(this._input);
 
-		if (input.val().length > 0)
-		{
-			button.addClass(this._animationClass);
-		}
-		else
-		{
-			button.removeClass(this._animationClass);	
-		}
+		button.removeClass(this._searchIcon).addClass(this._cancelIcon);
 	};
 
 	SearchFormView.prototype.bindEvents = function ()
@@ -2581,6 +2578,12 @@ namespace('OUI.views.list', function (window)
 	}
 
 
+	ListItemsView.prototype.getItemsWrapper = function ()
+	{
+		var container = this._itemsContainer;
+		return container.parent()[0].tagName === 'TABLE' ? container.parent() : container;
+	};
+
 	ListItemsView.prototype.getContainer = function ()
 	{
 		return this._container;
@@ -2613,7 +2616,7 @@ namespace('OUI.views.list', function (window)
 
 	ListItemsView.prototype.setLoading = function ()
 	{
-		this._container.addClass(this._loadingClass);
+		this.getItemsWrapper().addClass(this._loadingClass);
 	};
 
 	

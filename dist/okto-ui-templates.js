@@ -70,7 +70,7 @@ this["OUI"]["templates"]["search-form"]["hbs"] = Handlebars.template({"compiler"
     + alias3(((helper = (helper = helpers.placeholder || (depth0 != null ? depth0.placeholder : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"placeholder","hash":{},"data":data}) : helper)))
     + "\" value=\""
     + alias3(((helper = (helper = helpers.value || (depth0 != null ? depth0.value : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"value","hash":{},"data":data}) : helper)))
-    + "\">\n\n	<button type=\"button\" class=\"tcon tcon-search--xcross\" aria-label=\"toggle search\">\n	  	<span class=\"tcon-search__item\" aria-hidden=\"true\"></span>\n	  	<span class=\"tcon-visuallyhidden\">toggle search</span>\n	</button>\n</form>";
+    + "\" class=\"search-input\">\n	<i class=\"toggle-button icon-search\"></i>\n</form>";
 },"useData":true});
 this["OUI"]["templates"]["toast"] = this["OUI"]["templates"]["toast"] || {};
 this["OUI"]["templates"]["toast"]["hbs"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {

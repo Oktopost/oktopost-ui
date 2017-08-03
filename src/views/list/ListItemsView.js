@@ -18,6 +18,12 @@ namespace('OUI.views.list', function (window)
 	}
 
 
+	ListItemsView.prototype.getItemsWrapper = function ()
+	{
+		var container = this._itemsContainer;
+		return container.parent()[0].tagName === 'TABLE' ? container.parent() : container;
+	};
+
 	ListItemsView.prototype.getContainer = function ()
 	{
 		return this._container;
@@ -50,7 +56,7 @@ namespace('OUI.views.list', function (window)
 
 	ListItemsView.prototype.setLoading = function ()
 	{
-		this._container.addClass(this._loadingClass);
+		this.getItemsWrapper().addClass(this._loadingClass);
 	};
 
 	
