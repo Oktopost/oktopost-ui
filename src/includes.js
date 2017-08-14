@@ -7,6 +7,7 @@ namespace('OUI.includes', function (window)
 	var Tip 		= window.OUI.Components.Tip;
 	var Toast 		= window.OUI.Components.Toast;
 	var Wrapper 	= window.OUI.Components.Wrapper;
+	var HoverMenu	= window.OUI.Components.HoverMenu;
 
 	var ListMediator 	= window.OUI.Components.List.ListMediator;
 	var ListItems 		= window.OUI.Components.List.ListItems;
