@@ -1,17 +1,17 @@
 namespace('OUI.includes', function (window) 
 {
-	var Dialog 		= window.OUI.components.Dialog;
-	var Menu 		= window.OUI.components.Menu;
-	var Modal 		= window.OUI.components.Modal;
-	var SearchForm 	= window.OUI.components.SearchForm;
-	var Tip 		= window.OUI.components.Tip;
-	var Toast 		= window.OUI.components.Toast;
-	var Wrapper 	= window.OUI.components.Wrapper;
+	var Dialog 		= window.OUI.Components.Dialog;
+	var Menu 		= window.OUI.Components.Menu;
+	var Modal 		= window.OUI.Components.Modal;
+	var SearchForm 	= window.OUI.Components.SearchForm;
+	var Tip 		= window.OUI.Components.Tip;
+	var Toast 		= window.OUI.Components.Toast;
+	var Wrapper 	= window.OUI.Components.Wrapper;
 
-	var ListMediator 	= window.OUI.components.list.ListMediator;
-	var ListItems 		= window.OUI.components.list.ListItems;
-	var ListPagination 	= window.OUI.components.list.ListPagination;
-	var ListSelection 	= window.OUI.components.list.ListSelection;
-	var ListSorting 	= window.OUI.components.list.ListSorting;
-	var ListSearch 		= window.OUI.components.list.ListSearch;
+	var ListMediator 	= window.OUI.Components.List.ListMediator;
+	var ListItems 		= window.OUI.Components.List.ListItems;
+	var ListPagination 	= window.OUI.Components.List.ListPagination;
+	var ListSelection 	= window.OUI.Components.List.ListSelection;
+	var ListSorting 	= window.OUI.Components.List.ListSorting;
+	var ListSearch 		= window.OUI.Components.List.ListSearch;
 });

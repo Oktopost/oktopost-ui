@@ -175,10 +175,8 @@ namespace('Classy', function()
 		var count		= 0;
 		
 		
-		for (var key in target)
-		{
-			if (target.hasOwnProperty(key) && !(target[key] instanceof Object))
-			{
+		for (var key in target) {
+			if (target.hasOwnProperty(key) && !(target[key] instanceof Object)) {
 				keys.push(key);
 				map[key] = true;
 				
@@ -221,7 +219,29 @@ namespace('Classy', function()
 		return target;
 	};
 });
-namespace('OUI.core.view', function (window) 
+namespace('Classy', function()
+{
+	/**
+	 * @name Classy.classify
+	 * 
+	 * @param {*} object
+	 * @param {function()=} init
+	 */
+	this.classify = function classify(object, init) {
+		for (var key in object) {
+			if (typeof object[key] === 'function') {
+				object[key] = object[key].bind(object);
+			}
+		}
+		
+		if (typeof init !== 'undefined') {
+			init.call(object);
+		}
+		
+		return object;
+	};
+});
+namespace('OUI.Core.View', function (window) 
 {
 	this.fadeRemove = function ($container, extraClass, delay)
 	{
@@ -235,7 +255,7 @@ namespace('OUI.core.view', function (window)
 		}, delay);
 	};
 });
-namespace('OUI.core.view', function (window) 
+namespace('OUI.Core.View', function (window) 
 {
 	this.hbs = function (name, options)
 	{
@@ -244,7 +264,7 @@ namespace('OUI.core.view', function (window)
 		return window.OUI.templates[name].hbs(options);
 	};
 });
-namespace('OUI.core.view', function (window) 
+namespace('OUI.Core.View', function (window) 
 {
 	this.idGenerator = function (baseName)
 	{
@@ -255,8 +275,8 @@ namespace('Plankton', function()
 {
 	var ARRAY_INDEX_REGEX = /^0$|^[1-9]\d*$/;
 	var ARRAY_INDEX_MAX_VALUE = 4294967294;
-	
-	
+
+
 	/**
 	 * @class Plankton.is
 	 * @alias is
@@ -323,21 +343,6 @@ namespace('Plankton', function()
 	is.object.notEmpty = function (subject)
 	{
 		return is.object(subject) && Object.keys(subject).length > 0;
-	};
-	
-	
-	/**
-	 * @param {*} subject
-	 * @returns {boolean}
-	 */
-	is.objectLiteral = function(subject)
-	{
-		if (!is.object(subject))
-		{
-			return false;
-		}
-		
-		return is.undefined(subject.constructor) || subject.constructor === Object;
 	};
 	
 	
@@ -421,7 +426,7 @@ namespace('Plankton', function()
 	 */
 	is.collection = function(subject)
 	{
-		return (is.objectLiteral(subject) || is.array(subject) || is.string(subject));
+		return is.object(subject) || is.array(subject) || is.string(subject);
 	};
 	
 	/**
@@ -434,7 +439,7 @@ namespace('Plankton', function()
 		{
 			return is.array.empty(subject);
 		}
-		else if (is.objectLiteral(subject))
+		else if (is.object(subject))
 		{
 			return is.object.empty(subject);
 		}
@@ -521,7 +526,7 @@ namespace('Plankton', function()
 	 */
 	is.NaN = function(subject)
 	{
-		return Object.prototype.toString.call(subject) === '[object Number]' && isNaN(subject);
+		return isNaN(subject) && Object.prototype.toString.call(subject) === '[object Number]';
 	};
 	
 	/**
@@ -548,7 +553,7 @@ namespace('Plankton', function()
 	 */
 	is.jsObject = function(subject)
 	{
-		return subject instanceof Object || (!is.null(subject) && typeof subject === 'object');
+		return subject instanceof Object;
 	};
 	
 	/**
@@ -571,7 +576,7 @@ namespace('Plankton', function()
 			return is.collection.empty(subject);
 		}
 		
-		throw new Error('Subject is not Array, Object or String');
+		throw 'Subject is not Array, Object or String';
 	};
 	
 	/**
@@ -621,7 +626,7 @@ namespace('Plankton', function()
 	
 	/**
 	 * @param {*} subject
-	 * @returns {boolean}
+	 * @retrns {boolean}
 	 */
 	is.index = function(subject)
 	{
@@ -631,59 +636,229 @@ namespace('Plankton', function()
 	
 	this.is = is;
 });
-namespace('Classy', function(root)
+namespace('OUI.Core.Events', function (window)
 {
-	var is = root.Plankton.is;
-	
-	
-	function getProto(target)
+	var classify = window.Classy.classify;
+
+
+	function DeferCallback(threshold, callback)
 	{
-		if (typeof Object.getPrototypeOf === 'function')
-			return Object.getPrototypeOf(target);
-		
-		if (typeof target.constructor !== 'undefined' && target.constructor.prototype !== 'undefined')
-			return target.constructor.prototype;
-		
-		if (typeof target.__proto__ !== 'undefined')
-			return target.__proto__;
-		
-		return {};
+		classify(this);
+
+		this._threshold 		= threshold;
+		this._callback 			= callback;
+		this._callbackTimeout 	= null;
 	}
+
+
+	/**
+	 * Execute the callback function in defer time
+	 * @param {*} data
+	 */
+	DeferCallback.prototype.deferAction = function (data) 
+	{
+		clearTimeout(this._callbackTimeout);
+		this._callbackTimeout = setTimeout(this._callback.bind(null, data), this._threshold);
+	};
+
+	/**
+	 * Cancel previous and execute the call immediately
+	 * @param {*} data
+	 */
+	DeferCallback.prototype.executeAction = function (data) 
+	{
+		clearTimeout(this._callbackTimeout);
+		this._callback(data);
+	};
+
+	/**
+	 * Prevents the callback to execute if it is now deferred
+	 */
+	DeferCallback.prototype.cancel = function () 
+	{
+		clearTimeout(this._callbackTimeout);
+	};
+
+	/**
+	 * @param {int} threshold
+	 */
+	DeferCallback.prototype.setThreshold = function (threshold) 
+	{
+		this._threshold = threshold;
+	};
+
+	/**
+	 * @param {Function} callback
+	 */
+	DeferCallback.prototype.setCallback = function (callback) 
+	{
+		this._callback = callback;
+	};
+
+
+	this.DeferCallback = DeferCallback;
+});
+namespace('OUI.Core.Pos', function (window)
+{
+	var is 			= window.Plankton.is;
+	var classify 	= window.Classy.classify; 
 	
 	
 	/**
-	 * @name Classy.classify
-	 * 
-	 * @param {*} object
-	 * @param {function()=} init
+	 * @class OUI.Core.Pos.Area
 	 */
-	this.classify = function classify(object, init)
+	function Area(box, initial, areaName, positionName) 
+	{	
+		classify(this);
+		
+		/** @type {OUI.Core.Pos.Box} */
+		this.box = box;
+		
+		this.initial = initial;
+		this.areaName = areaName;
+		this.positionName = positionName;
+	}
+	
+	
+	Area.prototype.getName = function () 
 	{
-		var proto = getProto(object);
+		var name = this.areaName;
 		
-		for (var key in proto)
+		if (is.string(this.positionName) && this.positionName.length > 0)
 		{
-			if (typeof proto[key] === 'function')
-			{
-				object[key] = proto[key].bind(object);
-			}
+			name = name + '-' + this.positionName;
 		}
 		
-		if (typeof init !== 'undefined')
-		{
-			init.call(object);
-		}
-		
-		return object;
+		return name;	
 	};
+	
+	
+	this.Area = Area;
 });
-namespace('OUI.core.pos.enum', function (window)
+namespace('OUI.Core.Pos', function (window) 
+{
+	var classify = window.Classy.classify;
+	
+	
+	/**
+	 * @class OUI.Core.Pos.Box
+	 */
+	var Box = function (point, size) 
+	{
+		classify(this);
+		
+		/** @type {OUI.Core.Pos.Point} */
+		this._point = point;
+
+		/** @type {OUI.Core.Pos.Point} */
+		this._size = size;
+	};	
+	
+	
+	Box.prototype._debug = function () 
+	{
+		console.log(this.x(), this.y(), this.w(), this.h());	
+	};
+	
+	Box.prototype._isIntersectHorizontal = function (x, w)
+	{
+		return !(this.x()+this.w() <= x || x+w <= this.x());
+	};
+
+	Box.prototype._isIntersectVertical = function (y, h)
+	{
+		return !(this.y()+this.h() <= y || y+h <= this.y());
+	};
+	
+	Box.prototype._crossHorizontalBorder = function (x, w)
+	{
+		return ((this.x() < x) && (this.x() + this.w() >= x)) || 
+			(((this.x() + this.w()) > (x + w)) && (this.x() >= x));
+	};
+
+	Box.prototype._crossVerticalBorder = function (y, h)
+	{
+		return ((this.y() < y) && (this.y() + this.h() >= y)) || 
+			((this.y() + this.h() > y + h) && (this.y() >= y));
+	};
+	
+	Box.prototype._intersectHorizontal = function (x, w) 
+	{
+		if (x > this.x())
+		{
+			var widthSubtract = x - this.x();
+			this._point.x = x;
+			this._size.x -= widthSubtract > 0 ? widthSubtract : -widthSubtract; 
+		}
+		
+		if ((x + w) < (this.x() + this.w()))
+		{
+			this._size.x = x + w - this.x();
+		}
+	};
+	
+	Box.prototype._intersectVertical = function (y, h) 
+	{
+		if (y > this.y())
+		{
+			var heightSubtract = y - this.y();
+			this._point.y = y;
+			this._size.y -= heightSubtract > 0 ? heightSubtract : -heightSubtract; 
+		}
+		
+		if ((y + h) < (this.y() + this.h()))
+		{
+			this._size.y = y + h - this.y();
+		}
+	};
+		
+	
+	Box.prototype.x = function ()
+	{
+		return this._point.x;	
+	};
+
+	Box.prototype.y = function ()
+	{
+		return this._point.y;	
+	};
+
+	Box.prototype.w = function ()
+	{
+		return this._size.x;	
+	};
+		
+	Box.prototype.h = function ()
+	{
+		return this._size.y;	
+	};
+	
+	Box.prototype.isIntersect = function (box) 
+	{
+		return this._isIntersectHorizontal(box.x(), box.w()) && this._isIntersectVertical(box.y(), box.h());
+	};
+	
+	Box.prototype.isCrossBorder = function (box) 
+	{
+		return this._crossHorizontalBorder(box.x(), box.w()) || this._crossVerticalBorder(box.y(), box.h());
+	};
+	
+	Box.prototype.intersect = function (box) 
+	{
+		this._intersectHorizontal(box.x(), box.w());
+		this._intersectVertical(box.y(), box.h());
+	};
+	
+	
+	this.Box = Box;
+});
+namespace('OUI.Core.Pos.Enum', function (window)
 {
 	var Enum = window.Classy.Enum;
 	
 	
 	/**
-	 * @class OUI.core.pos.enum.TargetPosition
+	 * @class OUI.Core.Pos.Enum.TargetPosition
 	 * @enum {string}
 	 */
 	var TargetPosition = {
@@ -697,13 +872,13 @@ namespace('OUI.core.pos.enum', function (window)
 	
 	this.TargetPosition = Enum(TargetPosition);
 });
-namespace('OUI.core.pos.enum', function (window)
+namespace('OUI.Core.Pos.Enum', function (window)
 {
 	var Enum = window.Classy.Enum;
 	
 	
 	/**
-	 * @class OUI.core.pos.enum.TargetSide
+	 * @class OUI.Core.Pos.Enum.TargetSide
 	 * @enum {string}
 	 */
 	var TargetSide = {
@@ -715,6 +890,447 @@ namespace('OUI.core.pos.enum', function (window)
 	
 	
 	this.TargetSide = Enum(TargetSide);
+});
+namespace('OUI.Core.Pos', function (window)
+{
+	var classify = window.Classy.classify; 
+	
+	
+	/**
+	 * @class OUI.Core.Pos.Point
+	 */
+	function Point(x, y) 
+	{	
+		classify(this);
+		
+		this.x = x;
+		this.y = y;
+	}
+	
+	
+	this.Point = Point;
+});
+namespace('OUI.Views', function (window) 
+{
+	var hbs 		= window.OUI.Core.View.hbs;
+	var classify 	= window.Classy.classify;
+	var fadeRemove 	= window.OUI.Core.View.fadeRemove;
+
+
+	/**
+	 * @class OUI.Views.DialogView
+	 */
+	function DialogView(dialog, okButtonText, cancelButtonText) 
+	{
+		classify(this);
+
+		this._dialog 			= dialog;
+		this._okButtonText 		= okButtonText || 'OK';
+		this._cancelButtonText 	= cancelButtonText || 'Cancel';
+		this._okButton 			= 'a.ok-button';
+		this._cancelButton 		= 'a.cancel-button';
+	}
+
+
+	DialogView.prototype.getContainer = function ()
+	{
+		return $('#' + this._dialog.getId());
+	};
+
+	DialogView.prototype.bindEvents = function ()
+	{
+		var dialog = this._dialog;
+		var $container = this.getContainer();
+
+		$container.find(this._okButton).on('click', function (e) {
+			e.preventDefault();
+			dialog.confirm();
+		});
+
+		$container.find(this._cancelButton).on('click', function (e) {
+			e.preventDefault();
+			dialog.cancel();
+		});
+	};
+
+	DialogView.prototype.show = function (message)
+	{
+		$('body').append(hbs('dialog', {
+			id: this._dialog.getId(),
+			message: message,
+			okButtonText: this._okButtonText,
+			cancelButtonText: this._cancelButtonText
+		}));
+	};
+
+	DialogView.prototype.remove = function ()
+	{
+		fadeRemove(this.getContainer());
+	};
+
+	
+	this.DialogView = DialogView;
+});
+namespace('OUI.Views.List', function (window) 
+{
+	var classify = window.Classy.classify;
+
+
+	/**
+	 * @class OUI.Views.List.ListSearchView
+	 */
+	function ListSearchView()
+	{
+		classify(this);
+		
+		this._itemsContainer 		= null;
+		this._itemsWrapper			= null;
+		this._nullstateContainer 	= null;
+	}
+
+
+	ListSearchView.prototype.setItemsContainer = function (container)
+	{
+		this._itemsContainer 	= $(container);
+		this._itemsWrapper 		= this.getItemsWrapper();
+	};
+
+	ListSearchView.prototype.getItemsWrapper = function ()
+	{
+		var container = this._itemsContainer;
+		return container.parent()[0].tagName === 'TABLE' ? container.parent() : container;
+	};
+
+	ListSearchView.prototype.setNullstate = function (container)
+	{
+		this._nullstateContainer = $(container);
+	};
+
+	ListSearchView.prototype.hideNullstate = function ()
+	{
+		this._itemsWrapper.removeClass('hidden');
+		this._nullstateContainer.empty().addClass('hidden');
+	};
+
+	ListSearchView.prototype.showNullstate = function ()
+	{
+		this._itemsWrapper.addClass('hidden');
+		this._nullstateContainer.removeClass('hidden');
+	};
+
+	
+	this.ListSearchView = ListSearchView;
+});
+namespace('OUI.Views.List', function (window) 
+{
+	var classify = window.Classy.classify;
+
+
+	/**
+	 * @class OUI.Views.List.ListSortingView
+	 */
+	function ListSortingView(sorting, params, selector)
+	{
+		classify(this);
+
+		this._sorting = sorting;
+
+		this._sortColumns = $('a.sortable');
+		this._sortColumns.on('click', this.updateLink);
+	}
+
+
+	ListSortingView.prototype._setOrder = function (elem)
+	{
+		var order 		= elem.data();
+		var orderWay 	= order.orderWay === 1 ? 0 : 1;
+
+		this._sorting.setParam('_page', 0);
+		this._sorting.setParam('_order', order.orderBy + ',' + orderWay);
+
+		if (orderWay === 1)
+		{
+			elem.addClass('asc');
+		}
+		else 
+		{
+			elem.removeClass('asc');
+		}
+
+		elem.data('order-way', orderWay);
+	};
+
+	ListSortingView.prototype._updateLink = function (elem)
+	{
+		var path 		= window.location.pathname;
+		var queryString = $.param(this._sorting.getParams());
+
+		elem.attr('href', path + (queryString.length ? '?' + queryString : ''));
+	};
+
+	
+	ListSortingView.prototype.setActive = function (e)
+	{
+		this._sortColumns.removeClass('active');
+		$(e.target).addClass('active');
+	};
+
+	ListSortingView.prototype.updateLink = function (e)
+	{
+		e.preventDefault();
+
+		var elem = $(e.target);
+		
+		this._setOrder(elem);
+		this._updateLink(elem);
+		this._sorting.sort(e);
+	};
+
+	
+	this.ListSortingView = ListSortingView;
+});
+namespace('OUI.Views', function (window) 
+{
+	var hbs 		= window.OUI.Core.View.hbs;
+	var classify 	= window.Classy.classify;
+
+	/**
+	 * @class OUI.Views.ModalView
+	 */
+	function ModalView(modal, contents, className) 
+	{
+		classify(this);
+
+		className = className || '';
+
+		this._modal 		= modal;
+		this._underlay 		= 'div.oui-modal-underlay';
+		this._closeButton 	= 'a[data-oui-modal-close]';
+		
+		this._escapeEvent 	= 'keyup.' + modal.getId();
+
+		this._className		= className;
+		this._contents		= contents;
+	};
+	
+
+	ModalView.prototype._close = function ()
+	{
+		$(document).off(this._escapeEvent);
+		this._modal.close();
+	};
+
+
+	ModalView.prototype.getContainer = function ()
+	{
+		return $('#' + this._modal.getId());
+	};
+
+	ModalView.prototype.onOpen = function ()
+	{
+		var modalView = this;
+		var selectors = this._closeButton + ',' + this._underlay;
+
+		$(document).on(this._escapeEvent, function (e) 
+		{
+			if (e.keyCode === 27) 
+				modalView._close();
+		});
+
+		this.getContainer().on('click', selectors, function (e) 
+		{
+			e.preventDefault();
+			modalView._close();
+		});
+	};
+
+	ModalView.prototype.show = function () 
+	{
+		var position = {
+			top: 20,
+			left: 20
+		};
+
+		$('body').append(hbs('modal', {
+			id: this._modal.getId(),
+			contents: this._contents,
+			extraClass: this._className,
+			position: position
+		}));
+	};
+
+	ModalView.prototype.remove = function ()
+	{
+		this.getContainer().remove();
+	};
+
+	
+	this.ModalView = ModalView;
+});
+namespace('OUI.Views', function (window) 
+{
+	var hbs 		= window.OUI.Core.View.hbs;
+	var classify 	= window.Classy.classify;
+
+
+	function SearchFormView(form, container, value, param, placeholder)
+	{
+		classify(this);
+
+		this._form 			= form;
+		this._container 	= $(container);
+
+		this._input 		= 'input[type="text"]';
+		this._clearButton 	= 'i.toggle-button';
+		
+		this._cancelIcon 	= 'icon-cancel-squared';
+		this._searchIcon	= 'icon-search';
+
+		this.render(value, param, placeholder);
+		this.bindEvents();
+	}
+
+
+	SearchFormView.prototype.getValue = function ()
+	{
+		return this._container.find(this._input).val();
+	};
+
+	SearchFormView.prototype.clearInput = function (e)
+	{
+		var button = this._container.find(this._clearButton);
+
+		this._container.find(this._input).val('');
+		button.removeClass(this._cancelIcon).addClass(this._searchIcon);
+	};
+
+	SearchFormView.prototype.transformIcon = function (e)
+	{
+		var button 	= this._container.find(this._clearButton);
+		var input 	= this._container.find(this._input);
+
+		button.removeClass(this._searchIcon).addClass(this._cancelIcon);
+	};
+
+	SearchFormView.prototype.bindEvents = function ()
+	{
+		this._container.on('input', this._input, this._form.input);
+		this._container.on('click', this._clearButton, this._form.clear);
+		this._container.on('submit', function (e) { e.preventDefault(); });
+	};
+
+	SearchFormView.prototype.render = function (value, param, placeholder)
+	{
+		this._container.append(hbs('search-form', {
+			value: value,
+			param: param,
+			placeholder: placeholder			
+		}));
+
+		if (value.length)
+		{
+			this._container.find(this._clearButton).addClass(this._animationClass);
+		}
+	};
+
+
+	this.SearchFormView = SearchFormView;
+});
+namespace('OUI.Views', function (window) 
+{
+	var hbs 		= window.OUI.Core.View.hbs;
+	var fadeRemove 	= window.OUI.Core.View.fadeRemove;
+	var classify 	= window.Classy.classify;
+	
+
+	/**
+	 * @class OUI.Views.ToastView
+	 */
+	function ToastView(toast, delay)
+	{
+		classify(this);
+
+		delay = delay || 5000;
+
+		this._toast 	= toast;
+		this._delay 	= delay;
+
+		this._dismiss 	= 'a[data-oui-dismiss]';
+	};
+
+	ToastView.prototype.bindDismiss = function ()
+	{
+		var toast = this._toast;
+
+		this.getContainer().on('click', this._dismiss, function (e) {
+			e.preventDefault();
+			toast.dismiss();
+		});
+	};
+
+	ToastView.prototype.show = function (message)
+	{
+		this._onAdd.add(callback);
+	};
+
+	ToastView.prototype.getContainer = function ()
+	{
+		return $('#' + this._toast.getId());
+	};
+
+	ToastView.prototype.show = function (message)
+	{
+		var view = this;
+
+		$('body').append(hbs('toast', {
+			message: message,
+			id: this._toast.getId()
+		}));
+
+		setTimeout(function () {
+			fadeRemove(view.getContainer());
+		}, this._delay);
+	};
+
+	ToastView.prototype.remove = function ()
+	{
+		fadeRemove(this.getContainer());
+	};
+
+
+	this.ToastView = ToastView;
+});
+namespace('OUI.Views', function (window) 
+{
+	var classify 	= window.Classy.classify;
+
+
+	/**
+	 * @class OUI.Views.WrapperView
+	 */
+	function WrapperView(wrapper, container, template) 
+	{
+		classify(this);
+
+		this._wrapper 	= wrapper;
+		this._container = $(container);
+		this._template 	= template;
+	};
+
+
+	WrapperView.prototype.getContainer = function ()
+	{
+		return this._container;
+	};
+
+	WrapperView.prototype.render = function (params)
+	{
+		params = params || {};
+		return this._container.empty().append(this._template.hbs(params));
+	};
+
+
+	this.WrapperView = WrapperView;
 });
 namespace('Plankton', function(root) {
 	'use strict';
@@ -1328,1028 +1944,16 @@ namespace('Plankton', function (root)
 	
 	this.obj = obj;
 });
-namespace('OUI.core.events', function (window)
-{
-	var classify = window.Classy.classify;
-
-
-	function DeferCallback(threshold, callback)
-	{
-		classify(this);
-
-		this._threshold 		= threshold;
-		this._callback 			= callback;
-		this._callbackTimeout 	= null;
-	}
-
-
-	/**
-	 * Execute the callback function in defer time
-	 * @param {*} data
-	 */
-	DeferCallback.prototype.deferAction = function (data) 
-	{
-		clearTimeout(this._callbackTimeout);
-		this._callbackTimeout = setTimeout(this._callback.bind(null, data), this._threshold);
-	};
-
-	/**
-	 * Cancel previous and execute the call immediately
-	 * @param {*} data
-	 */
-	DeferCallback.prototype.executeAction = function (data) 
-	{
-		clearTimeout(this._callbackTimeout);
-		this._callback(data);
-	};
-
-	/**
-	 * Prevents the callback to execute if it is now deferred
-	 */
-	DeferCallback.prototype.cancel = function () 
-	{
-		clearTimeout(this._callbackTimeout);
-	};
-
-	/**
-	 * @param {int} threshold
-	 */
-	DeferCallback.prototype.setThreshold = function (threshold) 
-	{
-		this._threshold = threshold;
-	};
-
-	/**
-	 * @param {Function} callback
-	 */
-	DeferCallback.prototype.setCallback = function (callback) 
-	{
-		this._callback = callback;
-	};
-
-
-	this.DeferCallback = DeferCallback;
-});
-namespace('OUI.core.pos', function (window)
+namespace('OUI.Core.Pos', function (window) 
 {
 	var is 			= window.Plankton.is;
 	var classify 	= window.Classy.classify; 
+	var Box 		= window.OUI.Core.Pos.Box;
+	var Point		= window.OUI.Core.Pos.Point;
 	
 	
 	/**
-	 * @class OUI.core.pos.Area
-	 */
-	function Area(box, initial, areaName, positionName) 
-	{	
-		classify(this);
-		
-		/** @type {OUI.core.pos.Box} */
-		this.box = box;
-		
-		this.initial = initial;
-		this.areaName = areaName;
-		this.positionName = positionName;
-	}
-	
-	
-	Area.prototype.getName = function () 
-	{
-		var name = this.areaName;
-		
-		if (is.string(this.positionName) && this.positionName.length > 0)
-		{
-			name = name + '-' + this.positionName;
-		}
-		
-		return name;	
-	};
-	
-	
-	this.Area = Area;
-});
-namespace('OUI.core.pos', function (window) 
-{
-	var classify = window.Classy.classify;
-	
-	
-	/**
-	 * @class OUI.core.pos.Box
-	 */
-	var Box = function (point, size) 
-	{
-		classify(this);
-		
-		/** @type {OUI.core.pos.Point} */
-		this._point = point;
-
-		/** @type {OUI.core.pos.Point} */
-		this._size = size;
-	};	
-	
-	
-	Box.prototype._debug = function () 
-	{
-		console.log(this.x(), this.y(), this.w(), this.h());	
-	};
-	
-	Box.prototype._isIntersectHorizontal = function (x, w)
-	{
-		return !(this.x()+this.w() <= x || x+w <= this.x());
-	};
-
-	Box.prototype._isIntersectVertical = function (y, h)
-	{
-		return !(this.y()+this.h() <= y || y+h <= this.y());
-	};
-	
-	Box.prototype._crossHorizontalBorder = function (x, w)
-	{
-		return ((this.x() < x) && (this.x() + this.w() >= x)) || 
-			(((this.x() + this.w()) > (x + w)) && (this.x() >= x));
-	};
-
-	Box.prototype._crossVerticalBorder = function (y, h)
-	{
-		return ((this.y() < y) && (this.y() + this.h() >= y)) || 
-			((this.y() + this.h() > y + h) && (this.y() >= y));
-	};
-	
-	Box.prototype._intersectHorizontal = function (x, w) 
-	{
-		if (x > this.x())
-		{
-			var widthSubtract = x - this.x();
-			this._point.x = x;
-			this._size.x -= widthSubtract > 0 ? widthSubtract : -widthSubtract; 
-		}
-		
-		if ((x + w) < (this.x() + this.w()))
-		{
-			this._size.x = x + w - this.x();
-		}
-	};
-	
-	Box.prototype._intersectVertical = function (y, h) 
-	{
-		if (y > this.y())
-		{
-			var heightSubtract = y - this.y();
-			this._point.y = y;
-			this._size.y -= heightSubtract > 0 ? heightSubtract : -heightSubtract; 
-		}
-		
-		if ((y + h) < (this.y() + this.h()))
-		{
-			this._size.y = y + h - this.y();
-		}
-	};
-		
-	
-	Box.prototype.x = function ()
-	{
-		return this._point.x;	
-	};
-
-	Box.prototype.y = function ()
-	{
-		return this._point.y;	
-	};
-
-	Box.prototype.w = function ()
-	{
-		return this._size.x;	
-	};
-		
-	Box.prototype.h = function ()
-	{
-		return this._size.y;	
-	};
-	
-	Box.prototype.isIntersect = function (box) 
-	{
-		return this._isIntersectHorizontal(box.x(), box.w()) && this._isIntersectVertical(box.y(), box.h());
-	};
-	
-	Box.prototype.isCrossBorder = function (box) 
-	{
-		return this._crossHorizontalBorder(box.x(), box.w()) || this._crossVerticalBorder(box.y(), box.h());
-	};
-	
-	Box.prototype.intersect = function (box) 
-	{
-		this._intersectHorizontal(box.x(), box.w());
-		this._intersectVertical(box.y(), box.h());
-	};
-	
-	
-	this.Box = Box;
-});
-namespace('OUI.core.pos', function (window)
-{
-	var classify = window.Classy.classify; 
-	
-	
-	/**
-	 * @class OUI.core.pos.Point
-	 */
-	function Point(x, y) 
-	{	
-		classify(this);
-		
-		this.x = x;
-		this.y = y;
-	}
-	
-	
-	this.Point = Point;
-});
-namespace('OUI.views', function (window) 
-{
-	var hbs 		= window.OUI.core.view.hbs;
-	var classify 	= window.Classy.classify;
-	var fadeRemove 	= window.OUI.core.view.fadeRemove;
-
-
-	/**
-	 * @class OUI.views.DialogView
-	 */
-	function DialogView(dialog, okButtonText, cancelButtonText) 
-	{
-		classify(this);
-
-		this._dialog 			= dialog;
-		this._okButtonText 		= okButtonText || 'OK';
-		this._cancelButtonText 	= cancelButtonText || 'Cancel';
-		this._okButton 			= 'a.ok-button';
-		this._cancelButton 		= 'a.cancel-button';
-	}
-
-
-	DialogView.prototype.getContainer = function ()
-	{
-		return $('#' + this._dialog.getId());
-	};
-
-	DialogView.prototype.bindEvents = function ()
-	{
-		var dialog = this._dialog;
-		var $container = this.getContainer();
-
-		$container.find(this._okButton).on('click', function (e) {
-			e.preventDefault();
-			dialog.confirm();
-		});
-
-		$container.find(this._cancelButton).on('click', function (e) {
-			e.preventDefault();
-			dialog.cancel();
-		});
-	};
-
-	DialogView.prototype.show = function (message)
-	{
-		$('body').append(hbs('dialog', {
-			id: this._dialog.getId(),
-			message: message,
-			okButtonText: this._okButtonText,
-			cancelButtonText: this._cancelButtonText
-		}));
-	};
-
-	DialogView.prototype.remove = function ()
-	{
-		fadeRemove(this.getContainer());
-	};
-
-	
-	this.DialogView = DialogView;
-});
-namespace('OUI.views', function (window) 
-{
-	var hbs 		= window.OUI.core.view.hbs;
-	var classify 	= window.Classy.classify;
-
-	/**
-	 * @class OUI.views.ModalView
-	 */
-	function ModalView(modal, contents, className) 
-	{
-		classify(this);
-
-		className = className || '';
-
-		this._modal 		= modal;
-		this._underlay 		= 'div.oui-modal-underlay';
-		this._closeButton 	= 'a[data-oui-modal-close]';
-		
-		this._escapeEvent 	= 'keyup.' + modal.getId();
-
-		this._className		= className;
-		this._contents		= contents;
-	};
-	
-
-	ModalView.prototype._close = function ()
-	{
-		$(document).off(this._escapeEvent);
-		this._modal.close();
-	};
-
-
-	ModalView.prototype.getContainer = function ()
-	{
-		return $('#' + this._modal.getId());
-	};
-
-	ModalView.prototype.onOpen = function ()
-	{
-		var modalView = this;
-		var selectors = this._closeButton + ',' + this._underlay;
-
-		$(document).on(this._escapeEvent, function (e) 
-		{
-			if (e.keyCode === 27) 
-				modalView._close();
-		});
-
-		this.getContainer().on('click', selectors, function (e) 
-		{
-			e.preventDefault();
-			modalView._close();
-		});
-	};
-
-	ModalView.prototype.show = function () 
-	{
-		var position = {
-			top: 20,
-			left: 20
-		};
-
-		$('body').append(hbs('modal', {
-			id: this._modal.getId(),
-			contents: this._contents,
-			extraClass: this._className,
-			position: position
-		}));
-	};
-
-	ModalView.prototype.remove = function ()
-	{
-		this.getContainer().remove();
-	};
-
-	
-	this.ModalView = ModalView;
-});
-namespace('OUI.views', function (window) 
-{
-	var hbs 		= window.OUI.core.view.hbs;
-	var classify 	= window.Classy.classify;
-
-
-	function SearchFormView(form, container, value, param, placeholder)
-	{
-		classify(this);
-
-		this._form 			= form;
-		this._container 	= $(container);
-
-		this._input 		= 'input[type="text"]';
-		this._clearButton 	= 'i.toggle-button';
-		
-		this._cancelIcon 	= 'icon-cancel-squared';
-		this._searchIcon	= 'icon-search';
-
-		this.render(value, param, placeholder);
-		this.bindEvents();
-	}
-
-
-	SearchFormView.prototype.getValue = function ()
-	{
-		return this._container.find(this._input).val();
-	};
-
-	SearchFormView.prototype.clearInput = function (e)
-	{
-		var button = this._container.find(this._clearButton);
-
-		this._container.find(this._input).val('');
-		button.removeClass(this._cancelIcon).addClass(this._searchIcon);
-	};
-
-	SearchFormView.prototype.transformIcon = function (e)
-	{
-		var button 	= this._container.find(this._clearButton);
-		var input 	= this._container.find(this._input);
-
-		button.removeClass(this._searchIcon).addClass(this._cancelIcon);
-	};
-
-	SearchFormView.prototype.bindEvents = function ()
-	{
-		this._container.on('input', this._input, this._form.input);
-		this._container.on('click', this._clearButton, this._form.clear);
-		this._container.on('submit', function (e) { e.preventDefault(); });
-	};
-
-	SearchFormView.prototype.render = function (value, param, placeholder)
-	{
-		this._container.append(hbs('search-form', {
-			value: value,
-			param: param,
-			placeholder: placeholder			
-		}));
-
-		if (value.length)
-		{
-			this._container.find(this._clearButton).addClass(this._animationClass);
-		}
-	};
-
-
-	this.SearchFormView = SearchFormView;
-});
-namespace('OUI.views', function (window) 
-{
-	var hbs 		= window.OUI.core.view.hbs;
-	var fadeRemove 	= window.OUI.core.view.fadeRemove;
-	var classify 	= window.Classy.classify;
-	
-
-	/**
-	 * @class OUI.views.ToastView
-	 */
-	function ToastView(toast, delay)
-	{
-		classify(this);
-
-		delay = delay || 5000;
-
-		this._toast 	= toast;
-		this._delay 	= delay;
-
-		this._dismiss 	= 'a[data-oui-dismiss]';
-	};
-
-	ToastView.prototype.bindDismiss = function ()
-	{
-		var toast = this._toast;
-
-		this.getContainer().on('click', this._dismiss, function (e) {
-			e.preventDefault();
-			toast.dismiss();
-		});
-	};
-
-	ToastView.prototype.show = function (message)
-	{
-		this._onAdd.add(callback);
-	};
-
-	ToastView.prototype.getContainer = function ()
-	{
-		return $('#' + this._toast.getId());
-	};
-
-	ToastView.prototype.show = function (message)
-	{
-		var view = this;
-
-		$('body').append(hbs('toast', {
-			message: message,
-			id: this._toast.getId()
-		}));
-
-		setTimeout(function () {
-			fadeRemove(view.getContainer());
-		}, this._delay);
-	};
-
-	ToastView.prototype.remove = function ()
-	{
-		fadeRemove(this.getContainer());
-	};
-
-
-	this.ToastView = ToastView;
-});
-namespace('OUI.views', function (window) 
-{
-	var classify 	= window.Classy.classify;
-
-
-	/**
-	 * @class OUI.views.WrapperView
-	 */
-	function WrapperView(wrapper, container, template) 
-	{
-		classify(this);
-
-		this._wrapper 	= wrapper;
-		this._container = $(container);
-		this._template 	= template;
-	};
-
-
-	WrapperView.prototype.getContainer = function ()
-	{
-		return this._container;
-	};
-
-	WrapperView.prototype.render = function (params)
-	{
-		params = params || {};
-		return this._container.empty().append(this._template.hbs(params));
-	};
-
-
-	this.WrapperView = WrapperView;
-});
-namespace('OUI.views.list', function (window) 
-{
-	var hbs 		= window.OUI.core.view.hbs;
-	var classify 	= window.Classy.classify;
-	var obj			= window.Plankton.obj;
-
-
-	/**
-	 * @class OUI.views.list.ListPaginationView
-	 */
-	function ListPaginationView(listPagination, container) 
-	{
-		classify(this);
-
-		this._pagination 	= listPagination;
-		this._container 	= $(container);
-
-		this._nextSelector	= 'a[data-next]';
-		this._prevSelector 	= 'a[data-prev]';
-
-		this._bindEvents();
-		this.render();
-	}
-
-
-	ListPaginationView.prototype._getLink = function (params)
-	{
-		return window.location.pathname + '?' + $.param(params);
-	};
-
-	ListPaginationView.prototype._getNextPageLink = function (page, total, count)
-	{
-		var params = obj.copy(this._pagination.getParams());
-
-		if ((page + 1) * count < total)
-		{
-			params['_page'] = page + 1;
-		}
-
-		return this._getLink(params);
-	};
-
-	ListPaginationView.prototype._getPrevPageLink = function (page, total, count)
-	{
-		var params = obj.copy(this._pagination.getParams());
-
-		if (page > 0)
-		{
-			params['_page'] = page - 1;
-		}
-
-		return this._getLink(params);
-	};
-
-	ListPaginationView.prototype._getViewParams = function ()
-	{
-		var total 	= this._pagination.getTotal();
-		var page 	= this._pagination.getPage();
-		var count 	= this._pagination.getCount();
-
-		var showingFrom = (page * count) + 1;
-		var showingTo 	= (page + 1) * count < total ? (page + 1) * count : total;
-
-		var data = 
-		{
-			showingFrom: showingFrom,
-			showingTo: showingTo,
-			prevPageLink: this._getPrevPageLink(page, total, count),
-			nextPageLink: this._getNextPageLink(page, total, count),
-			hasNextPage: (page + 1) * count < total,
-			hasPrevPage: page > 0,
-			total: total
-		};
-
-		return data;
-	};
-
-	ListPaginationView.prototype._bindEvents = function ()
-	{
-		this._container.on('click', 'a', function (e) { e.preventDefault() });
-		this._container.on('click', this._nextSelector, this._pagination.next);
-		this._container.on('click', this._prevSelector, this._pagination.prev);
-	};
-
-
-	ListPaginationView.prototype.render = function ()
-	{		
-		this._container.empty().append(hbs('pagination', this._getViewParams()));		
-	};
-
-	
-	this.ListPaginationView = ListPaginationView;
-});
-namespace('OUI.views.list', function (window) 
-{
-	var classify = window.Classy.classify;
-
-
-	/**
-	 * @class OUI.views.list.ListSearchView
-	 */
-	function ListSearchView()
-	{
-		classify(this);
-		
-		this._itemsContainer 		= null;
-		this._itemsWrapper			= null;
-		this._nullstateContainer 	= null;
-	}
-
-
-	ListSearchView.prototype.setItemsContainer = function (container)
-	{
-		this._itemsContainer 	= $(container);
-		this._itemsWrapper 		= this.getItemsWrapper();
-	};
-
-	ListSearchView.prototype.getItemsWrapper = function ()
-	{
-		var container = this._itemsContainer;
-		return container.parent()[0].tagName === 'TABLE' ? container.parent() : container;
-	};
-
-	ListSearchView.prototype.setNullstate = function (container)
-	{
-		this._nullstateContainer = $(container);
-	};
-
-	ListSearchView.prototype.hideNullstate = function ()
-	{
-		this._itemsWrapper.removeClass('hidden');
-		this._nullstateContainer.empty().addClass('hidden');
-	};
-
-	ListSearchView.prototype.showNullstate = function ()
-	{
-		this._itemsWrapper.addClass('hidden');
-		this._nullstateContainer.removeClass('hidden');
-	};
-
-	
-	this.ListSearchView = ListSearchView;
-});
-namespace('OUI.views.list', function (window) 
-{
-	var classify 	= window.Classy.classify;
-	var array 		= window.Plankton.array;
-
-
-	/**
-	 * @class OUI.views.list.ListSelectionView
-	 */
-	function ListSelectionView(selection, itemsSelector) 
-	{
-		classify(this);
-
-		this._selection 	= selection;
-		this._items 		= $(itemsSelector);
-
-		this._bindEvents();
-	};
-
-
-	ListSelectionView.prototype._bindEvents = function ()
-	{
-		this._items.on('change', this._onChange);
-	};
-
-	ListSelectionView.prototype._onChange = function (e)
-	{
-		var checkbox 	= $(e.target);
-		var checkboxId 	= $(e.target).attr('id');
-
-		if (checkbox.is(':checked'))
-		{
-			this._selection.select([checkboxId]);
-		}
-		else
-		{
-			this._selection.deselect([checkboxId]);
-		}
-	};
-
-	
-	this.ListSelectionView = ListSelectionView;
-});
-namespace('OUI.views.list', function (window) 
-{
-	var classify = window.Classy.classify;
-
-
-	/**
-	 * @class OUI.views.list.ListSortingView
-	 */
-	function ListSortingView(sorting, params, selector)
-	{
-		classify(this);
-
-		this._sorting = sorting;
-
-		this._sortColumns = $('a.sortable');
-		this._sortColumns.on('click', this.updateLink);
-	}
-
-
-	ListSortingView.prototype._setOrder = function (elem)
-	{
-		var order 		= elem.data();
-		var orderWay 	= order.orderWay === 1 ? 0 : 1;
-
-		this._sorting.setParam('_page', 0);
-		this._sorting.setParam('_order', order.orderBy + ',' + orderWay);
-
-		if (orderWay === 1)
-		{
-			elem.addClass('asc');
-		}
-		else 
-		{
-			elem.removeClass('asc');
-		}
-
-		elem.data('order-way', orderWay);
-	};
-
-	ListSortingView.prototype._updateLink = function (elem)
-	{
-		var path 		= window.location.pathname;
-		var queryString = $.param(this._sorting.getParams());
-
-		elem.attr('href', path + (queryString.length ? '?' + queryString : ''));
-	};
-
-	
-	ListSortingView.prototype.setActive = function (e)
-	{
-		this._sortColumns.removeClass('active');
-		$(e.target).addClass('active');
-	};
-
-	ListSortingView.prototype.updateLink = function (e)
-	{
-		e.preventDefault();
-
-		var elem = $(e.target);
-		
-		this._setOrder(elem);
-		this._updateLink(elem);
-		this._sorting.sort(e);
-	};
-
-	
-	this.ListSortingView = ListSortingView;
-});
-namespace('Plankton', function (root) 
-{
-	var is		= root.Plankton.is;
-	var obj		= root.Plankton.obj;
-	var array	= root.Plankton.array;
-	
-	
-	function getForEachForSubject(subject)
-	{
-		if (is.array(subject))
-		{
-			return array.forEach;
-		}
-		else if (is.jsObject(subject))
-		{
-			return obj.forEach;
-		}
-		else
-		{
-			throw Error('Subject must be Array or Object');
-		}
-	}
-	
-	
-	/**
-	 * @class Plankton.foreach
-	 * @alias foreach
-	 * 
-	 * @param {Array|Object} subject
-	 * @param {function(*)} callback
-	 * @param {*=} scope
-	 */
-	var foreach = function (subject, callback, scope)
-	{
-		var method = getForEachForSubject(subject);
-		method.value(subject, callback, scope);
-	};
-	
-	/**
-	 * @param {Array} subject
-	 * @param {function(*)} callback
-	 * @param {*=} scope
-	 */
-	foreach.value = foreach;
-	
-	/**
-	 * @param {Array} subject
-	 * @param {function(Number)} callback
-	 * @param {*=} scope
-	 */
-	foreach.key = function (subject, callback, scope)
-	{
-		var method = getForEachForSubject(subject);
-		method.key(subject, callback, scope);
-	};
-	
-	/**
-	 * @param {Array} subject
-	 * @param {function(Number *)} callback
-	 * @param {*=} scope
-	 */
-	foreach.pair = function(subject, callback, scope)
-	{
-		var method = getForEachForSubject(subject);
-		method.pair(subject, callback, scope);
-	};
-	
-	/**
-	 * @param {Array} subject
-	 * @param {function(Array)} callback
-	 * @param {*=} scope
-	 */
-	foreach.item = function(subject, callback, scope)
-	{
-		var method = getForEachForSubject(subject);
-		method.item(subject, callback, scope);
-	};
-	
-	
-	this.foreach = foreach;
-});
-namespace('Duct.Debug', function (root)
-{
-	var foreach = root.Plankton.foreach;
-	
-	
-	var DEFAULT_FILTER = /.*/;
-	
-	
-	/**
-	 * @param {Event} event
-	 * @param {Array} params
-	 */
-	var DEFAULT_LOGGER = function (event, params)
-	{ 
-		console.groupCollapsed('Event %c' + event.name(), 'color: green');
-		
-		foreach(params, function (value)
-		{
-			console.log(value);
-		});
-		
-		console.groupEnd();
-	};
-	
-	
-	/**
-	 * @param {RegExp=} filter
-	 * @constructor
-	 */
-	var EventDebug = function (filter)
-	{
-		/**
-		 * @type {RegExp}
-		 * @private
-		 */
-		this._filter = filter || DEFAULT_FILTER;
-	
-		/**
-		 * @type {boolean}
-		 * @private
-		 */
-		this._log = false;
-	
-		/**
-		 * @private
-		 */
-		this._logger = DEFAULT_LOGGER;
-	};
-	
-	
-	EventDebug.prototype.log = function ()
-	{
-		this._log = true;
-	};
-	
-	/**
-	 * @param {RegExp} filter
-	 */
-	EventDebug.prototype.filter = function (filter)
-	{
-		this._filter = filter;
-	};
-	
-	/**
-	 * @param {string} data
-	 */
-	EventDebug.prototype.filterStartsWith = function (data)
-	{
-		this._filter = new RegExp('^' + data + '.*$');
-	};
-	
-	EventDebug.prototype.reset = function ()
-	{
-		this._filter = DEFAULT_FILTER;
-		this._log = false;
-	};
-	
-	/**
-	 * @param {function} logger
-	 */
-	EventDebug.prototype.setLogger = function(logger)
-	{
-		this._logger = logger;
-	};
-	
-	/**
-	 * @param {Event} event
-	 * @param {Array} args
-	 */
-	EventDebug.prototype.onTrigger = function(event, args) 
-	{
-		if (!this._log || !this._filter.test(event.name()))
-		{
-			return;
-		}
-		
-		this._logger(event, args)
-	};
-	
-	
-	this.EventDebug = EventDebug;
-});
-namespace('Duct', function (root)
-{
-	var func		= root.Plankton.func;
-	var foreach		= root.Plankton.foreach;
-	
-	
-	/**
-	 * @name {Duct.Trigger}
-	 * @alias {Trigger}
-	 */
-	var Trigger = {
-		
-		asyncHandle: function (callbacks, args, next)
-		{
-			foreach(callbacks, function(callback)
-			{
-				func.async.do(function() 
-				{
-					next([callback], args);
-				});
-			});
-		},
-		
-		asyncTrigger: function (callbacks, args, next)
-		{
-			func.async.do(function() 
-			{
-				next(callbacks, args);
-			});
-		},
-		
-	};
-	
-	
-	this.Trigger = Trigger;
-});
-namespace('OUI.core.pos', function (window) 
-{
-	var is 			= window.Plankton.is;
-	var classify 	= window.Classy.classify; 
-	var Box 		= window.OUI.core.pos.Box;
-	var Point		= window.OUI.core.pos.Point;
-	
-	
-	/**
-	 * @class OUI.core.pos.Positioner
+	 * @class OUI.Core.Pos.Positioner
 	 */
 	var Positioner = function (data) 
 	{
@@ -2558,265 +2162,335 @@ namespace('OUI.core.pos', function (window)
 	
 	this.Positioner = Positioner;
 });
-namespace('OUI.views.list', function (window) 
+namespace('OUI.Views.List', function (window) 
+{
+	var hbs 		= window.OUI.Core.View.hbs;
+	var classify 	= window.Classy.classify;
+	var obj			= window.Plankton.obj;
+
+
+	/**
+	 * @class OUI.Views.List.ListPaginationView
+	 */
+	function ListPaginationView(listPagination, container) 
+	{
+		classify(this);
+
+		this._pagination 	= listPagination;
+		this._container 	= $(container);
+
+		this._nextSelector	= 'a[data-next]';
+		this._prevSelector 	= 'a[data-prev]';
+
+		this._bindEvents();
+		this.render();
+	}
+
+
+	ListPaginationView.prototype._getLink = function (params)
+	{
+		return window.location.pathname + '?' + $.param(params);
+	};
+
+	ListPaginationView.prototype._getNextPageLink = function (page, total, count)
+	{
+		var params = obj.copy(this._pagination.getParams());
+
+		if ((page + 1) * count < total)
+		{
+			params['_page'] = page + 1;
+		}
+
+		return this._getLink(params);
+	};
+
+	ListPaginationView.prototype._getPrevPageLink = function (page, total, count)
+	{
+		var params = obj.copy(this._pagination.getParams());
+
+		if (page > 0)
+		{
+			params['_page'] = page - 1;
+		}
+
+		return this._getLink(params);
+	};
+
+	ListPaginationView.prototype._getViewParams = function ()
+	{
+		var total 	= this._pagination.getTotal();
+		var page 	= this._pagination.getPage();
+		var count 	= this._pagination.getCount();
+
+		var showingFrom = (page * count) + 1;
+		var showingTo 	= (page + 1) * count < total ? (page + 1) * count : total;
+
+		var data = 
+		{
+			showingFrom: showingFrom,
+			showingTo: showingTo,
+			prevPageLink: this._getPrevPageLink(page, total, count),
+			nextPageLink: this._getNextPageLink(page, total, count),
+			hasNextPage: (page + 1) * count < total,
+			hasPrevPage: page > 0,
+			total: total
+		};
+
+		return data;
+	};
+
+	ListPaginationView.prototype._bindEvents = function ()
+	{
+		this._container.on('click', 'a', function (e) { e.preventDefault() });
+		this._container.on('click', this._nextSelector, this._pagination.next);
+		this._container.on('click', this._prevSelector, this._pagination.prev);
+	};
+
+
+	ListPaginationView.prototype.render = function ()
+	{		
+		this._container.empty().append(hbs('pagination', this._getViewParams()));		
+	};
+
+	
+	this.ListPaginationView = ListPaginationView;
+});
+namespace('OUI.Views.List', function (window) 
 {
 	var classify 	= window.Classy.classify;
-	var foreach 	= window.Plankton.foreach;
+	var array 		= window.Plankton.array;
 
 
 	/**
-	 * @class OUI.views.list.ListItemsView
+	 * @class OUI.Views.List.ListSelectionView
 	 */
-	function ListItemsView(listItems, container) 
+	function ListSelectionView(selection, itemsSelector) 
 	{
 		classify(this);
 
-		this._listItems = listItems;
-		this._container = $(container);
+		this._selection 	= selection;
+		this._items 		= $(itemsSelector);
 
-		this._loadingClass = 'loading';
-	}
-
-
-	ListItemsView.prototype.getItemsWrapper = function ()
-	{
-		var container = this._container;
-		return container.parent()[0].tagName === 'TABLE' ? container.parent() : container;
+		this._bindEvents();
 	};
 
-	ListItemsView.prototype.getContainer = function ()
+
+	ListSelectionView.prototype._bindEvents = function ()
 	{
-		return this._container;
+		this._items.on('change', this._onChange);
 	};
 
-	ListItemsView.prototype.render = function (items, template)
+	ListSelectionView.prototype._onChange = function (e)
 	{
-		var container = this._container;
+		var checkbox 	= $(e.target);
+		var checkboxId 	= $(e.target).attr('id');
 
-		container.empty();
-		this.getItemsWrapper().removeClass(this._loadingClass);
-		
-		foreach(items, function (item) 
+		if (checkbox.is(':checked'))
 		{
-			container.append(template.hbs(item));
-		});
-	};
-
-	ListItemsView.prototype.highlightTerm = function (term)
-	{
-		if (term.length)
-		{
-			this._container.highlight(term);
+			this._selection.select([checkboxId]);
 		}
 		else
 		{
-			this._container.unhighlight();
+			this._selection.deselect([checkboxId]);
 		}
 	};
 
-	ListItemsView.prototype.setLoading = function ()
-	{
-		this.getItemsWrapper().addClass(this._loadingClass);
-	};
-
 	
-	this.ListItemsView = ListItemsView;
+	this.ListSelectionView = ListSelectionView;
 });
-namespace('Duct', function (root)
+namespace('Plankton', function (root) 
 {
-	var Trigger		= root.Duct.Trigger;
-	var EventDebug	= root.Duct.Debug.EventDebug;
-	
-	var func		= root.Plankton.func;
-	var foreach		= root.Plankton.foreach;
-	var classify	= root.Classy.classify;
+	var is		= root.Plankton.is;
+	var obj		= root.Plankton.obj;
+	var array	= root.Plankton.array;
 	
 	
-	/**
-	 * @template T
-	 * 
-	 * @constructor
-	 * @class Duct.Event
-	 * 
-	 * @property {Array<T>} _callbacks
-	 * @property {string} _name
-	 * @property {function(err)} _errorHandler
-	 * 
-	 * @param {string} name
-	 * @param {EventDebug=} debug
-	 */
-	function Event(name, debug)
+	function getForEachForSubject(subject)
 	{
-		classify(this);
-		
-		this._callbacks	= [];
-		this._name		= name || '';
-		this._debug		= debug || Event.DEFAULT_DEBUG;
-		this._trigger	= this._defaultTrigger;
-		
-		this._errorHandler = function(err)
+		if (is.array(subject))
 		{
-			console.error('Error when executing event ' + this._name, err);
-		};
+			return array.forEach;
+		}
+		else if (is.jsObject(subject))
+		{
+			return obj.forEach;
+		}
+		else
+		{
+			throw Error('Subject must be Array or Object');
+		}
 	}
 	
 	
 	/**
+	 * @class Plankton.foreach
+	 * @alias foreach
 	 * 
-	 * @param {array} callbacks
-	 * @param {array} callbackArgs
-	 * @private
+	 * @param {Array|Object} subject
+	 * @param {function(*)} callback
+	 * @param {*=} scope
 	 */
-	Event.prototype._defaultTrigger = function (callbacks, callbackArgs)
+	var foreach = function (subject, callback, scope)
 	{
-		foreach(callbacks, 
-			function(callback)
-			{
-				this._triggerCallback(callback, callbackArgs);
-			}, 
-			this);
+		var method = getForEachForSubject(subject);
+		method.value(subject, callback, scope);
 	};
 	
 	/**
-	 * @param {Function} callback
-	 * @param {Array} callbackArgs
-	 * @private
+	 * @param {Array} subject
+	 * @param {function(*)} callback
+	 * @param {*=} scope
 	 */
-	Event.prototype._triggerCallback = function (callback, callbackArgs)
+	foreach.value = foreach;
+	
+	/**
+	 * @param {Array} subject
+	 * @param {function(Number)} callback
+	 * @param {*=} scope
+	 */
+	foreach.key = function (subject, callback, scope)
 	{
-		if (this._callbacks === null) return;
+		var method = getForEachForSubject(subject);
+		method.key(subject, callback, scope);
+	};
+	
+	/**
+	 * @param {Array} subject
+	 * @param {function(Number *)} callback
+	 * @param {*=} scope
+	 */
+	foreach.pair = function(subject, callback, scope)
+	{
+		var method = getForEachForSubject(subject);
+		method.pair(subject, callback, scope);
+	};
+	
+	/**
+	 * @param {Array} subject
+	 * @param {function(Array)} callback
+	 * @param {*=} scope
+	 */
+	foreach.item = function(subject, callback, scope)
+	{
+		var method = getForEachForSubject(subject);
+		method.item(subject, callback, scope);
+	};
+	
+	
+	this.foreach = foreach;
+});
+namespace('Duct.Debug', function (root)
+{
+	var foreach = root.Plankton.foreach;
+	
+	
+	var DEFAULT_FILTER = /.*/;
+	
+	
+	/**
+	 * @param {Event} event
+	 * @param {Array} params
+	 */
+	var DEFAULT_LOGGER = function (event, params)
+	{ 
+		console.groupCollapsed('Event %c' + event.name(), 'color: green');
 		
-		var wrappedCallback = func.safe(callback, this._errorHandler); 
-		wrappedCallback.apply(null, callbackArgs);
-	};
-	
-	
-	/**
-	 * @returns {string}
-	 */
-	Event.prototype.name = function ()
-	{
-		return this._name;
-	};
-	
-	/**
-	 * @param {function(err)} handler
-	 */
-	Event.prototype.setErrorHandler = function (handler)
-	{
-		this._errorHandler = handler;
-	};
-	
-	Event.prototype.clear = function ()
-	{
-		if (this._callbacks !== null)
-			this._callbacks = [];
-	};
-	
-	/**
-	 * @template T
-	 * @param {T} callback
-	 * @return {Event}
-	 */
-	Event.prototype.add = function (callback)
-	{
-		if (this._callbacks !== null)
-			this._callbacks.push(callback);
-		
-		return this;
-	};
-	
-	/**
-	 * @template T
-	 * @param {T} callback
-	 * @return {Event}
-	 */
-	Event.prototype.remove = function (callback)
-	{
-		if (this._callbacks === null) return this;
-		
-		var index = this._callbacks.indexOf(callback);
-		
-		if (index >= 0)
+		foreach(params, function (value)
 		{
-			this._callbacks.splice(index, 1);
+			console.log(value);
+		});
+		
+		console.groupEnd();
+	};
+	
+	
+	/**
+	 * @param {RegExp=} filter
+	 * @constructor
+	 */
+	var EventDebug = function (filter)
+	{
+		/**
+		 * @type {RegExp}
+		 * @private
+		 */
+		this._filter = filter || DEFAULT_FILTER;
+	
+		/**
+		 * @type {boolean}
+		 * @private
+		 */
+		this._log = false;
+	
+		/**
+		 * @private
+		 */
+		this._logger = DEFAULT_LOGGER;
+	};
+	
+	
+	EventDebug.prototype.log = function ()
+	{
+		this._log = true;
+	};
+	
+	/**
+	 * @param {RegExp} filter
+	 */
+	EventDebug.prototype.filter = function (filter)
+	{
+		this._filter = filter;
+	};
+	
+	/**
+	 * @param {string} data
+	 */
+	EventDebug.prototype.filterStartsWith = function (data)
+	{
+		this._filter = new RegExp('^' + data + '.*$');
+	};
+	
+	EventDebug.prototype.reset = function ()
+	{
+		this._filter = DEFAULT_FILTER;
+		this._log = false;
+	};
+	
+	/**
+	 * @param {function} logger
+	 */
+	EventDebug.prototype.setLogger = function(logger)
+	{
+		this._logger = logger;
+	};
+	
+	/**
+	 * @param {Event} event
+	 * @param {Array} args
+	 */
+	EventDebug.prototype.onTrigger = function(event, args) 
+	{
+		if (!this._log || !this._filter.test(event.name()))
+		{
+			return;
 		}
 		
-		return this;
-	};
-	
-	/**
-	 * @returns {Number}
-	 */
-	Event.prototype.count = function ()
-	{
-		return this._callbacks.length;
-	};
-	
-	/**
-	 * @template T
-	 * @type T
-	 */
-	Event.prototype.trigger = function()
-	{
-		if (this._callbacks === null) return this;
-		
-		var callbackArgs = [].slice.apply(arguments);
-		
-		this._debug.onTrigger(this, callbackArgs);
-		this._trigger(this._callbacks.concat(), callbackArgs);
-	};
-	
-	/**
-	 * @param {Function} triggerCallback
-	 */
-	Event.prototype.addTrigger = function (triggerCallback)
-	{
-		var next = this._trigger;
-		this._trigger = function (callbacks, args) { triggerCallback(callbacks, args, next); };
-	};
-	
-	/**
-	 * @param {boolean=false} triggerOnly If true, only the trigger called asynchonisuly, but all of the handlers,
-	 * called one after another.
-	 */
-	Event.prototype.async = function (triggerOnly)
-	{
-		if (triggerOnly === true)
-			this.addTrigger(Trigger.asyncTrigger);
-		else
-			this.addTrigger(Trigger.asyncHandle);
-	};
-	
-	/**
-	 * @return {boolean}
-	 */
-	Event.prototype.isDestroyed = function ()
-	{
-		return this._callbacks === null;
-	};
-	
-	Event.prototype.destroy = function ()
-	{
-		this._callbacks = null;
+		this._logger(event, args)
 	};
 	
 	
-	Event.DEFAULT_DEBUG = new EventDebug();
-	
-	
-	this.Event = Event;
+	this.EventDebug = EventDebug;
 });
-namespace('OUI.core.pos.prepared', function (window) 
+namespace('OUI.Core.Pos.Prepared', function (window) 
 {
 	var is 				= window.Plankton.is;
 	var classify		= window.Classy.classify;
-	var Point 			= window.OUI.core.pos.Point;
-	var Box 			= window.OUI.core.pos.Box;
-	var Area			= window.OUI.core.pos.Area;
-	var Positioner		= window.OUI.core.pos.Positioner;
-	var TargetSide 		= window.OUI.core.pos.enum.TargetSide;
-	var TargetPosition 	= window.OUI.core.pos.enum.TargetPosition;
+	var Point 			= window.OUI.Core.Pos.Point;
+	var Box 			= window.OUI.Core.Pos.Box;
+	var Area			= window.OUI.Core.Pos.Area;
+	var Positioner		= window.OUI.Core.Pos.Positioner;
+	var TargetSide 		= window.OUI.Core.Pos.Enum.TargetSide;
+	var TargetPosition 	= window.OUI.Core.Pos.Enum.TargetPosition;
 	
 	
 	var defaults = {
@@ -2833,7 +2507,7 @@ namespace('OUI.core.pos.prepared', function (window)
 	
 	
 	/**
-	 * @class OUI.core.pos.prepared.BasePreparedWithOffsets
+	 * @class OUI.Core.Pos.Prepared.BasePreparedWithOffsets
 	 */
 	function BasePreparedWithOffsets(options, defaultsOptions)
 	{
@@ -3235,17 +2909,312 @@ namespace('OUI.core.pos.prepared', function (window)
 
 	this.BasePreparedWithOffsets = BasePreparedWithOffsets;
 });
-namespace('OUI.components', function (window) 
+namespace('OUI.Views.List', function (window) 
 {
-	var Event       = window.Duct.Event;
-	var DialogView 	= window.OUI.views.DialogView;
-
 	var classify 	= window.Classy.classify;
-	var idGenerator = window.OUI.core.view.idGenerator;
+	var foreach 	= window.Plankton.foreach;
 
 
 	/**
-	 * @class OUI.components.Dialog
+	 * @class OUI.Views.List.ListItemsView
+	 */
+	function ListItemsView(listItems, container) 
+	{
+		classify(this);
+
+		this._listItems = listItems;
+		this._container = $(container);
+
+		this._loadingClass = 'loading';
+	}
+
+
+	ListItemsView.prototype.getItemsWrapper = function ()
+	{
+		var container = this._container;
+		return container.parent()[0].tagName === 'TABLE' ? container.parent() : container;
+	};
+
+	ListItemsView.prototype.getContainer = function ()
+	{
+		return this._container;
+	};
+
+	ListItemsView.prototype.render = function (items, template)
+	{
+		var container = this._container;
+
+		container.empty();
+		this.getItemsWrapper().removeClass(this._loadingClass);
+		
+		foreach(items, function (item) 
+		{
+			container.append(template.hbs(item));
+		});
+	};
+
+	ListItemsView.prototype.highlightTerm = function (term)
+	{
+		if (term.length)
+		{
+			this._container.highlight(term);
+		}
+		else
+		{
+			this._container.unhighlight();
+		}
+	};
+
+	ListItemsView.prototype.setLoading = function ()
+	{
+		this.getItemsWrapper().addClass(this._loadingClass);
+	};
+
+	
+	this.ListItemsView = ListItemsView;
+});
+namespace('Duct', function (root)
+{
+	var EventDebug = root.Duct.Debug.EventDebug;
+	
+	var func	= root.Plankton.func;
+	var foreach	= root.Plankton.foreach;
+	
+	
+	/**
+	 * @template T
+	 * 
+	 * @constructor
+	 * @class Duct.Event
+	 * 
+	 * @property {Array<T>} _callbacks
+	 * @property {string} _name
+	 * @property {function(err)} _errorHandler
+	 * 
+	 * @param {string} name
+	 * @param {EventDebug=} debug
+	 */
+	function Event(name, debug)
+	{
+		this._callbacks	= [];
+		this._name		= name || '';
+		this._debug		= debug || Event.DEFAULT_DEBUG;
+		
+		
+		this._errorHandler = function(err)
+		{
+			console.error('Error when executing event ' + this._name, err);
+		};
+	}
+	
+	
+	/**
+	 * @param {Function} callback
+	 * @param {Array} callbackArgs
+	 * @private
+	 */
+	Event.prototype._triggerCallback = function (callback, callbackArgs)
+	{
+		var wrappedCallback = func.safe(callback, this._errorHandler);
+		wrappedCallback = func.async(wrappedCallback); 
+		wrappedCallback.apply(null, callbackArgs);
+	};
+	
+	
+	/**
+	 * @returns {string}
+	 */
+	Event.prototype.name = function ()
+	{
+		return this._name;
+	};
+	
+	/**
+	 * @param {function(err)} handler
+	 */
+	Event.prototype.setErrorHandler = function (handler)
+	{
+		this._errorHandler = handler;
+	};
+	
+	Event.prototype.clear = function()
+	{
+		this._callbacks = [];
+	};
+	
+	/**
+	 * @template T
+	 * @param {T} callback
+	 * @return {Event}
+	 */
+	Event.prototype.add = function (callback)
+	{
+		this._callbacks.push(callback);
+		return this;
+	};
+	
+	/**
+	 * @template T
+	 * @param {T} callback
+	 * @return {Event}
+	 */
+	Event.prototype.remove = function (callback)
+	{
+		var index = this._callbacks.indexOf(callback);
+		
+		if (index >= 0)
+		{
+			this._callbacks.splice(index, 1);
+		}
+		
+		return this;
+	};
+	
+	/**
+	 * @returns {Number}
+	 */
+	Event.prototype.count = function count()
+	{
+		return this._callbacks.length;
+	};
+	
+	/**
+	 * @template T
+	 * @type T
+	 */
+	Event.prototype.trigger = function()
+	{
+		var callbackArgs = [].slice.apply(arguments);
+		var self = this;
+		
+		this._debug.onTrigger(this, callbackArgs);
+		
+		func.async.do(
+			function() 
+			{
+				foreach(self._callbacks, function(callback)
+				{
+					self._triggerCallback(callback, callbackArgs);
+				});
+			});
+	};
+	
+	
+	Event.DEFAULT_DEBUG = new EventDebug();
+	
+	
+	this.Event = Event;
+});
+namespace('OUI.Core.Pos.Prepared.Cornered', function (window) 
+{
+	var classify				= window.Classy.classify;
+	var TargetSide 				= window.OUI.Core.Pos.Enum.TargetSide;
+	var TargetPosition 			= window.OUI.Core.Pos.Enum.TargetPosition;
+	var BasePreparedWithOffsets = window.OUI.Core.Pos.Prepared.BasePreparedWithOffsets;
+	
+	
+	var defaults = {
+		initialSide: TargetSide.bottom,
+		initialPosition: TargetPosition.center
+	};
+	
+	
+	/**
+	 * @class OUI.Core.Pos.Prepared.Cornered.BottomPosition
+	 */
+	function BottomPosition(options)
+	{
+		classify(this);
+		
+		BasePreparedWithOffsets.call(this, options, defaults);
+		
+		this._availableSides = [
+			TargetSide.bottom
+		];
+	}
+	
+	
+	BottomPosition.get = function (options) 
+	{
+		var bottomPosition = new BottomPosition(options);
+		return bottomPosition.getPosition();
+	};
+	
+
+	BottomPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
+	BottomPosition.prototype.constructor = BottomPosition;
+	
+	
+	BottomPosition.prototype._getAvailableSides = function () 
+	{
+		return this._availableSides;	
+	};
+		
+	
+	this.BottomPosition = BottomPosition;
+});
+namespace('OUI.Core.Pos.Prepared', function (window) 
+{
+	var classify				= window.Classy.classify;
+	var TargetSide 				= window.OUI.Core.Pos.Enum.TargetSide;
+	var TargetPosition 			= window.OUI.Core.Pos.Enum.TargetPosition;
+	var BasePreparedWithOffsets = window.OUI.Core.Pos.Prepared.BasePreparedWithOffsets;
+
+	
+	var defaults = {
+		initialSide: TargetSide.top,
+		initialPosition: TargetPosition.center
+	};
+	
+
+	/**
+	 * @class OUI.Core.Pos.Prepared.RoundPosition
+	 */
+	function RoundPosition(options)
+	{
+		classify(this);
+
+		BasePreparedWithOffsets.call(this, options, defaults);
+		
+		this._availableSides = [
+			TargetSide.top,
+			TargetSide.right,
+			TargetSide.bottom,
+			TargetSide.left,
+		];
+	}
+	
+	
+	RoundPosition.get = function (options) 
+	{
+		var roundPosition = new RoundPosition(options);
+		return roundPosition.getPosition();
+	};
+	
+
+	RoundPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
+	RoundPosition.prototype.constructor = RoundPosition;
+	
+	
+	RoundPosition.prototype._getAvailableSides = function () 
+	{
+		return this._availableSides;	
+	};
+	
+	
+	this.RoundPosition = RoundPosition;
+});
+namespace('OUI.Components', function (window) 
+{
+	var Event       = window.Duct.Event;
+	var DialogView 	= window.OUI.Views.DialogView;
+
+	var classify 	= window.Classy.classify;
+	var idGenerator = window.OUI.Core.View.idGenerator;
+
+
+	/**
+	 * @class OUI.Components.Dialog
 	 */
 	function Dialog(okButtonText, cancelButtonText) 
 	{
@@ -3303,251 +3272,16 @@ namespace('OUI.components', function (window)
 
 	this.Dialog = Dialog;
 });
-namespace('OUI.components', function (window) 
-{
-	var Event       = window.Duct.Event;
-	var ModalView   = window.OUI.views.ModalView;
-	
-	var classify 	= window.Classy.classify;
-	var idGenerator = window.OUI.core.view.idGenerator;
-
-
-	/**
-	 * @class OUI.components.Modal
-	 */
-	function Modal(contents, className) 
-	{
-		classify(this);
-
-		this._id            = idGenerator('oui-modal');
-		
-		this._view     		= new ModalView(this, contents, className);
-
-		this._onBeforeOpen 	= new Event('modal.beforeOpen');
-		this._onAfterOpen 	= new Event('modal.afterOpen');
-		this._onBeforeClose = new Event('modal.beforeClose');
-		this._onAfterClose 	= new Event('modal.afterClose');
-
-		this.onAfterOpen(this._view.onOpen);
-	};
-
-	Modal.prototype.getId = function ()
-	{
-		return this._id;
-	};
-
-	Modal.prototype.onBeforeOpen = function (callback)
-	{
-		this._onBeforeOpen.add(callback);
-	};
-
-	Modal.prototype.onAfterOpen = function (callback)
-	{
-		this._onAfterOpen.add(callback);
-	};
-
-	Modal.prototype.onBeforeClose = function (callback)
-	{
-		this._onBeforeClose.add(callback);
-	};
-
-	Modal.prototype.onAfterClose = function (callback)
-	{
-		this._onAfterClose.add(callback);
-	};
-
-	Modal.prototype.open = function() 
-	{
-		this._onBeforeOpen.trigger(this._id);
-		this._view.show();
-		this._onAfterOpen.trigger(this._view.getContainer());
-	};
-
-	Modal.prototype.close = function() 
-	{
-		this._onBeforeClose.trigger(this._view.getContainer());
-		this._view.remove();
-		this._onAfterClose.trigger(this._id);
-	};
-
-
-	this.Modal = Modal;
-});
-namespace('OUI.components', function (window) 
+namespace('OUI.Components.List', function (window) 
 {
 	var Event 			= window.Duct.Event;
-	var SearchFormView 	= window.OUI.views.SearchFormView;
-
-	var classify 		= window.Classy.classify;
-	var idGenerator 	= window.OUI.core.view.idGenerator;
-
-
-	function SearchForm(container, value, param, placeholder)
-	{
-		classify(this);
-
-		this._id 		= idGenerator('oui-search-form');
-
-		this._view 		= new SearchFormView(this, container, value, param, placeholder);
-		this._param		= param;
-
-		this._onInput 	= new Event('searchForm.onInput');
-		this._onClear 	= new Event('searchForm.onClear');
-
-		this.onClear(this._view.clearInput);
-		this.onInput(this._view.transformIcon);
-	}
-
-	SearchForm.prototype.getId = function ()
-	{
-		return this._id;
-	};
-
-	SearchForm.prototype.getValue = function ()
-	{
-		return this._view.getValue();
-	};
-
-	SearchForm.prototype.hasValue = function ()
-	{
-		return this.getValue().length > 0;
-	};
-
-	SearchForm.prototype.getParam = function ()
-	{
-		return this._param;
-	};
-
-	SearchForm.prototype.onInput = function (callback)
-	{
-		this._onInput.add(callback);
-	};
-
-	SearchForm.prototype.onClear = function (callback)
-	{
-		this._onClear.add(callback);
-	};
-
-	SearchForm.prototype.input = function (event)
-	{
-		this._onInput.trigger(event);
-	};
-	
-	SearchForm.prototype.clear = function (event)
-	{
-		this._onClear.trigger(event);
-	};
-
-
-	this.SearchForm = SearchForm;
-});
-namespace('OUI.components', function (window) 
-{
-	var Event 		= window.Duct.Event;	
-	var ToastView 	= window.OUI.views.ToastView;
-
-	var classify	= window.Classy.classify;
-	var idGenerator = window.OUI.core.view.idGenerator;
-
-
-	/**
-	 * @class OUI.components.Toast
-	 */
-	function Toast(delay)
-	{
-		classify(this);
-
-		this._id 		= idGenerator('oui-toast');
-
-		this._view 		= new ToastView(this, delay);
-				
-		this._onAdd 	= new Event('toast.onAdd');
-		this._onDismiss = new Event('toast.onDismiss');
-
-		this.onAdd(this._view.bindDismiss);
-	};
-
-
-	Toast.prototype.getId = function ()
-	{
-		return this._id;
-	};
-
-	Toast.prototype.onAdd = function (callback)
-	{
-		this._onAdd.add(callback);
-	};
-
-	Toast.prototype.onDismiss = function (callback)
-	{
-		this._onDismiss.add(callback);
-	};
-
-
-	Toast.prototype.add = function (message)
-	{
-		this._view.show(message);
-		this._onAdd.trigger(this._id);
-	};
-
-	Toast.prototype.dismiss = function ()
-	{
-		this._view.remove();
-		this._onDismiss.trigger(this._id);
-	};
-
-
-	this.Toast = Toast;
-});
-namespace('OUI.components', function (window) 
-{
-	var Event 		= window.Duct.Event;
-	var WrapperView = window.OUI.views.WrapperView;
-
-	var classify	= window.Classy.classify;
-
-
-	/**
-	 * @class OUI.components.Wrapper
-	 */
-	function Wrapper(container, template)
-	{
-		classify(this);
-
-		this._view 		= new WrapperView(this, container, template);
-		this._onRender 	= new Event('Wrapper.onRender');
-	};
-
-
-	Wrapper.prototype.getContainer = function ()
-	{
-		return this._view.getContainer();
-	};
-
-	Wrapper.prototype.onRender = function (callback)
-	{
-		this._onRender.add(callback);
-	};
-
-	Wrapper.prototype.render = function (params)
-	{
-		this._view.render(params);
-		this._onRender.trigger();
-	};
-
-
-	this.Wrapper = Wrapper;
-});
-namespace('OUI.components.list', function (window) 
-{
-	var Event 			= window.Duct.Event;
-	var ListItemsView 	= window.OUI.views.list.ListItemsView;
+	var ListItemsView 	= window.OUI.Views.List.ListItemsView;
 
 	var classify 		= window.Classy.classify;
 
 
 	/**
-	 * @class window.OUI.components.list.ListItems
+	 * @class window.OUI.Components.List.ListItems
 	 */
 	function ListItems(container) 
 	{
@@ -3587,17 +3321,17 @@ namespace('OUI.components.list', function (window)
 
 	this.ListItems = ListItems;
 });
-namespace('OUI.components.list', function (window) 
+namespace('OUI.Components.List', function (window) 
 {
 	var Event 				= window.Duct.Event;
-	var ListPaginationView 	= window.OUI.views.list.ListPaginationView;
+	var ListPaginationView 	= window.OUI.Views.List.ListPaginationView;
 
 	var classify 			= window.Classy.classify;
 	var obj 				= window.Plankton.obj;
 
 
 	/**
-	 * @class window.OUI.components.list.ListPagination
+	 * @class window.OUI.Components.List.ListPagination
 	 */
 	function ListPagination(container, params, total) 
 	{
@@ -3708,17 +3442,17 @@ namespace('OUI.components.list', function (window)
 
 	this.ListPagination = ListPagination;
 });
-namespace('OUI.components.list', function (window) 
+namespace('OUI.Components.List', function (window) 
 {
 	var Event 				= window.Duct.Event;
-	var ListSelectionView 	= window.OUI.views.list.ListSelectionView;
+	var ListSelectionView 	= window.OUI.Views.List.ListSelectionView;
 
 	var foreach 			= window.Plankton.foreach;
 	var classify 			= window.Classy.classify;
 
 
 	/**
-	 * @class window.OUI.components.list.ListSelection
+	 * @class window.OUI.Components.List.ListSelection
 	 */
 	function ListSelection(itemsSelector) 
 	{
@@ -3790,16 +3524,16 @@ namespace('OUI.components.list', function (window)
 
 	this.ListSelection = ListSelection;
 });
-namespace('OUI.components.list', function (window) 
+namespace('OUI.Components.List', function (window) 
 {
 	var Event 			= window.Duct.Event;
-	var ListSortingView = window.OUI.views.list.ListSortingView;
+	var ListSortingView = window.OUI.Views.List.ListSortingView;
 
 	var classify 		= window.Classy.classify;
 
 
 	/**
-	 * @class window.OUI.components.list.ListSorting
+	 * @class window.OUI.Components.List.ListSorting
 	 */
 	function ListSorting(params) 
 	{
@@ -3842,106 +3576,439 @@ namespace('OUI.components.list', function (window)
 
 	this.ListSorting = ListSorting;
 });
-namespace('OUI.core.pos.prepared', function (window) 
+namespace('OUI.Components', function (window) 
 {
-	var classify				= window.Classy.classify;
-	var TargetSide 				= window.OUI.core.pos.enum.TargetSide;
-	var TargetPosition 			= window.OUI.core.pos.enum.TargetPosition;
-	var BasePreparedWithOffsets = window.OUI.core.pos.prepared.BasePreparedWithOffsets;
+	var Event       = window.Duct.Event;
+	var ModalView   = window.OUI.Views.ModalView;
+	
+	var classify 	= window.Classy.classify;
+	var idGenerator = window.OUI.Core.View.idGenerator;
 
-	
-	var defaults = {
-		initialSide: TargetSide.top,
-		initialPosition: TargetPosition.center
-	};
-	
 
 	/**
-	 * @class OUI.core.pos.prepared.RoundPosition
+	 * @class OUI.Components.Modal
 	 */
-	function RoundPosition(options)
+	function Modal(contents, className) 
 	{
 		classify(this);
 
-		BasePreparedWithOffsets.call(this, options, defaults);
+		this._id            = idGenerator('oui-modal');
 		
-		this._availableSides = [
-			TargetSide.top,
-			TargetSide.right,
-			TargetSide.bottom,
-			TargetSide.left,
-		];
-	}
-	
-	
-	RoundPosition.get = function (options) 
-	{
-		var roundPosition = new RoundPosition(options);
-		return roundPosition.getPosition();
-	};
-	
+		this._view     		= new ModalView(this, contents, className);
 
-	RoundPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
-	RoundPosition.prototype.constructor = RoundPosition;
-	
-	
-	RoundPosition.prototype._getAvailableSides = function () 
+		this._onBeforeOpen 	= new Event('modal.beforeOpen');
+		this._onAfterOpen 	= new Event('modal.afterOpen');
+		this._onBeforeClose = new Event('modal.beforeClose');
+		this._onAfterClose 	= new Event('modal.afterClose');
+
+		this.onAfterOpen(this._view.onOpen);
+	};
+
+	Modal.prototype.getId = function ()
 	{
-		return this._availableSides;	
+		return this._id;
 	};
-	
-	
-	this.RoundPosition = RoundPosition;
+
+	Modal.prototype.onBeforeOpen = function (callback)
+	{
+		this._onBeforeOpen.add(callback);
+	};
+
+	Modal.prototype.onAfterOpen = function (callback)
+	{
+		this._onAfterOpen.add(callback);
+	};
+
+	Modal.prototype.onBeforeClose = function (callback)
+	{
+		this._onBeforeClose.add(callback);
+	};
+
+	Modal.prototype.onAfterClose = function (callback)
+	{
+		this._onAfterClose.add(callback);
+	};
+
+	Modal.prototype.open = function() 
+	{
+		this._onBeforeOpen.trigger(this._id);
+		this._view.show();
+		this._onAfterOpen.trigger(this._view.getContainer());
+	};
+
+	Modal.prototype.close = function() 
+	{
+		this._onBeforeClose.trigger(this._view.getContainer());
+		this._view.remove();
+		this._onAfterClose.trigger(this._id);
+	};
+
+
+	this.Modal = Modal;
 });
-namespace('OUI.core.pos.prepared.cornered', function (window) 
+namespace('OUI.Components', function (window) 
 {
-	var classify				= window.Classy.classify;
-	var TargetSide 				= window.OUI.core.pos.enum.TargetSide;
-	var TargetPosition 			= window.OUI.core.pos.enum.TargetPosition;
-	var BasePreparedWithOffsets = window.OUI.core.pos.prepared.BasePreparedWithOffsets;
-	
-	
-	var defaults = {
-		initialSide: TargetSide.bottom,
-		initialPosition: TargetPosition.center
-	};
-	
-	
-	/**
-	 * @class OUI.core.pos.prepared.cornered.BottomPosition
-	 */
-	function BottomPosition(options)
+	var Event 			= window.Duct.Event;
+	var SearchFormView 	= window.OUI.Views.SearchFormView;
+
+	var classify 		= window.Classy.classify;
+	var idGenerator 	= window.OUI.Core.View.idGenerator;
+
+
+	function SearchForm(container, value, param, placeholder)
 	{
 		classify(this);
-		
-		BasePreparedWithOffsets.call(this, options, defaults);
-		
-		this._availableSides = [
-			TargetSide.bottom
-		];
-	}
-	
-	
-	BottomPosition.get = function (options) 
-	{
-		var bottomPosition = new BottomPosition(options);
-		return bottomPosition.getPosition();
-	};
-	
 
-	BottomPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
-	BottomPosition.prototype.constructor = BottomPosition;
-	
-	
-	BottomPosition.prototype._getAvailableSides = function () 
+		this._id 		= idGenerator('oui-search-form');
+
+		this._view 		= new SearchFormView(this, container, value, param, placeholder);
+		this._param		= param;
+
+		this._onInput 	= new Event('searchForm.onInput');
+		this._onClear 	= new Event('searchForm.onClear');
+
+		this.onClear(this._view.clearInput);
+		this.onInput(this._view.transformIcon);
+	}
+
+	SearchForm.prototype.getId = function ()
 	{
-		return this._availableSides;	
+		return this._id;
 	};
-		
+
+	SearchForm.prototype.getValue = function ()
+	{
+		return this._view.getValue();
+	};
+
+	SearchForm.prototype.hasValue = function ()
+	{
+		return this.getValue().length > 0;
+	};
+
+	SearchForm.prototype.getParam = function ()
+	{
+		return this._param;
+	};
+
+	SearchForm.prototype.onInput = function (callback)
+	{
+		this._onInput.add(callback);
+	};
+
+	SearchForm.prototype.onClear = function (callback)
+	{
+		this._onClear.add(callback);
+	};
+
+	SearchForm.prototype.input = function (event)
+	{
+		this._onInput.trigger(event);
+	};
 	
-	this.BottomPosition = BottomPosition;
+	SearchForm.prototype.clear = function (event)
+	{
+		this._onClear.trigger(event);
+	};
+
+
+	this.SearchForm = SearchForm;
 });
-namespace('OUI.components.list', function (window) 
+namespace('OUI.Components', function (window) 
+{
+	var Event 		= window.Duct.Event;	
+	var ToastView 	= window.OUI.Views.ToastView;
+
+	var classify	= window.Classy.classify;
+	var idGenerator = window.OUI.Core.View.idGenerator;
+
+
+	/**
+	 * @class OUI.Components.Toast
+	 */
+	function Toast(delay)
+	{
+		classify(this);
+
+		this._id 		= idGenerator('oui-toast');
+
+		this._view 		= new ToastView(this, delay);
+				
+		this._onAdd 	= new Event('toast.onAdd');
+		this._onDismiss = new Event('toast.onDismiss');
+
+		this.onAdd(this._view.bindDismiss);
+	};
+
+
+	Toast.prototype.getId = function ()
+	{
+		return this._id;
+	};
+
+	Toast.prototype.onAdd = function (callback)
+	{
+		this._onAdd.add(callback);
+	};
+
+	Toast.prototype.onDismiss = function (callback)
+	{
+		this._onDismiss.add(callback);
+	};
+
+
+	Toast.prototype.add = function (message)
+	{
+		this._view.show(message);
+		this._onAdd.trigger(this._id);
+	};
+
+	Toast.prototype.dismiss = function ()
+	{
+		this._view.remove();
+		this._onDismiss.trigger(this._id);
+	};
+
+
+	this.Toast = Toast;
+});
+namespace('OUI.Components', function (window) 
+{
+	var Event 		= window.Duct.Event;
+	var WrapperView = window.OUI.Views.WrapperView;
+
+	var classify	= window.Classy.classify;
+
+
+	/**
+	 * @class OUI.Components.Wrapper
+	 */
+	function Wrapper(container, template)
+	{
+		classify(this);
+
+		this._view 		= new WrapperView(this, container, template);
+		this._onRender 	= new Event('Wrapper.onRender');
+	};
+
+
+	Wrapper.prototype.getContainer = function ()
+	{
+		return this._view.getContainer();
+	};
+
+	Wrapper.prototype.onRender = function (callback)
+	{
+		this._onRender.add(callback);
+	};
+
+	Wrapper.prototype.render = function (params)
+	{
+		this._view.render(params);
+		this._onRender.trigger();
+	};
+
+
+	this.Wrapper = Wrapper;
+});
+namespace('OUI.Views', function (window) 
+{
+	var hbs 			= window.OUI.Core.View.hbs;
+	var classify		= window.Classy.classify;
+	var obj 			= window.Plankton.obj;
+	
+	var BottomPosition	= window.OUI.Core.Pos.Prepared.Cornered.BottomPosition;
+	var TargetPosition	= window.OUI.Core.Pos.Enum.TargetPosition;
+
+
+	function MenuView(menu, $toggleElement, contents, extraClass, positionConfig)
+	{
+		classify(this);
+
+		extraClass = extraClass || '';
+
+		this._menu 				= menu;
+		this._toggleElement 	= $toggleElement;
+		this._contents 			= contents;
+		this._extraClass 		= extraClass;
+		this._underlay 			= 'div.oui-menu-underlay';
+		this._positionConfig	= positionConfig || {};
+
+		this._bindOpen();
+	};
+
+
+	MenuView.prototype._bindOpen = function ()
+	{
+		this._toggleElement.on('click', this._menu.open);
+	};
+
+
+	MenuView.prototype.bindRemove = function ()
+	{
+		this.getContainer().on('click', this._underlay, this._menu.close);
+	};
+
+	MenuView.prototype.getContainer = function ()
+	{
+		return $('#' + this._menu.getId());
+	};
+
+	MenuView.prototype.remove = function ()
+	{
+		this.getContainer().remove();
+	};
+
+	MenuView.prototype.show = function ()
+	{
+		$('body').append(hbs('menu', 
+		{
+			id: this._menu.getId(),
+			contents: this._contents,
+			extraClass: this._extraClass
+		}));
+		
+		var $container 	= this.getContainer();
+		var $target 	= $container.find('div.wrapper');
+		var $related 	= this._toggleElement;
+		
+		var baseConfig = {
+			container: $container,
+			containerOffset: 10,
+			relatedElement: $related,
+			relatedOffset: 0,
+			targetElement: $target,
+			targetOffset: 0,
+			initialPosition: TargetPosition.center
+		};
+
+		var pos = BottomPosition.get(obj.merge(baseConfig, this._positionConfig));
+
+		$target.offset(
+		{
+			top: pos.coordinates.top,
+			left: pos.coordinates.left
+		});
+
+		$target.addClass(pos.name);
+	};
+
+
+	this.MenuView = MenuView;
+});
+namespace('OUI.Views', function (window) 
+{
+	var RoundPosition 	= window.OUI.Core.Pos.Prepared.RoundPosition;
+    var TargetPosition 	= window.OUI.Core.Pos.Enum.TargetPosition;
+    var TargetSide 		= window.OUI.Core.Pos.Enum.TargetSide;
+
+    var classify		= window.Classy.classify;
+    var obj 			= window.Plankton.obj;
+
+
+	/**
+	 * @class OUI.Views.TipView
+	 */
+	function TipView(tip, baseName, positionConfig)
+	{
+		classify(this);
+
+		this._tip 				= tip;
+
+		this._tipBaseName 		= baseName;
+		this._tipSelector 		= '*[data-' + baseName + ']';
+		this._tipContentAttr 	= 'title';
+		this._invisibleClass 	= 'invisible';
+
+		this._positionConfig	= positionConfig || {};
+	};
+
+
+	TipView.prototype._getContent = function ($element)
+	{
+		var content = $element.data(this._tipBaseName);
+
+		content = content.replace(/\[/g, '<');
+		content = content.replace(/\]/g, '>');
+
+		return content;
+	};
+
+	TipView.prototype._getPosition = function ($related, $target)
+	{
+		var baseConfig = 
+		{			
+			relatedElement:  $related,
+		    targetElement: $target,
+		    relatedOffset: 10,
+		    initialPosition: TargetPosition.center,
+		    initialSide: TargetSide.bottom
+		};
+
+		var options = obj.merge(baseConfig, this._positionConfig);
+
+		return RoundPosition.get(options);
+	};
+
+
+	TipView.prototype.bindHover = function ()
+	{
+		var view = this;
+
+		$(document).on(
+		{
+		    'mouseenter.tip': function () 
+		    {
+		        view._tip.add($(this));
+		    },
+		    'mouseleave.tip': function () 
+		    {
+		        view._tip.remove();
+		    }
+		}, this._tipSelector);
+
+		$(document).on('click.tip', this._tipSelector, function () 
+		{
+			view._tip.remove();
+		});
+	};
+
+	TipView.prototype.getContainer = function ()
+	{
+		return $('#' + this._tip.getId());
+	};
+
+	TipView.prototype.show = function ($element)
+	{
+		var position;
+		var $tip = $('<div>')
+			.attr('id', this._tip.getId())
+			.addClass(this._tipBaseName)
+			.addClass(this._invisibleClass)
+			.html(this._getContent($element));
+
+		$('body').append($tip);
+
+		position = this._getPosition($element, $tip);
+
+		$tip
+			.addClass(position.name)
+			.removeClass(this._invisibleClass)
+			.css({ 
+				left: position.coordinates.left, 
+				top: position.coordinates.top 
+			});
+	};
+
+	TipView.prototype.remove = function ()
+	{
+		this.getContainer().remove();
+	};
+
+
+	this.TipView = TipView;
+});
+namespace('OUI.Components.List', function (window) 
 {
 	var is 			= window.Plankton.is;
 	var obj 		= window.Plankton.obj;
@@ -3949,16 +4016,16 @@ namespace('OUI.components.list', function (window)
 
 	var Event 			= window.Duct.Event;
 
-	var ListPagination 	= window.OUI.components.list.ListPagination;
-	var ListSelection 	= window.OUI.components.list.ListSelection;
-	var ListItems 		= window.OUI.components.list.ListItems;
-	var ListSorting 	= window.OUI.components.list.ListSorting;
+	var ListPagination 	= window.OUI.Components.List.ListPagination;
+	var ListSelection 	= window.OUI.Components.List.ListSelection;
+	var ListItems 		= window.OUI.Components.List.ListItems;
+	var ListSorting 	= window.OUI.Components.List.ListSorting;
 
-	var Wrapper 		= window.OUI.components.Wrapper;
+	var Wrapper 		= window.OUI.Components.Wrapper;
 
 
 	/**
-	 * @class window.OUI.components.list.ListMediator
+	 * @class window.OUI.Components.List.ListMediator
 	 */
 	function ListMediator(params)
 	{
@@ -4110,21 +4177,21 @@ namespace('OUI.components.list', function (window)
 
 	this.ListMediator = ListMediator;
 });
-namespace('OUI.components.list', function (window) 
+namespace('OUI.Components.List', function (window) 
 {
 	var Event 			= window.Duct.Event;
-	var ListSearchView 	= window.OUI.views.list.ListSearchView;
+	var ListSearchView 	= window.OUI.Views.List.ListSearchView;
 
 	var is 				= window.Plankton.is;
 	var classify 		= window.Classy.classify;
 
-	var DeferCallback 	= window.OUI.core.events.DeferCallback;
-	var SearchForm 		= window.OUI.components.SearchForm;
-	var Wrapper 		= window.OUI.components.Wrapper;
+	var DeferCallback 	= window.OUI.Core.Events.DeferCallback;
+	var SearchForm 		= window.OUI.Components.SearchForm;
+	var Wrapper 		= window.OUI.Components.Wrapper;
 
 
 	/**
-	 * @class window.OUI.components.list.ListSearch
+	 * @class window.OUI.Components.List.ListSearch
 	 */
 	function ListSearch(container, value, param, placeholder) 
 	{
@@ -4192,214 +4259,17 @@ namespace('OUI.components.list', function (window)
 
 	this.ListSearch = ListSearch;
 });
-namespace('OUI.views', function (window) 
-{
-	var hbs 			= window.OUI.core.view.hbs;
-	var classify		= window.Classy.classify;
-	var obj 			= window.Plankton.obj;
-	
-	var BottomPosition	= window.OUI.core.pos.prepared.cornered.BottomPosition;
-	var TargetPosition	= window.OUI.core.pos.enum.TargetPosition;
-
-
-	function MenuView(menu, $toggleElement, contents, extraClass, positionConfig)
-	{
-		classify(this);
-
-		extraClass = extraClass || '';
-
-		this._menu 				= menu;
-		this._toggleElement 	= $toggleElement;
-		this._contents 			= contents;
-		this._extraClass 		= extraClass;
-		this._underlay 			= 'div.oui-menu-underlay';
-		this._positionConfig	= positionConfig || {};
-
-		this._bindOpen();
-	};
-
-
-	MenuView.prototype._bindOpen = function ()
-	{
-		this._toggleElement.on('click', this._menu.open);
-	};
-
-
-	MenuView.prototype.bindRemove = function ()
-	{
-		this.getContainer().on('click', this._underlay, this._menu.close);
-	};
-
-	MenuView.prototype.getContainer = function ()
-	{
-		return $('#' + this._menu.getId());
-	};
-
-	MenuView.prototype.remove = function ()
-	{
-		this.getContainer().remove();
-	};
-
-	MenuView.prototype.show = function ()
-	{
-		$('body').append(hbs('menu', 
-		{
-			id: this._menu.getId(),
-			contents: this._contents,
-			extraClass: this._extraClass
-		}));
-		
-		var $container 	= this.getContainer();
-		var $target 	= $container.find('div.wrapper');
-		var $related 	= this._toggleElement;
-		
-		var baseConfig = {
-			container: $container,
-			containerOffset: 10,
-			relatedElement: $related,
-			relatedOffset: 0,
-			targetElement: $target,
-			targetOffset: 0,
-			initialPosition: TargetPosition.center
-		};
-
-		var pos = BottomPosition.get(obj.merge(baseConfig, this._positionConfig));
-
-		$target.offset(
-		{
-			top: pos.coordinates.top,
-			left: pos.coordinates.left
-		});
-
-		$target.addClass(pos.name);
-	};
-
-
-	this.MenuView = MenuView;
-});
-namespace('OUI.views', function (window) 
-{
-	var RoundPosition 	= window.OUI.core.pos.prepared.RoundPosition;
-    var TargetPosition 	= window.OUI.core.pos.enum.TargetPosition;
-    var TargetSide 		= window.OUI.core.pos.enum.TargetSide;
-
-    var classify		= window.Classy.classify;
-    var obj 			= window.Plankton.obj;
-
-
-	/**
-	 * @class OUI.views.TipView
-	 */
-	function TipView(tip, baseName, positionConfig)
-	{
-		classify(this);
-
-		this._tip 				= tip;
-
-		this._tipBaseName 		= baseName;
-		this._tipSelector 		= '*[data-' + baseName + ']';
-		this._tipContentAttr 	= 'title';
-		this._invisibleClass 	= 'invisible';
-
-		this._positionConfig	= positionConfig || {};
-	};
-
-
-	TipView.prototype._getContent = function ($element)
-	{
-		var content = $element.data(this._tipBaseName);
-
-		content = content.replace(/\[/g, '<');
-		content = content.replace(/\]/g, '>');
-
-		return content;
-	};
-
-	TipView.prototype._getPosition = function ($related, $target)
-	{
-		var baseConfig = 
-		{			
-			relatedElement:  $related,
-		    targetElement: $target,
-		    relatedOffset: 10,
-		    initialPosition: TargetPosition.center,
-		    initialSide: TargetSide.bottom
-		};
-
-		var options = obj.merge(baseConfig, this._positionConfig);
-
-		return RoundPosition.get(options);
-	};
-
-
-	TipView.prototype.bindHover = function ()
-	{
-		var view = this;
-
-		$(document).on(
-		{
-		    'mouseenter.tip': function () 
-		    {
-		        view._tip.add($(this));
-		    },
-		    'mouseleave.tip': function () 
-		    {
-		        view._tip.remove();
-		    }
-		}, this._tipSelector);
-
-		$(document).on('click.tip', this._tipSelector, function () 
-		{
-			view._tip.remove();
-		});
-	};
-
-	TipView.prototype.getContainer = function ()
-	{
-		return $('#' + this._tip.getId());
-	};
-
-	TipView.prototype.show = function ($element)
-	{
-		var position;
-		var $tip = $('<div>')
-			.attr('id', this._tip.getId())
-			.addClass(this._tipBaseName)
-			.addClass(this._invisibleClass)
-			.html(this._getContent($element));
-
-		$('body').append($tip);
-
-		position = this._getPosition($element, $tip);
-
-		$tip
-			.addClass(position.name)
-			.removeClass(this._invisibleClass)
-			.css({ 
-				left: position.coordinates.left, 
-				top: position.coordinates.top 
-			});
-	};
-
-	TipView.prototype.remove = function ()
-	{
-		this.getContainer().remove();
-	};
-
-
-	this.TipView = TipView;
-});
-namespace('OUI.components', function (window) 
+namespace('OUI.Components', function (window) 
 {
 	var Event 		= window.Duct.Event;
-	var MenuView 	= window.OUI.views.MenuView;
+	var MenuView 	= window.OUI.Views.MenuView;
 
 	var classify 	= window.Classy.classify;
-	var idGenerator = window.OUI.core.view.idGenerator;
+	var idGenerator = window.OUI.Core.View.idGenerator;
 
 
 	/**
-	 * @class OUI.components.Menu
+	 * @class OUI.Components.Menu
 	 */
 	function Menu($toggleElement, contents, extraClass, positionConfig)
 	{
@@ -4460,16 +4330,16 @@ namespace('OUI.components', function (window)
 
 	this.Menu = Menu;
 });
-namespace('OUI.components', function (window) 
+namespace('OUI.Components', function (window) 
 {
-	var TipView 	= window.OUI.views.TipView;
+	var TipView 	= window.OUI.Views.TipView;
 
 	var classify	= window.Classy.classify;
-	var idGenerator = window.OUI.core.view.idGenerator;
+	var idGenerator = window.OUI.Core.View.idGenerator;
 
 
 	/**
-	 * @class OUI.components.Tip
+	 * @class OUI.Components.Tip
 	 */
 	function Tip(baseName, positionConfig)
 	{

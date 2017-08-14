@@ -3,7 +3,7 @@ Use this component to render dynamic user messages.
 
 ## Usage
 ```JavaScript
-var Toast = window.OUI.components.Toast;
+var Toast = window.OUI.Components.Toast;
 var myMessage = new Toast(3000);
 
 myMessage.add('Hello World');

@@ -12,7 +12,7 @@ Use this component to render a pop up menu.
 
 ### Basic
 ```JavaScript
-var Menu = window.OUI.components.Menu;
+var Menu = window.OUI.Components.Menu;
 
 var menuButton = $('a.menu-button');
 var menuContent = $('div.menu-content');
@@ -25,7 +25,7 @@ var myMenu = new Menu(menuButton, menuContent, menuClass);
 The Menu component uses the [BottomPosition](POS.md) object for positioning. To override the default options, you can pass your own configurations, like so:
 
 ```JavaScript
-var Menu = window.OUI.components.Menu;
+var Menu = window.OUI.Components.Menu;
 
 var menuButton = $('a.menu-button');
 var menuContent = $('div.menu-content');

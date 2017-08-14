@@ -5,7 +5,7 @@ Use this component to display a simple search form.
 JavaScript:
 
 ```JavaScript
-var SearchForm = window.OUI.components.SearchForm;
+var SearchForm = window.OUI.Components.SearchForm;
 
 var sFrom = new SearchForm('div.search-form-wrapper', 'Search');
 

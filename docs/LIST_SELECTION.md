@@ -10,7 +10,7 @@ Use this component to save selected items in lists.
 
 JavaScript:
 ```JavaScript
-var ListSelection = OUI.components.list.ListSelection;
+var ListSelection = OUI.Components.List.ListSelection;
 
 var selection = new ListSelection('input[type="checkbox"]');
 

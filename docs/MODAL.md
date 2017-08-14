@@ -10,18 +10,18 @@ Use this component to render modal windows.
 
 ### Basic
 ```JavaScript
-var modal = new OUI.components.Modal(contents, 'big');
+var modal = new OUI.Components.Modal(contents, 'big');
 
 modal.open();
 ```
 
 ### Complex
 ```JavaScript
-var firstModal = new OUI.components.Modal(contents, 'big');
+var firstModal = new OUI.Components.Modal(contents, 'big');
 
 firstModal.onAfterOpen(function (container) {
     container.find('div.body a').on('click', function (e) {
-        var secondModal = new OUI.components.Modal('', 'small');
+        var secondModal = new OUI.Components.Modal('', 'small');
 
         secondModal.open();
     });

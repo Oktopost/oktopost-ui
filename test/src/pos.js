@@ -4,10 +4,10 @@ const Plankton = require('oktopost-plankton');
 
 const OUI = require('../index');
 
-const Positioner = OUI.core.pos.Positioner;
-const Area = OUI.core.pos.Area;
-const Box = OUI.core.pos.Box;
-const Point = OUI.core.pos.Point;
+const Positioner = OUI.Core.Pos.Positioner;
+const Area = OUI.Core.Pos.Area;
+const Box = OUI.Core.Pos.Box;
+const Point = OUI.Core.Pos.Point;
 
 function getPositioner() 
 {

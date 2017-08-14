@@ -9,7 +9,7 @@ Use this component to render list items.
 JavaScript:
 
 ```JavaScript
-var ListItems = OUI.components.list.ListItems;
+var ListItems = OUI.Components.List.ListItems;
 
 var list = new ListItems('div.list-container');
 var template = window.Handlebars['template']['templateDir']['templateName'];

@@ -7,7 +7,7 @@ Use this component to display a confirmation box.
 
 ## Usage
 ```JavaScript
-var confirm = new window.OUI.components.Dialog('YES', 'NO');
+var confirm = new window.OUI.Components.Dialog('YES', 'NO');
 
 confirm.onConfirm(function () {
     console.log('YES');
@@ -24,7 +24,7 @@ confirm.open('Are you sure?');
 
 ### Example
 ```JavaScript
-var confirm = new window.OUI.components.Dialog('YES', 'NO');
+var confirm = new window.OUI.Components.Dialog('YES', 'NO');
 
 confirm.onCancel(function () {
     console.log('Canceled by user');

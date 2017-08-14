@@ -7,7 +7,7 @@ Use this component to display simple text tips.
 
 JavaScript:
 ```JavaScript
-var Tip = window.OUI.components.Tip;
+var Tip = window.OUI.Components.Tip;
 
 var myTip = new Tip('oui-tip');
 ```

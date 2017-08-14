@@ -10,7 +10,7 @@ Use this component to render pagination for lists.
 JavaScript:
 
 ```JavaScript
-var ListPagination = OUI.components.list.ListPagination;
+var ListPagination = OUI.Components.List.ListPagination;
 
 var params = { '_page': 0, '_count': 10 };
 var total = 60;

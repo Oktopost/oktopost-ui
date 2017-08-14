@@ -2,12 +2,12 @@
 Use this library to position elements relatively to others, considering offsets and container limitations.
 
 ## Usage 
-The entry point is prepared objects (*core/positioning/prepared*). Each object represents an area to position target element in.
+The entry point is prepared objects (*Core/Positioning/Prepared*). Each object represents an area to position target element in.
 
 ```JavaScript
-var RoundPosition   = window.OUI.core.positioning.prepared.RoundPosition;
-var TargetPosition  = window.OUI.core.positioning.enum.TargetPosition;
-var TargetSide      = window.OUI.core.positioning.enum.TargetSide;
+var RoundPosition   = window.OUI.Core.Positioning.Prepared.RoundPosition;
+var TargetPosition  = window.OUI.Core.Positioning.Enum.TargetPosition;
+var TargetSide      = window.OUI.Core.Positioning.Enum.TargetSide;
 
 var $target = $('<div />', {
     text: 'target',
@@ -54,7 +54,7 @@ $target.addClass(position.name);
 * **targetElement** jQuery|HTMLElement. Positioned element
 * **targetOffset** Number. Target margin from relatedElement
 * **isRelative** Boolean. Return absolute or relative position to relatedElement
-* **initialPosition** String. See *window.OUI.core.positioning.enum.TargetPosition*
-* **initialSide** String. See *window.OUI.core.positioning.enum.TargetSide*
+* **initialPosition** String. See *window.OUI.Core.Positioning.Enum.TargetPosition*
+* **initialSide** String. See *window.OUI.Core.Positioning.Enum.TargetSide*
 
 **Note** that the *targetElement* must have width and height in order to be positioned correctly.
