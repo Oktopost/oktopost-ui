@@ -38,17 +38,34 @@ namespace('OUI.Views', function (window)
 		this._toggleElement.on('mouseleave', this._menu.close);
 	};
 	
+	HoverMenuView.prototype._bindPersistClose = function ()
+	{	
+		var self = this;
+		
+		$(document).on('click.' + self._menu.getId(), function (event) 
+		{
+			if (!$(event.target).closest('#' + self._menu.getId()).length)
+			{
+				self._menu.close();
+			}
+		});
+	};
+	
 
 	HoverMenuView.prototype.enablePersist = function () 
 	{
 		this._toggleElement.off('mouseenter');
 		this._toggleElement.off('mouseleave');
+		
+		this._bindPersistClose();
 	};
 	
 	HoverMenuView.prototype.disablePersist = function () 
 	{
 		this._bindOpen();
 		this._bindRemove();
+		
+		$(document).off('click.' + this._menu.getId());
 	};
 
 	HoverMenuView.prototype.getContainer = function ()
@@ -71,14 +88,15 @@ namespace('OUI.Views', function (window)
 			extraClass: this._extraClass
 		});
 		
-		$('body').append(menu);
+		var $container = $('body');
 		
-		var $container 	= this.getContainer();
-		var $target 	= $container.find('div.wrapper');
+		$container.append(menu);
+		
+		var $target 	= this.getContainer();
 		var $related 	= this._toggleElement;
 		
 		var baseConfig = {
-			container: $('body'),
+			container: $container,
 			containerOffset: 10,
 			relatedElement: $related,
 			relatedOffset: 0,

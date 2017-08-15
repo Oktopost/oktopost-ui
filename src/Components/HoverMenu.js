@@ -23,13 +23,21 @@ namespace('OUI.Components', function (window)
 		this._onBeforeClose 	= new Event('hover-menu.onBeforeClose');
 		this._onAfterClose 		= new Event('hover-menu.onAfterClose');
 		
+		this._onBeforePersist	= new Event('hover-menu.onBeforePersist');
+		this._onAfterPersist	= new Event('hover-menu.onAfterPersist');
+		
 		this._isPersist	= false;
 	}
 
-	
+
 	HoverMenu.prototype.getId = function ()
 	{
 		return this._id;
+	};
+
+	HoverMenu.prototype.onBeforeOpen = function (callback)
+	{
+		this._onBeforeOpen.add(callback);
 	};
 
 	HoverMenu.prototype.onAfterOpen = function (callback)
@@ -37,24 +45,29 @@ namespace('OUI.Components', function (window)
 		this._onAfterOpen.add(callback);
 	};
 
-	HoverMenu.prototype.onAfterClose = function (callback)
-	{
-		this._onAfterClose.add(callback);
-	};
-
 	HoverMenu.prototype.onBeforeClose = function (callback)
 	{
 		this._onBeforeClose.add(callback);
 	};
 
-	HoverMenu.prototype.onBeforeOpen = function (callback)
+	HoverMenu.prototype.onAfterClose = function (callback)
 	{
-		this._onBeforeOpen.add(callback);
+		this._onAfterClose.add(callback);
+	};
+	
+	HoverMenu.prototype.onBeforePersist = function (callback)
+	{
+		this._onBeforePersist.add(callback);
+	};
+	
+	HoverMenu.prototype.onAfterPersist = function (callback)
+	{
+		this._onAfterPersist.add(callback);	
 	};
 	
 	HoverMenu.prototype.open = function ()
 	{
-		this._onBeforeOpen.trigger(this._id);
+		this._onBeforeOpen.trigger(this.getId());
 		this._view.show();
 		this._onAfterOpen.trigger(this._view.getContainer());
 	};
@@ -69,20 +82,26 @@ namespace('OUI.Components', function (window)
 		
 		this._onBeforeClose.trigger(this._view.getContainer());
 		this._view.remove();
-		this._onAfterClose.trigger(this._view.getContainer());
+		this._onAfterClose.trigger(this.getId());
 	};
 	
-	HoverMenu.prototype.persist = function ()
+	HoverMenu.prototype.togglePersist = function ()
 	{
-		this._isPersist = true;
+		if (this.isOpen() && this.isPersist())
+		{
+			this.close();
+			return;
+		}
 		
 		if (!this._view.isOpen())
 		{
-
 			this.open();
 		}
 		
+		this._onBeforePersist.trigger(this._view.getContainer());
+		this._isPersist = true;
 		this._view.enablePersist();
+		this._onAfterPersist.trigger(this._view.getContainer());
 	};
 	
 	HoverMenu.prototype.isOpen = function () 

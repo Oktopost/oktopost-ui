@@ -3,17 +3,9 @@
 
 
 div.oui-hover-menu {
-	
-	div.oui-hover-menu-underlay {
-		
-	}
-
-	div.wrapper {
-		position: absolute;
-	    background-color: white;
-	    border-radius: 3px;
-	    box-shadow: $basicShadow;
-	    width: 300px;
-	    z-index: 100;
-	}
+	position: absolute;
+	background-color: white;
+	border-radius: 3px;
+	box-shadow: $basicShadow;
+	z-index: 100;
 }
