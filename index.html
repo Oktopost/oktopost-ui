@@ -13,5 +13,47 @@
     <script src="dist/okto-ui-templates.js"></script>
     <script src="dist/okto-ui.js"></script>
     
+    <script type="text/javascript">
+        $(document).ready(function () 
+        {
+        	var HoverMenu = OUI.Components.HoverMenu;
+        	
+        	var $target = $('#hover-menu-toggle');
+            
+        	$('#hover-menu-toggle').mouseenter(function () 
+            {
+                var menu = new HoverMenu($target, '<div><b>blabalbal</b></div>', true);
+
+				menu.open();
+			});
+        	
+            //var menu = new HoverMenu($target, '<div><b>blabalbal</b></div>');
+            
+//            $('#hover-menu-toggle').click(function (e) 
+//            {
+//				menu.togglePersist();
+//                
+//                $(document).click(function (event) 
+//				{
+//					if (!$(event.target).closest('#' + menu.getId()).length)
+//					{
+//						menu.close();
+//					}
+//				});
+//                
+//                e.stopPropagation();
+//			});
+            
+            
+           
+            });
+    </script>
+    
+    <div id="container" style="padding: 100px;">
+        
+        <a href="#" id="hover-menu-toggle">Test</a>
+        
+    </div>
+    
 </body>
 </html>

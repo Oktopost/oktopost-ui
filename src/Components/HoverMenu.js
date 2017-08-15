@@ -10,13 +10,13 @@ namespace('OUI.Components', function (window)
 	/**
 	 * @class OUI.Components.HoverMenu
 	 */
-	function HoverMenu($toggleElement, contents, extraClass, positionConfig)
+	function HoverMenu($toggleElement, contents, canPersist, extraClass, positionConfig)
 	{
 		classify(this);
 
 		this._id 				= idGenerator('oui-hover-menu');
 		
-		this._view 				= new HoverMenuView(this, $toggleElement, contents, extraClass, positionConfig);
+		this._view 				= new HoverMenuView(this, $toggleElement, contents, canPersist, extraClass, positionConfig);
 		
 		this._onBeforeOpen 		= new Event('hover-menu.onBeforeOpen');
 		this._onAfterOpen 		= new Event('hover-menu.onAfterOpen');
@@ -67,6 +67,11 @@ namespace('OUI.Components', function (window)
 	
 	HoverMenu.prototype.open = function ()
 	{
+		if (this._view.isOpen())
+		{
+			return;
+		}
+		
 		this._onBeforeOpen.trigger(this.getId());
 		this._view.show();
 		this._onAfterOpen.trigger(this._view.getContainer());
@@ -93,11 +98,6 @@ namespace('OUI.Components', function (window)
 			return;
 		}
 		
-		if (!this._view.isOpen())
-		{
-			this.open();
-		}
-		
 		this._onBeforePersist.trigger(this._view.getContainer());
 		this._isPersist = true;
 		this._view.enablePersist();
@@ -113,7 +113,6 @@ namespace('OUI.Components', function (window)
 	{
 		return this._isPersist;	
 	};
-
 
 	this.HoverMenu = HoverMenu;
 });
