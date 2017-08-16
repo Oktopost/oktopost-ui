@@ -64,6 +64,10 @@ namespace('OUI.Views', function (window)
 				{
 					self.disablePersist();
 				}
+				else 
+				{
+					self.enablePersist();
+				}
 			}
 			else 
 			{

@@ -3153,6 +3153,54 @@ namespace('OUI.Core.Pos.Prepared.Cornered', function (window)
 	
 	this.BottomPosition = BottomPosition;
 });
+namespace('OUI.Core.Pos.Prepared.Cornered', function (window) 
+{
+	var classify				= window.Classy.classify;
+	var TargetSide 				= window.OUI.Core.Pos.Enum.TargetSide;
+	var TargetPosition 			= window.OUI.Core.Pos.Enum.TargetPosition;
+	var BasePreparedWithOffsets = window.OUI.Core.Pos.Prepared.BasePreparedWithOffsets;
+	
+	
+	var defaults = {
+		initialSide: TargetSide.right,
+		initialPosition: TargetPosition.center
+	};
+	
+	
+	/**
+	 * @class OUI.Core.Pos.Prepared.Cornered.SidesPosition
+	 */
+	function SidesPosition(options)
+	{
+		classify(this);
+		
+		BasePreparedWithOffsets.call(this, options, defaults);
+			
+		this._availableSides = [
+			TargetSide.right,
+			TargetSide.left
+		];
+	}
+	
+	SidesPosition.get = function (options) 
+	{
+		var sidesPosition = new SidesPosition(options);
+		return sidesPosition.getPosition();
+	};
+	
+
+	SidesPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
+	SidesPosition.prototype.constructor = SidesPosition;
+	
+	
+	SidesPosition.prototype._getAvailableSides = function () 
+	{
+		return this._availableSides;	
+	};
+		
+	
+	this.SidesPosition = SidesPosition;
+});
 namespace('OUI.Core.Pos.Prepared', function (window) 
 {
 	var classify				= window.Classy.classify;
@@ -3817,7 +3865,7 @@ namespace('OUI.Views', function (window)
 	var classify		= window.Classy.classify;
 	var obj 			= window.Plankton.obj;
 	
-	var RoundPosition	= window.OUI.Core.Pos.Prepared.RoundPosition;
+	var SidesPosition	= window.OUI.Core.Pos.Prepared.Cornered.SidesPosition;
 	var TargetPosition	= window.OUI.Core.Pos.Enum.TargetPosition;
 	var TargetSide		= window.OUI.Core.Pos.Enum.TargetSide;
 
@@ -3867,7 +3915,7 @@ namespace('OUI.Views', function (window)
 	{
 		var self = this;
 		
-		this._toggleElement.on('click.' + this._menu.getId(), function (e) 
+		this._toggleElement.on('click.' + this._menu.getId(), function () 
 		{
 			if(self.isOpen() && self._menu.isPersist())
 			{
@@ -3876,6 +3924,10 @@ namespace('OUI.Views', function (window)
 				if (!self.getContainer().is(':visible'))
 				{
 					self.disablePersist();
+				}
+				else 
+				{
+					self.enablePersist();
 				}
 			}
 			else 
@@ -3943,7 +3995,6 @@ namespace('OUI.Views', function (window)
 		this._unbindPersistEvents();
 		
 		this._toggleElement.removeData(this._dataAttr);
-		this._isLoaded = false;
 	};
 
 	HoverMenuView.prototype.show = function ()
@@ -3973,7 +4024,7 @@ namespace('OUI.Views', function (window)
 			initialSide: TargetSide.right
 		};
 
-		var pos = RoundPosition.get(obj.merge(baseConfig, this._positionConfig));
+		var pos = SidesPosition.get(obj.merge(baseConfig, this._positionConfig));
 
 		$target.offset(
 		{
@@ -4226,6 +4277,11 @@ namespace('OUI.Components', function (window)
 	HoverMenu.prototype.getId = function ()
 	{
 		return this._id;
+	};
+	
+	HoverMenu.prototype.getContainer = function () 
+	{
+		return this._view.getContainer();	
 	};
 
 	HoverMenu.prototype.onBeforeOpen = function (callback)
