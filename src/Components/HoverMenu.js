@@ -34,6 +34,11 @@ namespace('OUI.Components', function (window)
 	{
 		return this._id;
 	};
+	
+	HoverMenu.prototype.getContainer = function () 
+	{
+		return this._view.getContainer();	
+	};
 
 	HoverMenu.prototype.onBeforeOpen = function (callback)
 	{
