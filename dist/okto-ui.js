@@ -3869,7 +3869,19 @@ namespace('OUI.Views', function (window)
 		
 		this._toggleElement.on('click.' + this._menu.getId(), function (e) 
 		{
-			self._menu.togglePersist();
+			if(self.isOpen() && self._menu.isPersist())
+			{
+				self.getContainer().toggle();
+				
+				if (!self.getContainer().is(':visible'))
+				{
+					self.disablePersist();
+				}
+			}
+			else 
+			{
+				self._menu.togglePersist();
+			}
 		});
 	};
 	

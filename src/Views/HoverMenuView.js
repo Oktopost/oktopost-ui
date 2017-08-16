@@ -4,7 +4,7 @@ namespace('OUI.Views', function (window)
 	var classify		= window.Classy.classify;
 	var obj 			= window.Plankton.obj;
 	
-	var RoundPosition	= window.OUI.Core.Pos.Prepared.RoundPosition;
+	var SidesPosition	= window.OUI.Core.Pos.Prepared.Cornered.SidesPosition;
 	var TargetPosition	= window.OUI.Core.Pos.Enum.TargetPosition;
 	var TargetSide		= window.OUI.Core.Pos.Enum.TargetSide;
 
@@ -54,9 +54,21 @@ namespace('OUI.Views', function (window)
 	{
 		var self = this;
 		
-		this._toggleElement.on('click.' + this._menu.getId(), function (e) 
+		this._toggleElement.on('click.' + this._menu.getId(), function () 
 		{
-			self._menu.togglePersist();
+			if(self.isOpen() && self._menu.isPersist())
+			{
+				self.getContainer().toggle();
+				
+				if (!self.getContainer().is(':visible'))
+				{
+					self.disablePersist();
+				}
+			}
+			else 
+			{
+				self._menu.togglePersist();
+			}
 		});
 	};
 	
@@ -118,7 +130,6 @@ namespace('OUI.Views', function (window)
 		this._unbindPersistEvents();
 		
 		this._toggleElement.removeData(this._dataAttr);
-		this._isLoaded = false;
 	};
 
 	HoverMenuView.prototype.show = function ()
@@ -148,7 +159,7 @@ namespace('OUI.Views', function (window)
 			initialSide: TargetSide.right
 		};
 
-		var pos = RoundPosition.get(obj.merge(baseConfig, this._positionConfig));
+		var pos = SidesPosition.get(obj.merge(baseConfig, this._positionConfig));
 
 		$target.offset(
 		{
