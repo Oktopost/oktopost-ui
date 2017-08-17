@@ -54,8 +54,6 @@ namespace('OUI.Views.List', function (window)
 
 	ListSortingView.prototype.updateLink = function (e)
 	{
-		e.preventDefault();
-
 		var elem = $(e.target);
 		
 		this._setOrder(elem);

@@ -26,7 +26,6 @@ namespace('OUI.Views', function (window)
 
 	TabsView.prototype._onClick = function (e)
 	{
-		e.preventDefault();
 		this._tabs.select($(e.target).data(this._dataAttr));
 	};
 

@@ -22,12 +22,7 @@ namespace('OUI.Views', function (window)
 
 	ToastView.prototype.bindDismiss = function ()
 	{
-		var toast = this._toast;
-
-		this.getContainer().on('click', this._dismiss, function (e) {
-			e.preventDefault();
-			toast.dismiss();
-		});
+		this.getContainer().on('click', this._dismiss, this._toast.dismiss);
 	};
 
 	ToastView.prototype.show = function (message)

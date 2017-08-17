@@ -51,8 +51,9 @@ namespace('OUI.Components.List', function (window)
 		if ((page + 1) * count < total)
 		{
 			this.setPage(page + 1);
-			this._onChange.trigger();
-			this._onNext.trigger();
+
+			this._onChange.trigger(this._params);
+			this._onNext.trigger(this._params);
 		}
 	};
 
@@ -63,8 +64,9 @@ namespace('OUI.Components.List', function (window)
 		if (page > 0)
 		{
 			this.setPage(page - 1);
-			this._onChange.trigger();
-			this._onPrev.trigger();
+
+			this._onChange.trigger(this._params);
+			this._onPrev.trigger(this._params);
 		}
 	};
 

@@ -1592,18 +1592,10 @@ namespace('OUI.Views', function (window)
 
 	DialogView.prototype.bindEvents = function ()
 	{
-		var dialog = this._dialog;
 		var $container = this.getContainer();
 
-		$container.find(this._okButton).on('click', function (e) {
-			e.preventDefault();
-			dialog.confirm();
-		});
-
-		$container.find(this._cancelButton).on('click', function (e) {
-			e.preventDefault();
-			dialog.cancel();
-		});
+		$container.find(this._okButton).on('click', this._dialog.confirm);
+		$container.find(this._cancelButton).on('click', this._dialog.cancel);
 	};
 
 	DialogView.prototype.show = function (message)
@@ -1689,12 +1681,12 @@ namespace('OUI.Views.List', function (window)
 
 		var data = 
 		{
-			showingFrom: showingFrom,
-			showingTo: showingTo,
-			prevPageLink: this._getPrevPageLink(page, total, count),
-			nextPageLink: this._getNextPageLink(page, total, count),
-			hasNextPage: (page + 1) * count < total,
-			hasPrevPage: page > 0,
+			showingFrom: 	showingFrom,
+			showingTo: 		showingTo,
+			prevPageLink: 	this._getPrevPageLink(page, total, count),
+			nextPageLink: 	this._getNextPageLink(page, total, count),
+			hasNextPage: 	(page + 1) * count < total,
+			hasPrevPage: 	page > 0,
 			total: total
 		};
 
@@ -1703,7 +1695,6 @@ namespace('OUI.Views.List', function (window)
 
 	ListPaginationView.prototype._bindEvents = function ()
 	{
-		this._container.on('click', 'a', function (e) { e.preventDefault() });
 		this._container.on('click', this._nextSelector, this._pagination.next);
 		this._container.on('click', this._prevSelector, this._pagination.prev);
 	};
@@ -1866,8 +1857,6 @@ namespace('OUI.Views.List', function (window)
 
 	ListSortingView.prototype.updateLink = function (e)
 	{
-		e.preventDefault();
-
 		var elem = $(e.target);
 		
 		this._setOrder(elem);
@@ -1922,15 +1911,13 @@ namespace('OUI.Views', function (window)
 
 		$(document).on(this._escapeEvent, function (e) 
 		{
-			if (e.keyCode === 27) 
+			if (e.keyCode === 27)
+			{
 				modalView._close();
+			}
 		});
 
-		this.getContainer().on('click', selectors, function (e) 
-		{
-			e.preventDefault();
-			modalView._close();
-		});
+		this.getContainer().on('click', selectors, this._close);
 	};
 
 	ModalView.prototype.show = function () 
@@ -2005,7 +1992,6 @@ namespace('OUI.Views', function (window)
 	{
 		this._container.on('input', this._input, this._form.input);
 		this._container.on('click', this._clearButton, this._form.clear);
-		this._container.on('submit', function (e) { e.preventDefault(); });
 	};
 
 	SearchFormView.prototype.render = function (value, param, placeholder)
@@ -2053,7 +2039,6 @@ namespace('OUI.Views', function (window)
 
 	TabsView.prototype._onClick = function (e)
 	{
-		e.preventDefault();
 		this._tabs.select($(e.target).data(this._dataAttr));
 	};
 
@@ -2107,12 +2092,7 @@ namespace('OUI.Views', function (window)
 
 	ToastView.prototype.bindDismiss = function ()
 	{
-		var toast = this._toast;
-
-		this.getContainer().on('click', this._dismiss, function (e) {
-			e.preventDefault();
-			toast.dismiss();
-		});
+		this.getContainer().on('click', this._dismiss, this._toast.dismiss);
 	};
 
 	ToastView.prototype.show = function (message)
@@ -3463,8 +3443,9 @@ namespace('OUI.Components.List', function (window)
 		if ((page + 1) * count < total)
 		{
 			this.setPage(page + 1);
-			this._onChange.trigger();
-			this._onNext.trigger();
+
+			this._onChange.trigger(this._params);
+			this._onNext.trigger(this._params);
 		}
 	};
 
@@ -3475,8 +3456,9 @@ namespace('OUI.Components.List', function (window)
 		if (page > 0)
 		{
 			this.setPage(page - 1);
-			this._onChange.trigger();
-			this._onPrev.trigger();
+
+			this._onChange.trigger(this._params);
+			this._onPrev.trigger(this._params);
 		}
 	};
 
@@ -4219,6 +4201,11 @@ namespace('OUI.Components.List', function (window)
 	ListMediator.prototype.onSearch = function (callback)
 	{
 		this._search.onSearch(callback);
+	};
+
+	ListMediator.prototype.onPaginationChange = function (callback)
+	{
+		this._pagination.onChange(callback);
 	};
 
 	ListMediator.prototype.setLoadingState = function ()

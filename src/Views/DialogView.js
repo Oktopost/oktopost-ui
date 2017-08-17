@@ -27,18 +27,10 @@ namespace('OUI.Views', function (window)
 
 	DialogView.prototype.bindEvents = function ()
 	{
-		var dialog = this._dialog;
 		var $container = this.getContainer();
 
-		$container.find(this._okButton).on('click', function (e) {
-			e.preventDefault();
-			dialog.confirm();
-		});
-
-		$container.find(this._cancelButton).on('click', function (e) {
-			e.preventDefault();
-			dialog.cancel();
-		});
+		$container.find(this._okButton).on('click', this._dialog.confirm);
+		$container.find(this._cancelButton).on('click', this._dialog.cancel);
 	};
 
 	DialogView.prototype.show = function (message)

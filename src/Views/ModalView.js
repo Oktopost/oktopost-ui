@@ -42,15 +42,13 @@ namespace('OUI.Views', function (window)
 
 		$(document).on(this._escapeEvent, function (e) 
 		{
-			if (e.keyCode === 27) 
+			if (e.keyCode === 27)
+			{
 				modalView._close();
+			}
 		});
 
-		this.getContainer().on('click', selectors, function (e) 
-		{
-			e.preventDefault();
-			modalView._close();
-		});
+		this.getContainer().on('click', selectors, this._close);
 	};
 
 	ModalView.prototype.show = function () 

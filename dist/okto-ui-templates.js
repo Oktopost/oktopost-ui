@@ -66,11 +66,11 @@ this["OUI"]["templates"]["pagination"]["hbs"] = Handlebars.template({"1":functio
     + alias3(((helper = (helper = helpers.prevPageLink || (depth0 != null ? depth0.prevPageLink : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"prevPageLink","hash":{},"data":data}) : helper)))
     + "\" \n	class=\"button paginate "
     + ((stack1 = helpers.unless.call(depth0,(depth0 != null ? depth0.hasPrevPage : depth0),{"name":"unless","hash":{},"fn":this.program(1, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
-    + "\" \n	data-o-link data-prev>\n	<i class=\"icon-left-open\"></i>\n</a>\n<a \n	href=\""
+    + "\" \n	data-prev>\n	<i class=\"icon-left-open\"></i>\n</a>\n<a \n	href=\""
     + alias3(((helper = (helper = helpers.nextPageLink || (depth0 != null ? depth0.nextPageLink : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"nextPageLink","hash":{},"data":data}) : helper)))
     + "\" \n	class=\"button paginate "
     + ((stack1 = helpers.unless.call(depth0,(depth0 != null ? depth0.hasNextPage : depth0),{"name":"unless","hash":{},"fn":this.program(1, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
-    + "\" \n	data-o-link data-next>\n	<i class=\"icon-right-open\"></i>\n</a>";
+    + "\" \n	data-next>\n	<i class=\"icon-right-open\"></i>\n</a>";
 },"useData":true});
 this["OUI"]["templates"]["search-form"] = this["OUI"]["templates"]["search-form"] || {};
 this["OUI"]["templates"]["search-form"]["hbs"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {

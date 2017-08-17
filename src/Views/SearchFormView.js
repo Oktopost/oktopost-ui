@@ -47,7 +47,6 @@ namespace('OUI.Views', function (window)
 	{
 		this._container.on('input', this._input, this._form.input);
 		this._container.on('click', this._clearButton, this._form.clear);
-		this._container.on('submit', function (e) { e.preventDefault(); });
 	};
 
 	SearchFormView.prototype.render = function (value, param, placeholder)

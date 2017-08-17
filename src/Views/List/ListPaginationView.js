@@ -63,12 +63,12 @@ namespace('OUI.Views.List', function (window)
 
 		var data = 
 		{
-			showingFrom: showingFrom,
-			showingTo: showingTo,
-			prevPageLink: this._getPrevPageLink(page, total, count),
-			nextPageLink: this._getNextPageLink(page, total, count),
-			hasNextPage: (page + 1) * count < total,
-			hasPrevPage: page > 0,
+			showingFrom: 	showingFrom,
+			showingTo: 		showingTo,
+			prevPageLink: 	this._getPrevPageLink(page, total, count),
+			nextPageLink: 	this._getNextPageLink(page, total, count),
+			hasNextPage: 	(page + 1) * count < total,
+			hasPrevPage: 	page > 0,
 			total: total
 		};
 
@@ -77,7 +77,6 @@ namespace('OUI.Views.List', function (window)
 
 	ListPaginationView.prototype._bindEvents = function ()
 	{
-		this._container.on('click', 'a', function (e) { e.preventDefault() });
 		this._container.on('click', this._nextSelector, this._pagination.next);
 		this._container.on('click', this._prevSelector, this._pagination.prev);
 	};
