@@ -1616,6 +1616,61 @@ namespace('OUI.Views', function (window)
 	
 	this.DialogView = DialogView;
 });
+namespace('OUI.Views', function (window) 
+{
+	var classify = window.Classy.classify;
+
+	/**
+	 * @class FileUploadView
+	 * @param {string} input
+	 * @param {string} button
+	 * @param {string} dropzone
+	 */
+	function FileUploadView(input, button, dropzone)
+	{
+		classify(this);
+
+		this._input 			= $(input);
+		this._dropzone 			= $(dropzone);
+		this._button 			= $(button);
+		this._dropzoneTimeout 	= null;
+
+		this._button.on('click', this._onButtonClick);
+		$(document).on('dragover', this._onDragover);
+	};
+
+
+	FileUploadView.prototype._onButtonClick = function (e)
+	{
+		this._input.trigger('click');
+	};
+
+	FileUploadView.prototype._onDragover = function (e)
+	{
+		var target 	= $(e.target);
+		
+		if (this._dropzoneTimeout) 
+	    {
+	        clearTimeout(this._dropzoneTimeout);
+	    } 
+	    else 
+	    {
+	        this._dropzone.addClass('in');
+	    }
+
+	    this._dropzone.toggleClass('hover', target.closest(this._dropzone).length);
+	    this._dropzoneTimeout = setTimeout(this._resetHover, 100);
+	};
+
+	FileUploadView.prototype._resetHover = function ()
+	{
+		this._dropzoneTimeout = null;
+		this._dropzone.removeClass('in hover');
+	};
+
+
+	this.FileUploadView = FileUploadView;
+});
 namespace('OUI.Views.List', function (window) 
 {
 	var hbs 		= window.OUI.Core.View.hbs;
@@ -3340,6 +3395,67 @@ namespace('OUI.Components', function (window)
 
 
 	this.Dialog = Dialog;
+});
+namespace('OUI.Components', function (window) 
+{
+	var Event 			= window.Duct.Event;
+	var classify 		= window.Classy.classify;
+
+	var FileUploadView 	= window.OUI.Views.FileUploadView;
+
+
+	/**
+	 * @class FileUpload
+	 * @uses $.fn.fileupload
+	 * 
+	 * @param {string} input
+	 * @param {string} button
+	 * @param {string} dropzone
+	 * @param {string} url
+	 */
+	function FileUpload(input, button, dropzone, url)
+	{
+		classify(this);
+
+		this._view 		= new FileUploadView(input, button, dropzone);
+
+		this._onAdd 	= new Event('FileUpload.onAdd');
+		this._onDone 	= new Event('FileUpload.onDone');
+		this._onSuccess = new Event('FileUpload.onSuccess');
+
+		$(input).fileupload(
+		{
+			url: 		url,
+			dataType: 	'json',
+			dropZone: 	$(dropzone),
+			add: 		this._onAdd.trigger,
+			done: 		this._onDone.trigger,
+			success: 	this._onSuccess.trigger
+		});
+
+		this.onAdd(function (e, data) {
+			data.submit();
+		});
+	};
+
+
+	FileUpload.prototype.onAdd = function (callback)
+	{
+		this._onAdd.add(callback);
+	};
+
+	FileUpload.prototype.onDone = function (callback)
+	{
+		this._onDone.add(callback);
+	};
+
+	FileUpload.prototype.onSuccess = function (callback)
+	{
+		this._onSuccess.add(callback);
+	};
+
+
+	this.FileUpload = FileUpload;
 });
 namespace('OUI.Components.List', function (window) 
 {

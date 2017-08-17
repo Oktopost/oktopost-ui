@@ -22,6 +22,7 @@ Place the following files in your HTML template:
 7. [List](docs/LIST.md)
 8. [Wrapper](docs/WRAPPER.md)
 9. [Tabs](docs/TABS.md)
+10. [FileUpload](docs/FILE_UPLOAD.md)
 
 ## Helpers
 1. [View Helpers](docs/VIEW.md)

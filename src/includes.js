@@ -9,6 +9,7 @@ namespace('OUI.includes', function (window)
 	var Wrapper 	= window.OUI.Components.Wrapper;
 	var HoverMenu	= window.OUI.Components.HoverMenu;
 	var Tabs		= window.OUI.Components.Tabs;
+	var FileUpload	= window.OUI.Components.FileUpload;
 
 	var ListMediator 	= window.OUI.Components.List.ListMediator;
 	var ListItems 		= window.OUI.Components.List.ListItems;
