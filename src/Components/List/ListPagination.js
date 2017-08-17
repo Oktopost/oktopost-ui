@@ -52,8 +52,8 @@ namespace('OUI.Components.List', function (window)
 		{
 			this.setPage(page + 1);
 
-			this._onChange.trigger(this._params);
-			this._onNext.trigger(this._params);
+			this._onChange.trigger(this.getPage());
+			this._onNext.trigger(this.getPage());
 		}
 	};
 
@@ -65,8 +65,8 @@ namespace('OUI.Components.List', function (window)
 		{
 			this.setPage(page - 1);
 
-			this._onChange.trigger(this._params);
-			this._onPrev.trigger(this._params);
+			this._onChange.trigger(this.getPage());
+			this._onPrev.trigger(this.getPage());
 		}
 	};
 

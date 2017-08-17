@@ -73,6 +73,7 @@ namespace('OUI.Components.List', function (window)
 
 	ListMediator.prototype.setPagination = function (container, total)
 	{
+		var mediator 	= this;
 		var params 		= obj.copy(this._params);
 		var pagination 	= new ListPagination(container, params, total);
 
@@ -84,6 +85,11 @@ namespace('OUI.Components.List', function (window)
 		this._onBeforeRender.add(function (data)
 		{
 			pagination.setTotal(data.Total);
+		});
+
+		pagination.onChange(function (page) 
+		{
+			mediator.setParam('_page', page);
 		});
 
 		this._pagination = pagination;
