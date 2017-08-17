@@ -129,9 +129,9 @@ namespace('OUI.Components.List', function (window)
 		this._nullstate = new Wrapper(container, template);
 	};
 
-	ListMediator.prototype.setSelection = function (selector)
+	ListMediator.prototype.setSelection = function (container, selector)
 	{
-		this._selection = new ListSelection(selector);
+		this._selection = new ListSelection(container, selector);
 		
 		this._selection.onSelect(function (id) {
 			$('[data-id="' + id + '"]').addClass('selected');
@@ -140,6 +140,16 @@ namespace('OUI.Components.List', function (window)
 		this._selection.onDeselect(function (id) {
 			$('[data-id="' + id + '"]').removeClass('selected');
 		});
+	};
+
+	ListMediator.prototype.onSelect = function (callback)
+	{
+		this._selection.onSelect(callback);
+	};
+
+	ListMediator.prototype.onDeselect = function (callback)
+	{
+		this._selection.onDeselect(callback);
 	};
 
 	ListMediator.prototype.onRenderNullstate = function (callback)

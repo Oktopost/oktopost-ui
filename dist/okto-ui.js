@@ -1822,12 +1822,14 @@ namespace('OUI.Views.List', function (window)
 	/**
 	 * @class OUI.Views.List.ListSelectionView
 	 */
-	function ListSelectionView(selection, itemsSelector) 
+	function ListSelectionView(selection, itemsContainer, itemsSelector) 
 	{
 		classify(this);
 
 		this._selection 	= selection;
-		this._items 		= $(itemsSelector);
+		
+		this._container 	= $(itemsContainer);
+		this._itemsSelector = itemsSelector;
 
 		this._bindEvents();
 	};
@@ -1835,7 +1837,7 @@ namespace('OUI.Views.List', function (window)
 
 	ListSelectionView.prototype._bindEvents = function ()
 	{
-		this._items.on('change', this._onChange);
+		this._container.on('change', this._itemsSelector, this._onChange);
 	};
 
 	ListSelectionView.prototype._onChange = function (e)
@@ -3641,11 +3643,11 @@ namespace('OUI.Components.List', function (window)
 	/**
 	 * @class window.OUI.Components.List.ListSelection
 	 */
-	function ListSelection(itemsSelector) 
+	function ListSelection(itemsContainer, itemsSelector) 
 	{
 		classify(this);
 
-		this._view 			= new ListSelectionView(this, itemsSelector);
+		this._view 			= new ListSelectionView(this, itemsContainer, itemsSelector);
 
 		this._onSelect 		= new Event('ListSelection.onSelect');
 		this._onDeselect 	= new Event('ListSelection.onDeselect');
@@ -4310,9 +4312,9 @@ namespace('OUI.Components.List', function (window)
 		this._nullstate = new Wrapper(container, template);
 	};
 
-	ListMediator.prototype.setSelection = function (selector)
+	ListMediator.prototype.setSelection = function (container, selector)
 	{
-		this._selection = new ListSelection(selector);
+		this._selection = new ListSelection(container, selector);
 		
 		this._selection.onSelect(function (id) {
 			$('[data-id="' + id + '"]').addClass('selected');
@@ -4321,6 +4323,16 @@ namespace('OUI.Components.List', function (window)
 		this._selection.onDeselect(function (id) {
 			$('[data-id="' + id + '"]').removeClass('selected');
 		});
+	};
+
+	ListMediator.prototype.onSelect = function (callback)
+	{
+		this._selection.onSelect(callback);
+	};
+
+	ListMediator.prototype.onDeselect = function (callback)
+	{
+		this._selection.onDeselect(callback);
 	};
 
 	ListMediator.prototype.onRenderNullstate = function (callback)

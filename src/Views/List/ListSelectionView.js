@@ -7,12 +7,14 @@ namespace('OUI.Views.List', function (window)
 	/**
 	 * @class OUI.Views.List.ListSelectionView
 	 */
-	function ListSelectionView(selection, itemsSelector) 
+	function ListSelectionView(selection, itemsContainer, itemsSelector) 
 	{
 		classify(this);
 
 		this._selection 	= selection;
-		this._items 		= $(itemsSelector);
+		
+		this._container 	= $(itemsContainer);
+		this._itemsSelector = itemsSelector;
 
 		this._bindEvents();
 	};
@@ -20,7 +22,7 @@ namespace('OUI.Views.List', function (window)
 
 	ListSelectionView.prototype._bindEvents = function ()
 	{
-		this._items.on('change', this._onChange);
+		this._container.on('change', this._itemsSelector, this._onChange);
 	};
 
 	ListSelectionView.prototype._onChange = function (e)
