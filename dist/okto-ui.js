@@ -4216,6 +4216,11 @@ namespace('OUI.Components.List', function (window)
 	}
 
 
+	ListMediator.prototype.getSelected = function ()
+	{
+		return this._selection.getSelected();
+	};
+
 	ListMediator.prototype.getParams = function ()
 	{
 		return this._params;
@@ -4303,6 +4308,19 @@ namespace('OUI.Components.List', function (window)
 	ListMediator.prototype.setNullstate = function (container, template)
 	{
 		this._nullstate = new Wrapper(container, template);
+	};
+
+	ListMediator.prototype.setSelection = function (selector)
+	{
+		this._selection = new ListSelection(selector);
+		
+		this._selection.onSelect(function (id) {
+			$('[data-id="' + id + '"]').addClass('selected');
+		});
+
+		this._selection.onDeselect(function (id) {
+			$('[data-id="' + id + '"]').removeClass('selected');
+		});
 	};
 
 	ListMediator.prototype.onRenderNullstate = function (callback)
