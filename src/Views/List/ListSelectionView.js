@@ -15,6 +15,7 @@ namespace('OUI.Views.List', function (window)
 		
 		this._container 	= $(itemsContainer);
 		this._itemsSelector = itemsSelector;
+		this._selectedClass = 'selected';
 
 		this._bindEvents();
 	};
@@ -38,6 +39,17 @@ namespace('OUI.Views.List', function (window)
 		{
 			this._selection.deselect([checkboxId]);
 		}
+	};
+
+
+	ListSelectionView.prototype.selectItem = function (itemId)
+	{
+		$('[data-id="' + itemId + '"]').addClass(this._selectedClass);
+	};
+
+	ListSelectionView.prototype.deselectItem = function (itemId)
+	{
+		$('[data-id="' + itemId + '"]').removeClass(this._selectedClass);
 	};
 
 	

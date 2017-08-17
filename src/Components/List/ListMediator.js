@@ -131,15 +131,14 @@ namespace('OUI.Components.List', function (window)
 
 	ListMediator.prototype.setSelection = function (container, selector)
 	{
-		this._selection = new ListSelection(container, selector);
-		
-		this._selection.onSelect(function (id) {
-			$('[data-id="' + id + '"]').addClass('selected');
+		var selection = new ListSelection(container, selector);
+
+		this._items.onRemove(function (ids)
+		{
+			selection.deselect(ids);
 		});
 
-		this._selection.onDeselect(function (id) {
-			$('[data-id="' + id + '"]').removeClass('selected');
-		});
+		this._selection = selection;
 	};
 
 	ListMediator.prototype.onSelect = function (callback)
@@ -180,6 +179,11 @@ namespace('OUI.Components.List', function (window)
 	ListMediator.prototype.setLoadingState = function ()
 	{
 		this._items.setLoading();
+	};
+
+	ListMediator.prototype.removeItems = function (ids)
+	{
+		this._items.removeItems(ids);
 	};
 
 	ListMediator.prototype.render = function (data)

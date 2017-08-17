@@ -1830,6 +1830,7 @@ namespace('OUI.Views.List', function (window)
 		
 		this._container 	= $(itemsContainer);
 		this._itemsSelector = itemsSelector;
+		this._selectedClass = 'selected';
 
 		this._bindEvents();
 	};
@@ -1853,6 +1854,17 @@ namespace('OUI.Views.List', function (window)
 		{
 			this._selection.deselect([checkboxId]);
 		}
+	};
+
+
+	ListSelectionView.prototype.selectItem = function (itemId)
+	{
+		$('[data-id="' + itemId + '"]').addClass(this._selectedClass);
+	};
+
+	ListSelectionView.prototype.deselectItem = function (itemId)
+	{
+		$('[data-id="' + itemId + '"]').removeClass(this._selectedClass);
 	};
 
 	
@@ -2657,6 +2669,7 @@ namespace('OUI.Views.List', function (window)
 {
 	var classify 	= window.Classy.classify;
 	var foreach 	= window.Plankton.foreach;
+	var fadeRemove 	= window.OUI.Core.View.fadeRemove;
 
 
 	/**
@@ -2669,7 +2682,7 @@ namespace('OUI.Views.List', function (window)
 		this._listItems = listItems;
 		this._container = $(container);
 
-		this._loadingClass = 'loading';
+		this._loadingClass 	= 'loading';
 	}
 
 
@@ -2707,6 +2720,14 @@ namespace('OUI.Views.List', function (window)
 		{
 			this._container.unhighlight();
 		}
+	};
+
+	ListItemsView.prototype.removeItems = function (ids)
+	{
+		foreach(ids, function (id) 
+		{
+			fadeRemove($('[data-id="' + id + '"]'));
+		});
 	};
 
 	ListItemsView.prototype.setLoading = function ()
@@ -3463,7 +3484,7 @@ namespace('OUI.Components.List', function (window)
 {
 	var Event 			= window.Duct.Event;
 	var ListItemsView 	= window.OUI.Views.List.ListItemsView;
-
+	var foreach 		= window.Plankton.foreach;
 	var classify 		= window.Classy.classify;
 
 
@@ -3475,7 +3496,9 @@ namespace('OUI.Components.List', function (window)
 		classify(this);
 		
 		this._view 		= new ListItemsView(this, container);
+		
 		this._onRender 	= new Event('ListItems.onRender');
+		this._onRemove 	= new Event('ListItems.onRemove');
 	};
 
 
@@ -3487,6 +3510,11 @@ namespace('OUI.Components.List', function (window)
 	ListItems.prototype.onRender = function (callback)
 	{
 		this._onRender.add(callback);
+	};
+
+	ListItems.prototype.onRemove = function (callback)
+	{
+		this._onRemove.add(callback);
 	};
 
 	ListItems.prototype.render = function (items, template) 
@@ -3503,6 +3531,12 @@ namespace('OUI.Components.List', function (window)
 	ListItems.prototype.setLoading = function ()
 	{
 		this._view.setLoading();
+	};
+
+	ListItems.prototype.removeItems = function (ids)
+	{
+		this._view.removeItems(ids);
+		this._onRemove.trigger(ids);
 	};
 
 
@@ -3651,6 +3685,9 @@ namespace('OUI.Components.List', function (window)
 
 		this._onSelect 		= new Event('ListSelection.onSelect');
 		this._onDeselect 	= new Event('ListSelection.onDeselect');
+
+		this.onSelect(this._view.selectItem);
+		this.onDeselect(this._view.deselectItem);
 
 		this._selected		= [];
 	};
@@ -4314,15 +4351,14 @@ namespace('OUI.Components.List', function (window)
 
 	ListMediator.prototype.setSelection = function (container, selector)
 	{
-		this._selection = new ListSelection(container, selector);
-		
-		this._selection.onSelect(function (id) {
-			$('[data-id="' + id + '"]').addClass('selected');
+		var selection = new ListSelection(container, selector);
+
+		this._items.onRemove(function (ids)
+		{
+			selection.deselect(ids);
 		});
 
-		this._selection.onDeselect(function (id) {
-			$('[data-id="' + id + '"]').removeClass('selected');
-		});
+		this._selection = selection;
 	};
 
 	ListMediator.prototype.onSelect = function (callback)
@@ -4363,6 +4399,11 @@ namespace('OUI.Components.List', function (window)
 	ListMediator.prototype.setLoadingState = function ()
 	{
 		this._items.setLoading();
+	};
+
+	ListMediator.prototype.removeItems = function (ids)
+	{
+		this._items.removeItems(ids);
 	};
 
 	ListMediator.prototype.render = function (data)

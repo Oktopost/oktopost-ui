@@ -19,6 +19,9 @@ namespace('OUI.Components.List', function (window)
 		this._onSelect 		= new Event('ListSelection.onSelect');
 		this._onDeselect 	= new Event('ListSelection.onDeselect');
 
+		this.onSelect(this._view.selectItem);
+		this.onDeselect(this._view.deselectItem);
+
 		this._selected		= [];
 	};
 

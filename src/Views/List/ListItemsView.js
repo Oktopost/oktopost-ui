@@ -2,6 +2,7 @@ namespace('OUI.Views.List', function (window)
 {
 	var classify 	= window.Classy.classify;
 	var foreach 	= window.Plankton.foreach;
+	var fadeRemove 	= window.OUI.Core.View.fadeRemove;
 
 
 	/**
@@ -14,7 +15,7 @@ namespace('OUI.Views.List', function (window)
 		this._listItems = listItems;
 		this._container = $(container);
 
-		this._loadingClass = 'loading';
+		this._loadingClass 	= 'loading';
 	}
 
 
@@ -52,6 +53,14 @@ namespace('OUI.Views.List', function (window)
 		{
 			this._container.unhighlight();
 		}
+	};
+
+	ListItemsView.prototype.removeItems = function (ids)
+	{
+		foreach(ids, function (id) 
+		{
+			fadeRemove($('[data-id="' + id + '"]'));
+		});
 	};
 
 	ListItemsView.prototype.setLoading = function ()

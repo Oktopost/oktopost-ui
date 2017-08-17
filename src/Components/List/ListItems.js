@@ -2,7 +2,7 @@ namespace('OUI.Components.List', function (window)
 {
 	var Event 			= window.Duct.Event;
 	var ListItemsView 	= window.OUI.Views.List.ListItemsView;
-
+	var foreach 		= window.Plankton.foreach;
 	var classify 		= window.Classy.classify;
 
 
@@ -14,7 +14,9 @@ namespace('OUI.Components.List', function (window)
 		classify(this);
 		
 		this._view 		= new ListItemsView(this, container);
+		
 		this._onRender 	= new Event('ListItems.onRender');
+		this._onRemove 	= new Event('ListItems.onRemove');
 	};
 
 
@@ -26,6 +28,11 @@ namespace('OUI.Components.List', function (window)
 	ListItems.prototype.onRender = function (callback)
 	{
 		this._onRender.add(callback);
+	};
+
+	ListItems.prototype.onRemove = function (callback)
+	{
+		this._onRemove.add(callback);
 	};
 
 	ListItems.prototype.render = function (items, template) 
@@ -42,6 +49,12 @@ namespace('OUI.Components.List', function (window)
 	ListItems.prototype.setLoading = function ()
 	{
 		this._view.setLoading();
+	};
+
+	ListItems.prototype.removeItems = function (ids)
+	{
+		this._view.removeItems(ids);
+		this._onRemove.trigger(ids);
 	};
 
 
