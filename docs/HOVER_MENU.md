@@ -16,14 +16,15 @@ Use this component to render a hover toggled menu.
 var HoverMenu = window.OUI.Components.HoverMenu;
 
 var menuButton = $('a.menu-button');
-var menuContent = $('div.menu-content');
+var menuContent = $('div.menu-content').html();
 var menuClass = 'my-menu-class';
+var canPersist = false;
 
-var myHoverMenu = new HoverMenu(menuButton, menuContent, menuClass);
+var myHoverMenu = new HoverMenu(menuButton, menuContent, canPersist, menuClass);
 ```
 
 ### With Positioning
-The HoverMenu component uses the [RoundPosition](POS.md) object for positioning. To override the default options, you can pass your own configurations, like so:
+The HoverMenu component uses the [SidesPosition](POS.md) object for positioning. To override the default options, you can pass your own configurations, like so:
 
 ```JavaScript
 var HoverMenu       = window.OUI.Components.HoverMenu;
@@ -31,7 +32,7 @@ var TargetSide      = window.OUI.Core.Pos.Enum.TargetSide;
 var TargetPosition  = window.OUI.Core.Pos.Enum.TargetPosition;
 
 var menuButton = $('a.menu-button');
-var menuContent = $('div.menu-content');
+var menuContent = $('div.menu-content').html();
 var menuClass = 'my-menu-class';
 var positionConfig = {
 	initialSide: TargetSide.right,
@@ -39,7 +40,7 @@ var positionConfig = {
 	containerOffset: 30
 };
 
-var myHoverMenu = new HoverMenu(menuButton, menuContent, menuClass, positionConfig);
+var myHoverMenu = new HoverMenu(menuButton, menuContent, false, menuClass, positionConfig);
 ```
 ### With Persisting
 The HoverMenu component provides possibility to enable persistent mode - it disables menu closing on hover and enables menu closing on click outside the menu, for example:
@@ -48,16 +49,12 @@ The HoverMenu component provides possibility to enable persistent mode - it disa
 var HoverMenu = window.OUI.Components.HoverMenu;
 
 var menuButton = $('a.menu-button');
-var menuContent = $('div.menu-content');
+var menuContent = $('div.menu-content').html();
 var menuClass = 'my-menu-class';
+var canPersist = true;
 
-var myHoverMenu = new HoverMenu(menuButton, menuContent, menuClass);
+var myHoverMenu = new HoverMenu(menuButton, menuContent, canPersist, menuClass);
 
-menuButton.click(function(e)
-{
-	myHoverMenu.togglePersist();            
-    e.stopPropagation();
-});
 ```
 
 ## Events
@@ -73,7 +70,7 @@ menuButton.click(function(e)
 
 ```JavaScript
 
-var myHoverMenu = new HoverMenu(menuButton, menuContent, menuClass);
+var myHoverMenu = new HoverMenu(menuButton, menuContent);
 
 myHoverMenu.onAfterOpen(function (container) {
 	console.log('do something');

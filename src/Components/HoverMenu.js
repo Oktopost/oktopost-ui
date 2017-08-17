@@ -18,13 +18,13 @@ namespace('OUI.Components', function (window)
 		
 		this._view 				= new HoverMenuView(this, $toggleElement, contents, canPersist, extraClass, positionConfig);
 		
-		this._onBeforeOpen 		= new Event('hover-menu.onBeforeOpen');
-		this._onAfterOpen 		= new Event('hover-menu.onAfterOpen');
-		this._onBeforeClose 	= new Event('hover-menu.onBeforeClose');
-		this._onAfterClose 		= new Event('hover-menu.onAfterClose');
+		this._onBeforeOpen 		= new Event('hoverMenu.onBeforeOpen');
+		this._onAfterOpen 		= new Event('hoverMenu.onAfterOpen');
+		this._onBeforeClose 	= new Event('hoverMenu.onBeforeClose');
+		this._onAfterClose 		= new Event('hoverMenu.onAfterClose');
 		
-		this._onBeforePersist	= new Event('hover-menu.onBeforePersist');
-		this._onAfterPersist	= new Event('hover-menu.onAfterPersist');
+		this._onBeforePersist	= new Event('hoverMenu.onBeforePersist');
+		this._onAfterPersist	= new Event('hoverMenu.onAfterPersist');
 		
 		this._isPersist	= false;
 	}
@@ -119,5 +119,6 @@ namespace('OUI.Components', function (window)
 		return this._isPersist;	
 	};
 
+	
 	this.HoverMenu = HoverMenu;
 });
