@@ -12,7 +12,7 @@ JavaScript:
 ```JavaScript
 var ListSelection = OUI.Components.List.ListSelection;
 
-var selection = new ListSelection('input[type="checkbox"]');
+var selection = new ListSelection('ul.items-container', 'input[type="checkbox"]');
 
 selection.onDeselect(function () {
 	console.log(selection.getSelected().join(','));
@@ -25,7 +25,7 @@ selection.onSelect(function () {
 
 HTML:
 ```HTML
-<ul>
+<ul class="items-container">
 	<li>
 		<label>
 			<input type="checkbox" name="checkbox[]" id="checkbox-1">
