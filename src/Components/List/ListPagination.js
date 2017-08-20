@@ -42,6 +42,8 @@ namespace('OUI.Components.List', function (window)
 			return;
 
 		this.setPage(page - delta);
+		this.setTotal(newTotal);
+		
 		this._onChange.trigger(this.getPage());
 	};
 
