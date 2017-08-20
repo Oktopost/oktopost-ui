@@ -93,6 +93,11 @@ namespace('OUI.Components.List', function (window)
 			pagination.setTotal(data.Total);
 		});
 
+		this._items.onRemove(function (ids)
+		{
+			pagination.updatePageOnRemoveItems(pagination.getTotal() - ids.length);
+		});
+
 		pagination.onChange(function (page) 
 		{
 			mediator.setParam('_page', page);

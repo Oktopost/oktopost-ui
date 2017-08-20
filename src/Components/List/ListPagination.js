@@ -27,6 +27,23 @@ namespace('OUI.Components.List', function (window)
 	}
 
 
+	ListPagination.prototype.updatePageOnRemoveItems = function (newTotal)
+	{
+		var page 		= this.getPage();
+		var count 		= this.getCount();
+		var total 		= this.getTotal();
+		var toRemove 	= total - newTotal;
+		var pageDelta 	= Math.ceil(toRemove / count);
+
+		if (newTotal >= total)
+			return;
+
+		if ((page + 1) * count > newTotal) 
+			return;
+
+		this.setPage(page - pageDelta);
+	};
+
 	ListPagination.prototype.onNext = function (callback)
 	{
 		this._onNext.add(callback);
