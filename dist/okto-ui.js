@@ -4262,7 +4262,7 @@ namespace('OUI.Components.List', function (window)
 {
 	var is 			= window.Plankton.is;
 	var obj 		= window.Plankton.obj;
-	var array 		= window.Plankton.array;
+	var foreach 	= window.Plankton.foreach;
 	var classify 	= window.Classy.classify;
 
 	var Event 			= window.Duct.Event;
@@ -4308,7 +4308,7 @@ namespace('OUI.Components.List', function (window)
 		var params 			= obj.copy(this._params);
 		var excludeParams 	= this._excludeParams;
 
-		array.forEach.key(excludeParams, function (key)
+		foreach(excludeParams, function (key)
 		{
 			if (is(params[key]))
 			{
