@@ -1845,12 +1845,12 @@ namespace('OUI.Views.List', function (window)
 	ListSelectionView.prototype._toggleSelectAll = function (e)
 	{
 		var checkbox 	= $(e.target);
-		var items 		= $(this._itemsSelector);
+		var items 		= this._container.find(this._itemsSelector);
 		var ids 		= [];
 
 		items.each(function () 
 		{
-			ids.push($(this).attr('data-id'));
+			ids.push($(this).attr('id'));
 		});
 
 		if (checkbox.is(':checked'))
