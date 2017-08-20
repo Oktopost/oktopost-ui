@@ -104,11 +104,13 @@ namespace('OUI.Components.List', function (window)
 		this._onUpdateParam.add(function (key, value) 
 		{
 			pagination.setParam(key, value);
+			pagination.render();
 		});
 
 		this._onBeforeRender.add(function (data)
 		{
 			pagination.setTotal(data.Total);
+			pagination.render();
 		});
 
 		pagination.onChange(function (page) 

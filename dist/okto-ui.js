@@ -1757,7 +1757,7 @@ namespace('OUI.Views.List', function (window)
 
 	ListPaginationView.prototype.render = function ()
 	{		
-		this._container.empty().append(hbs('pagination', this._getViewParams()));		
+		this._container.empty().append(hbs('pagination', this._getViewParams()));
 	};
 
 	
@@ -3611,7 +3611,7 @@ namespace('OUI.Components.List', function (window)
 
 		this.setPage(page - delta);
 		this.setTotal(newTotal);
-		
+
 		this._onChange.trigger(this.getPage());
 	};
 
@@ -3673,7 +3673,6 @@ namespace('OUI.Components.List', function (window)
 		if (total != this._total)
 		{
 			this._total = total;
-			this._view.render();
 		}
 	};
 
@@ -3682,7 +3681,6 @@ namespace('OUI.Components.List', function (window)
 		if (this._params[param] != value) 
 		{
 			this._params[param] = value;
-			this._view.render();
 		}
 	};
 
@@ -3704,6 +3702,11 @@ namespace('OUI.Components.List', function (window)
 	ListPagination.prototype.getTotal = function ()
 	{
 		return this._total;
+	};
+
+	ListPagination.prototype.render = function ()
+	{
+		this._view.render();
 	};
 
 
@@ -4362,11 +4365,13 @@ namespace('OUI.Components.List', function (window)
 		this._onUpdateParam.add(function (key, value) 
 		{
 			pagination.setParam(key, value);
+			pagination.render();
 		});
 
 		this._onBeforeRender.add(function (data)
 		{
 			pagination.setTotal(data.Total);
+			pagination.render();
 		});
 
 		pagination.onChange(function (page) 

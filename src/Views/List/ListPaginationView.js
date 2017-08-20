@@ -84,7 +84,7 @@ namespace('OUI.Views.List', function (window)
 
 	ListPaginationView.prototype.render = function ()
 	{		
-		this._container.empty().append(hbs('pagination', this._getViewParams()));		
+		this._container.empty().append(hbs('pagination', this._getViewParams()));
 	};
 
 	
