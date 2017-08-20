@@ -3606,7 +3606,7 @@ namespace('OUI.Components.List', function (window)
 		if (page === 0)
 			return;
 
-		if (newTotal < (page - delta + 1) * count) 
+		if (newTotal > (page - delta + 1) * count) 
 			return;
 
 		this.setPage(page - delta);
