@@ -1882,13 +1882,13 @@ namespace('OUI.Views.List', function (window)
 	ListSelectionView.prototype.selectItem = function (itemId)
 	{
 		$('[data-id="' + itemId + '"]').addClass(this._selectedClass);
-		$('#' + itemId).attr('checked', 'checked');
+		$('#' + itemId).prop('checked', true);
 	};
 
 	ListSelectionView.prototype.deselectItem = function (itemId)
 	{
 		$('[data-id="' + itemId + '"]').removeClass(this._selectedClass);
-		$('#' + itemId).removeAttr('checked');
+		$('#' + itemId).prop('checked', false);
 	};
 
 	
