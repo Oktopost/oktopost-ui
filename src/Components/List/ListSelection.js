@@ -30,28 +30,26 @@ namespace('OUI.Components.List', function (window)
 	{
 		var index = this._selected.indexOf(itemId);
 
-		if (index > -1) 
+		if (index === -1) 
 		{
-			console.log('Item ' + itemId + ' already selected');
-			return;
+			this._selected.push(itemId);
+			this._onSelect.trigger(itemId);
 		}
 
-		this._selected.push(itemId);
-		this._onSelect.trigger(itemId);
+		this._view.selectItem(itemId);
 	};
 
 	ListSelection.prototype._deselectItem = function (itemId)
 	{
 		var index = this._selected.indexOf(itemId);
 
-		if (index === -1) 
+		if (index > -1) 
 		{
-			console.log('Item ' + itemId + ' not found');
-			return;
+			this._selected.splice(index, 1);
+			this._onDeselect.trigger(itemId);
 		}
 
-		this._selected.splice(index, 1);
-		this._onDeselect.trigger(itemId);
+		this._view.deselectItem(itemId);
 	};
 
 

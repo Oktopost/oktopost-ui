@@ -32,6 +32,7 @@ namespace('OUI.Components.List', function (window)
 
 		this._onUpdateParam 	= new Event('ListMediator.onUpdateParam');
 		this._onBeforeRender 	= new Event('ListMediator.onBeforeRender');
+		this._onAfterRender 	= new Event('ListMediator.onAfterRender');
 	}
 
 
@@ -138,6 +139,11 @@ namespace('OUI.Components.List', function (window)
 			selection.deselect(ids);
 		});
 
+		this._onAfterRender.add(function (data) 
+		{
+			selection.select(selection.getSelected());
+		});
+
 		this._selection = selection;
 	};
 
@@ -205,6 +211,8 @@ namespace('OUI.Components.List', function (window)
 		{
 			this._items.render(data.Items, this._template);	
 		}
+
+		this._onAfterRender.trigger(data);
 	};
 
 
