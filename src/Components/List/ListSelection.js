@@ -10,11 +10,11 @@ namespace('OUI.Components.List', function (window)
 	/**
 	 * @class window.OUI.Components.List.ListSelection
 	 */
-	function ListSelection(itemsContainer, itemsSelector) 
+	function ListSelection(itemsContainer, itemsSelector, selectAll) 
 	{
 		classify(this);
 
-		this._view 			= new ListSelectionView(this, itemsContainer, itemsSelector);
+		this._view 			= new ListSelectionView(this, itemsContainer, itemsSelector, selectAll);
 
 		this._onSelect 		= new Event('ListSelection.onSelect');
 		this._onDeselect 	= new Event('ListSelection.onDeselect');

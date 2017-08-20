@@ -1815,14 +1815,13 @@ namespace('OUI.Views.List', function (window)
 });
 namespace('OUI.Views.List', function (window) 
 {
-	var classify 	= window.Classy.classify;
-	var array 		= window.Plankton.array;
+	var classify = window.Classy.classify;
 
 
 	/**
 	 * @class OUI.Views.List.ListSelectionView
 	 */
-	function ListSelectionView(selection, itemsContainer, itemsSelector) 
+	function ListSelectionView(selection, itemsContainer, itemsSelector, selectAll) 
 	{
 		classify(this);
 
@@ -1830,6 +1829,7 @@ namespace('OUI.Views.List', function (window)
 		
 		this._container 	= $(itemsContainer);
 		this._itemsSelector = itemsSelector;
+		this._selectAll 	= $(selectAll);
 		this._selectedClass = 'selected';
 
 		this._bindEvents();
@@ -1839,6 +1839,28 @@ namespace('OUI.Views.List', function (window)
 	ListSelectionView.prototype._bindEvents = function ()
 	{
 		this._container.on('change', this._itemsSelector, this._onChange);
+		this._selectAll.on('change', this._toggleSelectAll);
+	};
+
+	ListSelectionView.prototype._toggleSelectAll = function (e)
+	{
+		var checkbox 	= $(e.target);
+		var items 		= $(this._itemsSelector);
+		var ids 		= [];
+
+		items.each(function () 
+		{
+			ids.push($(this).attr('data-id'));
+		});
+
+		if (checkbox.is(':checked'))
+		{
+			this._selection.select(ids);
+		}
+		else
+		{
+			this._selection.deselect(ids);
+		}
 	};
 
 	ListSelectionView.prototype._onChange = function (e)
@@ -1860,11 +1882,13 @@ namespace('OUI.Views.List', function (window)
 	ListSelectionView.prototype.selectItem = function (itemId)
 	{
 		$('[data-id="' + itemId + '"]').addClass(this._selectedClass);
+		$('#' + itemId).attr('checked', 'checked');
 	};
 
 	ListSelectionView.prototype.deselectItem = function (itemId)
 	{
 		$('[data-id="' + itemId + '"]').removeClass(this._selectedClass);
+		$('#' + itemId).removeAttr('checked');
 	};
 
 	
@@ -3677,11 +3701,11 @@ namespace('OUI.Components.List', function (window)
 	/**
 	 * @class window.OUI.Components.List.ListSelection
 	 */
-	function ListSelection(itemsContainer, itemsSelector) 
+	function ListSelection(itemsContainer, itemsSelector, selectAll) 
 	{
 		classify(this);
 
-		this._view 			= new ListSelectionView(this, itemsContainer, itemsSelector);
+		this._view 			= new ListSelectionView(this, itemsContainer, itemsSelector, selectAll);
 
 		this._onSelect 		= new Event('ListSelection.onSelect');
 		this._onDeselect 	= new Event('ListSelection.onDeselect');
