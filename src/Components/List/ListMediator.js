@@ -206,7 +206,7 @@ namespace('OUI.Components.List', function (window)
 
 		if (is(this._pagination))
 		{
-			this._pagination.updatePageOnRemoveItems(ids);
+			this._pagination.updatePageOnRemoveItems(ids.length);
 		}
 
 		if (is(this._selection))
