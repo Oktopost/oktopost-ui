@@ -111,11 +111,6 @@ namespace('OUI.Components.List', function (window)
 			pagination.setTotal(data.Total);
 		});
 
-		this._items.onRemove(function (ids)
-		{
-			pagination.updatePageOnRemoveItems(pagination.getTotal() - ids.length);
-		});
-
 		pagination.onChange(function (page) 
 		{
 			mediator.setParam('_page', page);
@@ -156,11 +151,6 @@ namespace('OUI.Components.List', function (window)
 	ListMediator.prototype.setSelection = function (container, selector, selectAll)
 	{
 		var selection = new ListSelection(container, selector, selectAll);
-
-		this._items.onRemove(function (ids)
-		{
-			selection.deselect(ids);
-		});
 
 		this._onAfterRender.add(function (data) 
 		{
@@ -213,6 +203,16 @@ namespace('OUI.Components.List', function (window)
 	ListMediator.prototype.removeItems = function (ids)
 	{
 		this._items.removeItems(ids);
+
+		if (is(this._pagination))
+		{
+			this._pagination.updatePageOnRemoveItems(ids);
+		}
+
+		if (is(this._selection))
+		{
+			this._selection.deselect(ids);
+		}
 	};
 
 	ListMediator.prototype.render = function (data)

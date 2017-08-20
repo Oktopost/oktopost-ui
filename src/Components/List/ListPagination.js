@@ -41,6 +41,9 @@ namespace('OUI.Components.List', function (window)
 		if ((page + 1) * count <= newTotal) 
 			return;
 
+		if (page - pageDelta === 0)
+			return;
+
 		this.setPage(page - pageDelta);
 		this._onChange.trigger(this.getPage());
 	};

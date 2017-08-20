@@ -35,8 +35,6 @@ namespace('OUI.Components.List', function (window)
 			this._selected.push(itemId);
 			this._onSelect.trigger(itemId);
 		}
-
-		this._view.selectItem(itemId);
 	};
 
 	ListSelection.prototype._deselectItem = function (itemId)
@@ -48,8 +46,6 @@ namespace('OUI.Components.List', function (window)
 			this._selected.splice(index, 1);
 			this._onDeselect.trigger(itemId);
 		}
-
-		this._view.deselectItem(itemId);
 	};
 
 
