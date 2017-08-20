@@ -4372,9 +4372,9 @@ namespace('OUI.Components.List', function (window)
 		this._nullstate = new Wrapper(container, template);
 	};
 
-	ListMediator.prototype.setSelection = function (container, selector)
+	ListMediator.prototype.setSelection = function (container, selector, selectAll)
 	{
-		var selection = new ListSelection(container, selector);
+		var selection = new ListSelection(container, selector, selectAll);
 
 		this._items.onRemove(function (ids)
 		{
