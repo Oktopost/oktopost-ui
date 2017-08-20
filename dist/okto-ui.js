@@ -3601,18 +3601,15 @@ namespace('OUI.Components.List', function (window)
 		var count 		= this.getCount();
 		var total 		= this.getTotal();
 		var toRemove 	= total - newTotal;
-		var pageDelta 	= Math.ceil(toRemove / count);
-
-		if (newTotal >= total)
-			return;
-
-		if ((page + 1) * count > newTotal) 
-			return;
+		var delta 		= Math.ceil(toRemove / count);
 
 		if (page === 0)
 			return;
 
-		this.setPage(page - pageDelta);
+		if (newTotal < (page - delta + 1) * count) 
+			return;
+
+		this.setPage(page - delta);
 		this._onChange.trigger(this.getPage());
 	};
 
