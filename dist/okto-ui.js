@@ -3606,7 +3606,7 @@ namespace('OUI.Components.List', function (window)
 		if (newTotal >= total)
 			return;
 
-		if ((page + 1) * count >= newTotal) 
+		if ((page + 1) * count > newTotal) 
 			return;
 
 		if (page === 0)
