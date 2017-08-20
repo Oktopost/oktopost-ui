@@ -2,6 +2,7 @@ namespace('OUI.Components.List', function (window)
 {
 	var is 			= window.Plankton.is;
 	var obj 		= window.Plankton.obj;
+	var array 		= window.Plankton.array;
 	var classify 	= window.Classy.classify;
 
 	var Event 			= window.Duct.Event;
@@ -22,6 +23,7 @@ namespace('OUI.Components.List', function (window)
 		classify(this);
 
 		this._params 		= obj.merge({ '_page': 0,'_count': 20 }, params);
+		this._excludeParams = [];
 		this._pagination 	= null;
 		this._selection 	= null;
 		this._items 		= null;
@@ -43,7 +45,18 @@ namespace('OUI.Components.List', function (window)
 
 	ListMediator.prototype.getParams = function ()
 	{
-		return this._params;
+		var params 			= obj.copy(this._params);
+		var excludeParams 	= this._excludeParams;
+
+		array.forEach.key(excludeParams, function (key)
+		{
+			if (is(params[key]))
+			{
+				delete params[key];
+			}
+		});
+
+		return params;
 	};
 
 	ListMediator.prototype.getParam = function (key)
@@ -56,11 +69,16 @@ namespace('OUI.Components.List', function (window)
 		this._params[key] = value;
 		this._onUpdateParam.trigger(key, value);
 	};
+
+	ListMediator.prototype.setExcludeParams = function (keys)
+	{
+		this._excludeParams = keys;
+	};
 	
 	ListMediator.prototype.setSorting = function ()
 	{
 		var mediator 	= this;
-		var params 		= obj.copy(this._params);
+		var params 		= this.getParams();
 		var sorting 	= new ListSorting(params);
 
 		sorting.onSort(function ()
@@ -80,7 +98,7 @@ namespace('OUI.Components.List', function (window)
 	ListMediator.prototype.setPagination = function (container, total)
 	{
 		var mediator 	= this;
-		var params 		= obj.copy(this._params);
+		var params 		= this.getParams();
 		var pagination 	= new ListPagination(container, params, total);
 
 		this._onUpdateParam.add(function (key, value) 

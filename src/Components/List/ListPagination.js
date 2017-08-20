@@ -42,6 +42,7 @@ namespace('OUI.Components.List', function (window)
 			return;
 
 		this.setPage(page - pageDelta);
+		this._onChange.trigger(this.getPage());
 	};
 
 	ListPagination.prototype.onNext = function (callback)
