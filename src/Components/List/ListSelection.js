@@ -32,18 +32,20 @@ namespace('OUI.Components.List', function (window)
 	{
 		if (is.undefined(this._selected[itemId])) 
 		{
-			this._selected[itemId] = true;
-			this._onSelect.trigger(itemId);
+			this._selected[itemId] = true;			
 		}
+
+		this._onSelect.trigger(itemId);
 	};
 
 	ListSelection.prototype._deselectItem = function (itemId)
 	{
 		if (is(this._selected[itemId])) 
 		{
-			delete this._selected[itemId];
-			this._onDeselect.trigger(itemId);
+			delete this._selected[itemId];			
 		}
+
+		this._onDeselect.trigger(itemId);
 	};
 
 
