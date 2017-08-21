@@ -3717,6 +3717,7 @@ namespace('OUI.Components.List', function (window)
 	var Event 				= window.Duct.Event;
 	var ListSelectionView 	= window.OUI.Views.List.ListSelectionView;
 
+	var is 					= window.Plankton.is;
 	var obj 				= window.Plankton.obj;
 	var foreach 			= window.Plankton.foreach;
 	var classify 			= window.Classy.classify;
@@ -3737,28 +3738,24 @@ namespace('OUI.Components.List', function (window)
 		this.onSelect(this._view.selectItem);
 		this.onDeselect(this._view.deselectItem);
 
-		this._selected		= [];
+		this._selected		= {};
 	};
 
 
 	ListSelection.prototype._selectItem = function (itemId)
 	{
-		var index = this._selected.indexOf(itemId);
-
-		if (index === -1) 
+		if (is.undefined(this._selected[itemId])) 
 		{
-			this._selected.push(itemId);
+			this._selected[itemId] = true;
 			this._onSelect.trigger(itemId);
 		}
 	};
 
 	ListSelection.prototype._deselectItem = function (itemId)
 	{
-		var index = this._selected.indexOf(itemId);
-
-		if (index > -1) 
+		if (is(this._selected[itemId])) 
 		{
-			this._selected.splice(index, 1);
+			delete this._selected[itemId];
 			this._onDeselect.trigger(itemId);
 		}
 	};
@@ -3786,7 +3783,7 @@ namespace('OUI.Components.List', function (window)
 
 	ListSelection.prototype.getSelected = function ()
 	{
-		return obj.copy(this._selected);
+		return obj.keys(this._selected);
 	};
 
 
