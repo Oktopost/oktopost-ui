@@ -3,6 +3,7 @@ namespace('OUI.Components.List', function (window)
 	var Event 				= window.Duct.Event;
 	var ListSelectionView 	= window.OUI.Views.List.ListSelectionView;
 
+	var obj 				= window.Plankton.obj;
 	var foreach 			= window.Plankton.foreach;
 	var classify 			= window.Classy.classify;
 
@@ -71,7 +72,7 @@ namespace('OUI.Components.List', function (window)
 
 	ListSelection.prototype.getSelected = function ()
 	{
-		return this._selected;
+		return obj.copy(this._selected);
 	};
 
 
