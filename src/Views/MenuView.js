@@ -4,8 +4,9 @@ namespace('OUI.Views', function (window)
 	var classify		= window.Classy.classify;
 	var obj 			= window.Plankton.obj;
 	
-	var BottomPosition	= window.OUI.Core.Pos.Prepared.Cornered.BottomPosition;
-	var TargetPosition	= window.OUI.Core.Pos.Enum.TargetPosition;
+	var ConfigurablePosition	= window.OUI.Core.Pos.Prepared.ConfigurablePosition;
+	var TargetPosition			= window.OUI.Core.Pos.Enum.TargetPosition;
+	var TargetSide				= window.OUI.Core.Pos.Enum.TargetSide;
 
 
 	function MenuView(menu, $toggleElement, contents, extraClass, positionConfig)
@@ -63,13 +64,14 @@ namespace('OUI.Views', function (window)
 			container: $container,
 			containerOffset: 10,
 			relatedElement: $related,
-			relatedOffset: 0,
 			targetElement: $target,
-			targetOffset: 0,
-			initialPosition: TargetPosition.center
+			initialPosition: TargetPosition.center,
+			sides: [TargetSide.bottom]
 		};
+		
+		var config = obj.merge(baseConfig, this._positionConfig);
 
-		var pos = BottomPosition.get(obj.merge(baseConfig, this._positionConfig));
+		var pos = ConfigurablePosition.get(config, config.sides);
 
 		$target.offset(
 		{
