@@ -4327,10 +4327,14 @@ namespace('OUI.Views', function (window)
 		return $('#' + this._menu.getId());
 	};
 
-	MenuView.prototype.remove = function ()
+	MenuView.prototype.remove = function (unbindEvent)
 	{
 		this.getContainer().remove();
-		this._unbindOpen();
+
+		if (unbindEvent)
+		{
+			this._unbindOpen();
+		}
 	};
 
 	MenuView.prototype.show = function ()
@@ -4995,10 +4999,12 @@ namespace('OUI.Components', function (window)
 		this._onAfterOpen.trigger(this._view.getContainer());
 	};
 
-	Menu.prototype.close = function ()
+	Menu.prototype.close = function (unbindEvent)
 	{
+		unbindEvent = unbindEvent !== false;
+		
 		this._onBeforeClose.trigger(this._view.getContainer());
-		this._view.remove();
+		this._view.remove(unbindEvent);
 		this._onAfterClose.trigger(this._id);
 	};
 

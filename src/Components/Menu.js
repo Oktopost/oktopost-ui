@@ -64,7 +64,7 @@ namespace('OUI.Components', function (window)
 		unbindEvent = unbindEvent !== false;
 		
 		this._onBeforeClose.trigger(this._view.getContainer());
-		this._view.remove();
+		this._view.remove(unbindEvent);
 		this._onAfterClose.trigger(this._id);
 	};
 
