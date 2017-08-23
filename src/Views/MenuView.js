@@ -23,18 +23,23 @@ namespace('OUI.Views', function (window)
 		this._positionConfig	= positionConfig || {};
 
 		this._bindOpen();
-	};
+	}
 
 
 	MenuView.prototype._bindOpen = function ()
 	{
-		this._toggleElement.on('click', this._menu.open);
+		this._toggleElement.on('click.' + this._menu.getId(), this._menu.open);
+	};
+	
+	MenuView.prototype._unbindOpen = function () 
+	{
+		this._toggleElement.off('click.' + this._menu.getId());	
 	};
 
 
 	MenuView.prototype.bindRemove = function ()
 	{
-		this.getContainer().on('click', this._underlay, this._menu.close);
+		this.getContainer().on('click.' + this._menu.getId(), this._underlay, this._menu.close);
 	};
 
 	MenuView.prototype.getContainer = function ()
@@ -45,6 +50,7 @@ namespace('OUI.Views', function (window)
 	MenuView.prototype.remove = function ()
 	{
 		this.getContainer().remove();
+		this._unbindOpen();
 	};
 
 	MenuView.prototype.show = function ()
