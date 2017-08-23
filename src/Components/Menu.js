@@ -59,8 +59,10 @@ namespace('OUI.Components', function (window)
 		this._onAfterOpen.trigger(this._view.getContainer());
 	};
 
-	Menu.prototype.close = function ()
+	Menu.prototype.close = function (unbindEvent)
 	{
+		unbindEvent = unbindEvent !== false;
+		
 		this._onBeforeClose.trigger(this._view.getContainer());
 		this._view.remove();
 		this._onAfterClose.trigger(this._id);

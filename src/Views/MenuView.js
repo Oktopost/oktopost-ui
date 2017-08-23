@@ -47,10 +47,14 @@ namespace('OUI.Views', function (window)
 		return $('#' + this._menu.getId());
 	};
 
-	MenuView.prototype.remove = function ()
+	MenuView.prototype.remove = function (unbindEvent)
 	{
 		this.getContainer().remove();
-		this._unbindOpen();
+
+		if (unbindEvent)
+		{
+			this._unbindOpen();
+		}
 	};
 
 	MenuView.prototype.show = function ()
