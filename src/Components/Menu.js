@@ -14,17 +14,19 @@ namespace('OUI.Components', function (window)
 	{
 		classify(this);
 
+		this._unbindEvent = true;
+
 		this._id 			= idGenerator('oui-menu');
-		
+
 		this._view 			= new MenuView(this, $toggleElement, contents, extraClass, positionConfig);
-		
 		this._onBeforeOpen 	= new Event('menu.onBeforeOpen');
 		this._onAfterOpen 	= new Event('menu.onAfterOpen');
 		this._onBeforeClose = new Event('menu.onBeforeClose');
+
 		this._onAfterClose 	= new Event('menu.onAfterClose');
 		
 		this.onAfterOpen(this._view.bindRemove);
-	};
+	}
 
 	
 	Menu.prototype.getId = function ()
@@ -59,13 +61,21 @@ namespace('OUI.Components', function (window)
 		this._onAfterOpen.trigger(this._view.getContainer());
 	};
 
-	Menu.prototype.close = function (unbindEvent)
+	Menu.prototype.close = function ()
 	{
-		unbindEvent = unbindEvent !== false;
-		
 		this._onBeforeClose.trigger(this._view.getContainer());
-		this._view.remove(unbindEvent);
+		this._view.remove(this._unbindEvent);
 		this._onAfterClose.trigger(this._id);
+	};
+	
+	Menu.prototype.disableUnbinding = function ()
+	{
+		this._unbindEvent = false;
+	};
+	
+	Menu.prototype.enableUnbinding = function ()
+	{
+		this._unbindEvent = true;
 	};
 
 
