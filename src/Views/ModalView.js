@@ -1,7 +1,9 @@
 namespace('OUI.Views', function (window) 
 {
+	var is  		= window.Plankton.is;
 	var hbs 		= window.OUI.Core.View.hbs;
 	var classify 	= window.Classy.classify;
+
 
 	/**
 	 * @class OUI.Views.ModalView
@@ -23,13 +25,6 @@ namespace('OUI.Views', function (window)
 	};
 	
 
-	ModalView.prototype._close = function ()
-	{
-		$(document).off(this._escapeEvent);
-		this._modal.close();
-	};
-
-
 	ModalView.prototype.getContainer = function ()
 	{
 		return $('#' + this._modal.getId());
@@ -37,37 +32,32 @@ namespace('OUI.Views', function (window)
 
 	ModalView.prototype.onOpen = function ()
 	{
-		var modalView = this;
-		var selectors = this._closeButton + ',' + this._underlay;
+		var modal = this._modal;
 
 		$(document).on(this._escapeEvent, function (e) 
 		{
 			if (e.keyCode === 27)
 			{
-				modalView._close();
+				modal.close();
 			}
 		});
 
-		this.getContainer().on('click', selectors, this._close);
+		this.getContainer().on('click', this._closeButton, this._modal.close);
+		this.getContainer().on('click', this._underlay, this._modal.underlayClick);
 	};
 
 	ModalView.prototype.show = function () 
 	{
-		var position = {
-			top: 20,
-			left: 20
-		};
-
 		$('body').append(hbs('modal', {
 			id: this._modal.getId(),
 			contents: this._contents,
-			extraClass: this._className,
-			position: position
+			extraClass: this._className
 		}));
 	};
 
 	ModalView.prototype.remove = function ()
 	{
+		$(document).off(this._escapeEvent);
 		this.getContainer().remove();
 	};
 

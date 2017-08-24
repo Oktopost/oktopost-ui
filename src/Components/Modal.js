@@ -14,17 +14,19 @@ namespace('OUI.Components', function (window)
 	{
 		classify(this);
 
-		this._id            = idGenerator('oui-modal');
-		
-		this._view     		= new ModalView(this, contents, className);
+		this._id 	= idGenerator('oui-modal');		
+		this._view  = new ModalView(this, contents, className);
 
-		this._onBeforeOpen 	= new Event('modal.beforeOpen');
-		this._onAfterOpen 	= new Event('modal.afterOpen');
-		this._onBeforeClose = new Event('modal.beforeClose');
-		this._onAfterClose 	= new Event('modal.afterClose');
+		this._onBeforeOpen 		= new Event('modal.beforeOpen');
+		this._onAfterOpen 		= new Event('modal.afterOpen');
+		this._onBeforeClose 	= new Event('modal.beforeClose');
+		this._onAfterClose 		= new Event('modal.afterClose');
+		this._onUnderlayClick 	= new Event('modal.onUnderlayClick');
 
 		this.onAfterOpen(this._view.onOpen);
+		this.onUnderlayClick(this.close);
 	};
+
 
 	Modal.prototype.getId = function ()
 	{
@@ -49,6 +51,21 @@ namespace('OUI.Components', function (window)
 	Modal.prototype.onAfterClose = function (callback)
 	{
 		this._onAfterClose.add(callback);
+	};
+
+	Modal.prototype.onUnderlayClick = function (callback)
+	{
+		this._onUnderlayClick.add(callback);
+	};
+
+	Modal.prototype.clearUnderlayClick = function ()
+	{
+		this._onUnderlayClick.clear();
+	};
+
+	Modal.prototype.underlayClick = function (e)
+	{
+		this._onUnderlayClick.trigger(e);
 	};
 
 	Modal.prototype.open = function() 

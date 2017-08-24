@@ -15,19 +15,48 @@ var modal = new OUI.Components.Modal(contents, 'big');
 modal.open();
 ```
 
-### Complex
+### Nested Windows
 ```JavaScript
-var firstModal = new OUI.Components.Modal(contents, 'big');
+var Modal = window.OUI.Components.Modal;
+
+var firstModal = new Modal(contents, 'big');
 
 firstModal.onAfterOpen(function (container) {
     container.find('div.body a').on('click', function (e) {
-        var secondModal = new OUI.Components.Modal('', 'small');
+        var secondModal = new Modal('', 'small');
 
         secondModal.open();
     });
 });
 
 firstModal.open();
+```
+
+### Show Dialog on Underlay Click
+
+```JavaScript
+var Modal 	= window.OUI.Components.Modal;
+var Dialog 	= window.OUI.Components.Dialog;
+
+var myModal = new Modal('asasas');
+
+myModal.onAfterOpen(myModal.clearUnderlayClick);
+myModal.onAfterOpen(function ()
+{
+	myModal.onUnderlayClick(function ()
+	{
+		var dialog = new Dialog('Yes', 'Cancel');
+
+		dialog.onConfirm(function () 
+		{ 
+			myModal.close() 
+		});
+		
+		dialog.open('Are you sure you want to close this window?');
+	});
+});
+
+myModal.open();
 ```
 
 ### Closing Windows
@@ -40,3 +69,4 @@ firstModal.open();
 2. onAfterOpen
 3. onBeforeClose
 4. onAfterClose
+5. onUnderlayClick
