@@ -181,6 +181,11 @@ namespace('OUI.Components.List', function (window)
 	{
 		this._items.onRender(callback);
 	};
+	
+	ListMediator.prototype.onClick = function (callback)
+	{
+		this._items.onClick(callback);	
+	};
 
 	ListMediator.prototype.onSort = function (callback)
 	{

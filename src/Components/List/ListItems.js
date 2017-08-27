@@ -17,7 +17,8 @@ namespace('OUI.Components.List', function (window)
 		
 		this._onRender 	= new Event('ListItems.onRender');
 		this._onRemove 	= new Event('ListItems.onRemove');
-	};
+		this._onClick	= new Event('ListItems.onClick');
+	}
 
 
 	ListItems.prototype.getContainer = function ()
@@ -33,6 +34,11 @@ namespace('OUI.Components.List', function (window)
 	ListItems.prototype.onRemove = function (callback)
 	{
 		this._onRemove.add(callback);
+	};
+	
+	ListItems.prototype.onClick = function (callback)
+	{
+		this._onClick.add(callback);
 	};
 
 	ListItems.prototype.render = function (items, template) 
@@ -55,6 +61,11 @@ namespace('OUI.Components.List', function (window)
 	{
 		this._view.removeItems(ids);
 		this._onRemove.trigger(ids);
+	};
+	
+	ListItems.prototype.handleClick = function (itemId)
+	{
+		this._onClick.trigger(itemId);	
 	};
 
 

@@ -19,6 +19,20 @@ namespace('OUI.Views.List', function (window)
 	}
 
 
+	ListItemsView.prototype._bindEvents = function ()
+	{
+		var self = this;
+		
+		this._container.find('[data-id]').click(function (e)
+		{
+			if (!$(e.target).is(':checkbox'))
+			{
+				self._listItems.handleClick($(this).data('id'));
+			}
+		});
+	};
+	
+	
 	ListItemsView.prototype.getItemsWrapper = function ()
 	{
 		var container = this._container;
@@ -41,6 +55,8 @@ namespace('OUI.Views.List', function (window)
 		{
 			container.append(template.hbs(item));
 		});
+		
+		this._bindEvents();
 	};
 
 	ListItemsView.prototype.highlightTerm = function (term)
