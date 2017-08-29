@@ -4936,6 +4936,16 @@ namespace('OUI.Components.List', function (window)
 
 		this._onAfterRender.trigger(data);
 	};
+	
+	ListMediator.prototype.select = function (itemIds)
+	{
+		this._selection.select(itemIds);	
+	};
+	
+	ListMediator.prototype.deselect = function (itemIds)
+	{
+		this._selection.deselect(itemIds);	
+	};
 
 
 	this.ListMediator = ListMediator;
