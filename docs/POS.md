@@ -2,12 +2,12 @@
 Use this library to position elements relatively to others, considering offsets and container limitations.
 
 ## Usage 
-The entry point is prepared objects (*Core/Positioning/Prepared*). Each object represents an area to position target element in.
+The entry point is prepared objects (*Core/Pos/Prepared*). Each object represents an area to position target element in.
 
 ```JavaScript
-var RoundPosition   = window.OUI.Core.Positioning.Prepared.RoundPosition;
-var TargetPosition  = window.OUI.Core.Positioning.Enum.TargetPosition;
-var TargetSide      = window.OUI.Core.Positioning.Enum.TargetSide;
+var RoundPosition   = window.OUI.Core.Pos.Prepared.RoundPosition;
+var TargetPosition  = window.OUI.Core.Pos.Enum.TargetPosition;
+var TargetSide      = window.OUI.Core.Pos.Enum.TargetSide;
 
 var $target = $('<div />', {
     text: 'target',
