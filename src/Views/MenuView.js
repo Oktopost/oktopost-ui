@@ -3,6 +3,7 @@ namespace('OUI.Views', function (window)
 	var hbs 			= window.OUI.Core.View.hbs;
 	var classify		= window.Classy.classify;
 	var obj 			= window.Plankton.obj;
+	var is				= window.Plankton.is;
 	
 	var ConfigurablePosition	= window.OUI.Core.Pos.Prepared.ConfigurablePosition;
 	var TargetPosition			= window.OUI.Core.Pos.Enum.TargetPosition;
@@ -21,6 +22,8 @@ namespace('OUI.Views', function (window)
 		this._extraClass 		= extraClass;
 		this._underlay 			= 'div.oui-menu-underlay';
 		this._positionConfig	= positionConfig || {};
+		
+		this._positionClass = null;
 
 		this._bindOpen();
 	}
@@ -34,6 +37,40 @@ namespace('OUI.Views', function (window)
 	MenuView.prototype._unbindOpen = function () 
 	{
 		this._toggleElement.off('click.' + this._menu.getId());	
+	};
+	
+	MenuView.prototype._putInPosition = function ()
+	{
+		var $container 	= this.getContainer();
+		var $target 	= $container.find('div.wrapper');
+		var $related 	= this._toggleElement;
+		
+		var baseConfig = {
+			container: $container,
+			containerOffset: 10,
+			relatedElement: $related,
+			targetElement: $target,
+			initialPosition: TargetPosition.center,
+			sides: [TargetSide.bottom]
+		};
+		
+		var config = obj.merge(baseConfig, this._positionConfig);
+
+		var pos = ConfigurablePosition.get(config, config.sides);
+
+		$target.offset(
+		{
+			top: pos.coordinates.top,
+			left: pos.coordinates.left
+		});
+		
+		if (!is.null(this._positionClass))
+		{
+			$target.removeClass(this._positionClass);
+		}
+
+		this._positionClass = pos.name;
+		$target.addClass(pos.name);
 	};
 
 
@@ -65,31 +102,13 @@ namespace('OUI.Views', function (window)
 			contents: this._contents,
 			extraClass: this._extraClass
 		}));
-		
-		var $container 	= this.getContainer();
-		var $target 	= $container.find('div.wrapper');
-		var $related 	= this._toggleElement;
-		
-		var baseConfig = {
-			container: $container,
-			containerOffset: 10,
-			relatedElement: $related,
-			targetElement: $target,
-			initialPosition: TargetPosition.center,
-			sides: [TargetSide.bottom]
-		};
-		
-		var config = obj.merge(baseConfig, this._positionConfig);
-
-		var pos = ConfigurablePosition.get(config, config.sides);
-
-		$target.offset(
-		{
-			top: pos.coordinates.top,
-			left: pos.coordinates.left
-		});
-
-		$target.addClass(pos.name);
+	
+		this._putInPosition();
+	};
+	
+	MenuView.prototype.refreshPosition = function ()
+	{
+		this._putInPosition();
 	};
 
 

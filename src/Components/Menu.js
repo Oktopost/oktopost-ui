@@ -77,7 +77,11 @@ namespace('OUI.Components', function (window)
 	{
 		this._unbindEvent = true;
 	};
-
+	
+	Menu.prototype.refreshPosition = function ()
+	{
+		this._view.refreshPosition();	
+	};
 
 	this.Menu = Menu;
 });
