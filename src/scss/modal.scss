@@ -41,6 +41,13 @@ div.oui-modal {
 		div.body {
 			padding: 25px;
 		}
+
+		div.footer {
+			padding: 15px 25px;
+		    border-top: 1px solid #eee;
+		    display: flex;
+		    justify-content: space-between;
+		}
 	}
 
 	&.small {

@@ -175,8 +175,10 @@ namespace('Classy', function()
 		var count		= 0;
 		
 		
-		for (var key in target) {
-			if (target.hasOwnProperty(key) && !(target[key] instanceof Object)) {
+		for (var key in target)
+		{
+			if (target.hasOwnProperty(key) && !(target[key] instanceof Object))
+			{
 				keys.push(key);
 				map[key] = true;
 				
@@ -219,28 +221,6 @@ namespace('Classy', function()
 		return target;
 	};
 });
-namespace('Classy', function()
-{
-	/**
-	 * @name Classy.classify
-	 * 
-	 * @param {*} object
-	 * @param {function()=} init
-	 */
-	this.classify = function classify(object, init) {
-		for (var key in object) {
-			if (typeof object[key] === 'function') {
-				object[key] = object[key].bind(object);
-			}
-		}
-		
-		if (typeof init !== 'undefined') {
-			init.call(object);
-		}
-		
-		return object;
-	};
-});
 namespace('OUI.Core.View', function (window) 
 {
 	this.fadeRemove = function ($container, extraClass, delay)
@@ -275,8 +255,8 @@ namespace('Plankton', function()
 {
 	var ARRAY_INDEX_REGEX = /^0$|^[1-9]\d*$/;
 	var ARRAY_INDEX_MAX_VALUE = 4294967294;
-
-
+	
+	
 	/**
 	 * @class Plankton.is
 	 * @alias is
@@ -343,6 +323,21 @@ namespace('Plankton', function()
 	is.object.notEmpty = function (subject)
 	{
 		return is.object(subject) && Object.keys(subject).length > 0;
+	};
+	
+	
+	/**
+	 * @param {*} subject
+	 * @returns {boolean}
+	 */
+	is.objectLiteral = function(subject)
+	{
+		if (!is.object(subject))
+		{
+			return false;
+		}
+		
+		return is.undefined(subject.constructor) || subject.constructor === Object;
 	};
 	
 	
@@ -426,7 +421,7 @@ namespace('Plankton', function()
 	 */
 	is.collection = function(subject)
 	{
-		return is.object(subject) || is.array(subject) || is.string(subject);
+		return (is.objectLiteral(subject) || is.array(subject) || is.string(subject));
 	};
 	
 	/**
@@ -439,7 +434,7 @@ namespace('Plankton', function()
 		{
 			return is.array.empty(subject);
 		}
-		else if (is.object(subject))
+		else if (is.objectLiteral(subject))
 		{
 			return is.object.empty(subject);
 		}
@@ -526,7 +521,7 @@ namespace('Plankton', function()
 	 */
 	is.NaN = function(subject)
 	{
-		return isNaN(subject) && Object.prototype.toString.call(subject) === '[object Number]';
+		return Object.prototype.toString.call(subject) === '[object Number]' && isNaN(subject);
 	};
 	
 	/**
@@ -553,7 +548,7 @@ namespace('Plankton', function()
 	 */
 	is.jsObject = function(subject)
 	{
-		return subject instanceof Object;
+		return subject instanceof Object || (!is.null(subject) && typeof subject === 'object');
 	};
 	
 	/**
@@ -576,7 +571,7 @@ namespace('Plankton', function()
 			return is.collection.empty(subject);
 		}
 		
-		throw 'Subject is not Array, Object or String';
+		throw new Error('Subject is not Array, Object or String');
 	};
 	
 	/**
@@ -626,7 +621,7 @@ namespace('Plankton', function()
 	
 	/**
 	 * @param {*} subject
-	 * @retrns {boolean}
+	 * @returns {boolean}
 	 */
 	is.index = function(subject)
 	{
@@ -636,266 +631,51 @@ namespace('Plankton', function()
 	
 	this.is = is;
 });
-namespace('OUI.Components', function (window) 
+namespace('Classy', function(root)
 {
-	var classify 	= window.Classy.classify;
-	var md5 		= window.md5;
-
-
-	/**
-	 * @see https://en.gravatar.com/site/implement/images/
-	 * @param {jQuery} elements
-	 */
-	function Gravatar(elements, size, defaultImage)
-	{
-		classify(this);
-
-		this._elements 	= elements;
-		this._base 		= 'https://www.gravatar.com/avatar/';
-		this._size 		= size || 160;
-		this._default 	= defaultImage || 'identicon';
-
-		this._init();
-	};
-
-
-	Gravatar.prototype._init = function ()
-	{
-		var getAvatar = this._getAvatar;
-
-		if (this._elements.length > 1)
-		{
-			this._elements.each(function () { $(this).attr('src', getAvatar($(this))); });
-		}
-		else (this._elements.length === 1)
-		{
-			this._elements.attr('src', getAvatar(this._elements));
-		}
-	};
-
-	Gravatar.prototype._getAvatar = function (elem)
-	{
-		return this._base + md5(elem.data('gravatar').toLowerCase()) + '?s=' + this._size + '&d=' + this._default;
-	};
-
-
-	this.Gravatar = Gravatar;
-});
-namespace('OUI.Core.Events', function (window)
-{
-	var classify = window.Classy.classify;
-
-
-	function DeferCallback(threshold, callback)
-	{
-		classify(this);
-
-		this._threshold 		= threshold;
-		this._callback 			= callback;
-		this._callbackTimeout 	= null;
-	}
-
-
-	/**
-	 * Execute the callback function in defer time
-	 * @param {*} data
-	 */
-	DeferCallback.prototype.deferAction = function (data) 
-	{
-		clearTimeout(this._callbackTimeout);
-		this._callbackTimeout = setTimeout(this._callback.bind(null, data), this._threshold);
-	};
-
-	/**
-	 * Cancel previous and execute the call immediately
-	 * @param {*} data
-	 */
-	DeferCallback.prototype.executeAction = function (data) 
-	{
-		clearTimeout(this._callbackTimeout);
-		this._callback(data);
-	};
-
-	/**
-	 * Prevents the callback to execute if it is now deferred
-	 */
-	DeferCallback.prototype.cancel = function () 
-	{
-		clearTimeout(this._callbackTimeout);
-	};
-
-	/**
-	 * @param {int} threshold
-	 */
-	DeferCallback.prototype.setThreshold = function (threshold) 
-	{
-		this._threshold = threshold;
-	};
-
-	/**
-	 * @param {Function} callback
-	 */
-	DeferCallback.prototype.setCallback = function (callback) 
-	{
-		this._callback = callback;
-	};
-
-
-	this.DeferCallback = DeferCallback;
-});
-namespace('OUI.Core.Pos', function (window)
-{
-	var is 			= window.Plankton.is;
-	var classify 	= window.Classy.classify; 
+	var is = root.Plankton.is;
 	
 	
-	/**
-	 * @class OUI.Core.Pos.Area
-	 */
-	function Area(box, initial, areaName, positionName) 
-	{	
-		classify(this);
+	function getProto(target)
+	{
+		if (typeof Object.getPrototypeOf === 'function')
+			return Object.getPrototypeOf(target);
 		
-		/** @type {OUI.Core.Pos.Box} */
-		this.box = box;
+		if (typeof target.constructor !== 'undefined' && target.constructor.prototype !== 'undefined')
+			return target.constructor.prototype;
 		
-		this.initial = initial;
-		this.areaName = areaName;
-		this.positionName = positionName;
+		if (typeof target.__proto__ !== 'undefined')
+			return target.__proto__;
+		
+		return {};
 	}
 	
 	
-	Area.prototype.getName = function () 
-	{
-		var name = this.areaName;
-		
-		if (is.string(this.positionName) && this.positionName.length > 0)
-		{
-			name = name + '-' + this.positionName;
-		}
-		
-		return name;	
-	};
-	
-	
-	this.Area = Area;
-});
-namespace('OUI.Core.Pos', function (window) 
-{
-	var classify = window.Classy.classify;
-	
-	
 	/**
-	 * @class OUI.Core.Pos.Box
+	 * @name Classy.classify
+	 * 
+	 * @param {*} object
+	 * @param {function()=} init
 	 */
-	var Box = function (point, size) 
+	this.classify = function classify(object, init)
 	{
-		classify(this);
+		var proto = getProto(object);
 		
-		/** @type {OUI.Core.Pos.Point} */
-		this._point = point;
-
-		/** @type {OUI.Core.Pos.Point} */
-		this._size = size;
-	};	
-	
-	
-	Box.prototype._debug = function () 
-	{
-		console.log(this.x(), this.y(), this.w(), this.h());	
-	};
-	
-	Box.prototype._isIntersectHorizontal = function (x, w)
-	{
-		return !(this.x()+this.w() <= x || x+w <= this.x());
-	};
-
-	Box.prototype._isIntersectVertical = function (y, h)
-	{
-		return !(this.y()+this.h() <= y || y+h <= this.y());
-	};
-	
-	Box.prototype._crossHorizontalBorder = function (x, w)
-	{
-		return ((this.x() < x) && (this.x() + this.w() >= x)) || 
-			(((this.x() + this.w()) > (x + w)) && (this.x() >= x));
-	};
-
-	Box.prototype._crossVerticalBorder = function (y, h)
-	{
-		return ((this.y() < y) && (this.y() + this.h() >= y)) || 
-			((this.y() + this.h() > y + h) && (this.y() >= y));
-	};
-	
-	Box.prototype._intersectHorizontal = function (x, w) 
-	{
-		if (x > this.x())
+		for (var key in proto)
 		{
-			var widthSubtract = x - this.x();
-			this._point.x = x;
-			this._size.x -= widthSubtract > 0 ? widthSubtract : -widthSubtract; 
+			if (typeof proto[key] === 'function')
+			{
+				object[key] = proto[key].bind(object);
+			}
 		}
 		
-		if ((x + w) < (this.x() + this.w()))
+		if (typeof init !== 'undefined')
 		{
-			this._size.x = x + w - this.x();
-		}
-	};
-	
-	Box.prototype._intersectVertical = function (y, h) 
-	{
-		if (y > this.y())
-		{
-			var heightSubtract = y - this.y();
-			this._point.y = y;
-			this._size.y -= heightSubtract > 0 ? heightSubtract : -heightSubtract; 
+			init.call(object);
 		}
 		
-		if ((y + h) < (this.y() + this.h()))
-		{
-			this._size.y = y + h - this.y();
-		}
+		return object;
 	};
-		
-	
-	Box.prototype.x = function ()
-	{
-		return this._point.x;	
-	};
-
-	Box.prototype.y = function ()
-	{
-		return this._point.y;	
-	};
-
-	Box.prototype.w = function ()
-	{
-		return this._size.x;	
-	};
-		
-	Box.prototype.h = function ()
-	{
-		return this._size.y;	
-	};
-	
-	Box.prototype.isIntersect = function (box) 
-	{
-		return this._isIntersectHorizontal(box.x(), box.w()) && this._isIntersectVertical(box.y(), box.h());
-	};
-	
-	Box.prototype.isCrossBorder = function (box) 
-	{
-		return this._crossHorizontalBorder(box.x(), box.w()) || this._crossVerticalBorder(box.y(), box.h());
-	};
-	
-	Box.prototype.intersect = function (box) 
-	{
-		this._intersectHorizontal(box.x(), box.w());
-		this._intersectVertical(box.y(), box.h());
-	};
-	
-	
-	this.Box = Box;
 });
 namespace('OUI.Core.Pos.Enum', function (window)
 {
@@ -935,612 +715,6 @@ namespace('OUI.Core.Pos.Enum', function (window)
 	
 	
 	this.TargetSide = Enum(TargetSide);
-});
-namespace('OUI.Core.Pos', function (window)
-{
-	var classify = window.Classy.classify; 
-	
-	
-	/**
-	 * @class OUI.Core.Pos.Point
-	 */
-	function Point(x, y) 
-	{	
-		classify(this);
-		
-		this.x = x;
-		this.y = y;
-	}
-	
-	
-	this.Point = Point;
-});
-namespace('OUI.Views', function (window) 
-{
-	var hbs 		= window.OUI.Core.View.hbs;
-	var classify 	= window.Classy.classify;
-	var fadeRemove 	= window.OUI.Core.View.fadeRemove;
-
-
-	/**
-	 * @class OUI.Views.DialogView
-	 */
-	function DialogView(dialog, okButtonText, cancelButtonText) 
-	{
-		classify(this);
-
-		this._dialog 			= dialog;
-		this._okButtonText 		= okButtonText || 'OK';
-		this._cancelButtonText 	= cancelButtonText || 'Cancel';
-		this._okButton 			= 'a.ok-button';
-		this._cancelButton 		= 'a.cancel-button';
-	}
-
-
-	DialogView.prototype.getContainer = function ()
-	{
-		return $('#' + this._dialog.getId());
-	};
-
-	DialogView.prototype.bindEvents = function ()
-	{
-		var $container = this.getContainer();
-
-		$container.find(this._okButton).on('click', this._dialog.confirm);
-		$container.find(this._cancelButton).on('click', this._dialog.cancel);
-	};
-
-	DialogView.prototype.show = function (message)
-	{
-		$('body').append(hbs('dialog', {
-			id: this._dialog.getId(),
-			message: message,
-			okButtonText: this._okButtonText,
-			cancelButtonText: this._cancelButtonText
-		}));
-	};
-
-	DialogView.prototype.remove = function ()
-	{
-		fadeRemove(this.getContainer());
-	};
-
-	
-	this.DialogView = DialogView;
-});
-namespace('OUI.Views', function (window) 
-{
-	var classify = window.Classy.classify;
-
-	/**
-	 * @class FileUploadView
-	 * @param {string} input
-	 * @param {string} button
-	 * @param {string} dropzone
-	 */
-	function FileUploadView(input, button, dropzone)
-	{
-		classify(this);
-
-		this._input 			= $(input);
-		this._dropzone 			= $(dropzone);
-		this._button 			= $(button);
-		this._dropzoneTimeout 	= null;
-
-		this._button.on('click', this._onButtonClick);
-		$(document).on('dragover', this._onDragover);
-	};
-
-
-	FileUploadView.prototype._onButtonClick = function (e)
-	{
-		this._input.trigger('click');
-	};
-
-	FileUploadView.prototype._onDragover = function (e)
-	{
-		var target 	= $(e.target);
-		
-		if (this._dropzoneTimeout) 
-	    {
-	        clearTimeout(this._dropzoneTimeout);
-	    } 
-	    else 
-	    {
-	        this._dropzone.addClass('in');
-	    }
-
-	    this._dropzone.toggleClass('hover', target.closest(this._dropzone).length);
-	    this._dropzoneTimeout = setTimeout(this._resetHover, 100);
-	};
-
-	FileUploadView.prototype._resetHover = function ()
-	{
-		this._dropzoneTimeout = null;
-		this._dropzone.removeClass('in hover');
-	};
-
-
-	this.FileUploadView = FileUploadView;
-});
-namespace('OUI.Views.List', function (window) 
-{
-	var classify = window.Classy.classify;
-
-
-	/**
-	 * @class OUI.Views.List.ListSearchView
-	 */
-	function ListSearchView()
-	{
-		classify(this);
-		
-		this._itemsContainer 		= null;
-		this._itemsWrapper			= null;
-		this._nullstateContainer 	= null;
-	}
-
-
-	ListSearchView.prototype.setItemsContainer = function (container)
-	{
-		this._itemsContainer 	= $(container);
-		this._itemsWrapper 		= this.getItemsWrapper();
-	};
-
-	ListSearchView.prototype.getItemsWrapper = function ()
-	{
-		var container = this._itemsContainer;
-		return container.parent()[0].tagName === 'TABLE' ? container.parent() : container;
-	};
-
-	ListSearchView.prototype.setNullstate = function (container)
-	{
-		this._nullstateContainer = $(container);
-	};
-
-	ListSearchView.prototype.hideNullstate = function ()
-	{
-		this._itemsWrapper.removeClass('hidden');
-		this._nullstateContainer.empty().addClass('hidden');
-	};
-
-	ListSearchView.prototype.showNullstate = function ()
-	{
-		this._itemsWrapper.addClass('hidden');
-		this._nullstateContainer.removeClass('hidden');
-	};
-
-	
-	this.ListSearchView = ListSearchView;
-});
-namespace('OUI.Views.List', function (window) 
-{
-	var classify = window.Classy.classify;
-
-
-	/**
-	 * @class OUI.Views.List.ListSelectionView
-	 */
-	function ListSelectionView(selection, itemsContainer, itemsSelector, selectAll) 
-	{
-		classify(this);
-
-		this._selection 	= selection;
-		
-		this._container 	= $(itemsContainer);
-		this._itemsSelector = itemsSelector;
-		this._selectAll 	= $(selectAll);
-		this._selectedClass = 'selected';
-
-		this._bindEvents();
-	};
-
-
-	ListSelectionView.prototype._bindEvents = function ()
-	{
-		this._container.on('change', this._itemsSelector, this._onChange);
-		this._selectAll.on('change', this._toggleSelectAll);
-	};
-
-	ListSelectionView.prototype._toggleSelectAll = function (e)
-	{
-		var checkbox 	= $(e.target);
-		var items 		= this._container.find(this._itemsSelector);
-		var ids 		= [];
-
-		items.each(function () 
-		{
-			ids.push($(this).attr('id'));
-		});
-
-		if (checkbox.is(':checked'))
-		{
-			this._selection.select(ids);
-		}
-		else
-		{
-			this._selection.deselect(ids);
-		}
-	};
-
-	ListSelectionView.prototype._onChange = function (e)
-	{
-		var checkbox 	= $(e.target);
-		var checkboxId 	= $(e.target).attr('id');
-
-		if (checkbox.is(':checked'))
-		{
-			this._selection.select([checkboxId]);
-		}
-		else
-		{
-			this._selection.deselect([checkboxId]);
-		}
-	};
-
-
-	ListSelectionView.prototype.selectItem = function (itemId)
-	{
-		$('[data-id="' + itemId + '"]').addClass(this._selectedClass);
-		$('#' + itemId).prop('checked', true);
-	};
-
-	ListSelectionView.prototype.deselectItem = function (itemId)
-	{
-		$('[data-id="' + itemId + '"]').removeClass(this._selectedClass);
-		$('#' + itemId).prop('checked', false);
-	};
-
-	
-	this.ListSelectionView = ListSelectionView;
-});
-namespace('OUI.Views.List', function (window) 
-{
-	var classify = window.Classy.classify;
-
-
-	/**
-	 * @class OUI.Views.List.ListSortingView
-	 */
-	function ListSortingView(sorting, params, selector)
-	{
-		classify(this);
-
-		this._sorting = sorting;
-
-		this._sortColumns = $('a.sortable');
-		this._sortColumns.on('click', this.updateLink);
-	}
-
-
-	ListSortingView.prototype._setOrder = function (elem)
-	{
-		var order 		= elem.data();
-		var orderWay 	= order.orderWay === 1 ? 0 : 1;
-
-		this._sorting.setParam('_page', 0);
-		this._sorting.setParam('_order', order.orderBy + ',' + orderWay);
-
-		if (orderWay === 1)
-		{
-			elem.addClass('asc');
-		}
-		else 
-		{
-			elem.removeClass('asc');
-		}
-
-		elem.data('order-way', orderWay);
-	};
-
-	ListSortingView.prototype._updateLink = function (elem)
-	{
-		var path 		= window.location.pathname;
-		var queryString = $.param(this._sorting.getParams());
-
-		elem.attr('href', path + (queryString.length ? '?' + queryString : ''));
-	};
-
-	
-	ListSortingView.prototype.setActive = function (e)
-	{
-		this._sortColumns.removeClass('active');
-		$(e.target).addClass('active');
-	};
-
-	ListSortingView.prototype.updateLink = function (e)
-	{
-		var elem = $(e.target);
-		
-		this._setOrder(elem);
-		this._updateLink(elem);
-		this._sorting.sort(e);
-	};
-
-	
-	this.ListSortingView = ListSortingView;
-});
-namespace('OUI.Views', function (window) 
-{
-	var is  		= window.Plankton.is;
-	var hbs 		= window.OUI.Core.View.hbs;
-	var classify 	= window.Classy.classify;
-
-
-	/**
-	 * @class OUI.Views.ModalView
-	 */
-	function ModalView(modal, contents, className) 
-	{
-		classify(this);
-
-		className = className || '';
-
-		this._modal 		= modal;
-		this._underlay 		= 'div.oui-modal-underlay';
-		this._closeButton 	= 'a[data-oui-modal-close]';
-		
-		this._escapeEvent 	= 'keyup.' + modal.getId();
-
-		this._className		= className;
-		this._contents		= contents;
-	};
-	
-
-	ModalView.prototype.getContainer = function ()
-	{
-		return $('#' + this._modal.getId());
-	};
-
-	ModalView.prototype.onOpen = function ()
-	{
-		var modal = this._modal;
-
-		$(document).on(this._escapeEvent, function (e) 
-		{
-			if (e.keyCode === 27)
-			{
-				modal.close();
-			}
-		});
-
-		this.getContainer().on('click', this._closeButton, this._modal.close);
-		this.getContainer().on('click', this._underlay, this._modal.underlayClick);
-	};
-
-	ModalView.prototype.show = function () 
-	{
-		$('body').append(hbs('modal', {
-			id: this._modal.getId(),
-			contents: this._contents,
-			extraClass: this._className
-		}));
-	};
-
-	ModalView.prototype.remove = function ()
-	{
-		$(document).off(this._escapeEvent);
-		this.getContainer().remove();
-	};
-
-	
-	this.ModalView = ModalView;
-});
-namespace('OUI.Views', function (window) 
-{
-	var hbs 		= window.OUI.Core.View.hbs;
-	var classify 	= window.Classy.classify;
-
-
-	function SearchFormView(form, container, value, param, placeholder)
-	{
-		classify(this);
-
-		this._form 			= form;
-		this._container 	= $(container);
-
-		this._input 		= 'input[type="text"]';
-		this._clearButton 	= 'i.toggle-button';
-		
-		this._cancelIcon 	= 'icon-cancel-squared';
-		this._searchIcon	= 'icon-search';
-
-		this.render(value, param, placeholder);
-		this.bindEvents();
-	}
-
-
-	SearchFormView.prototype.getValue = function ()
-	{
-		return this._container.find(this._input).val();
-	};
-
-	SearchFormView.prototype.clearInput = function (e)
-	{
-		var button = this._container.find(this._clearButton);
-
-		this._container.find(this._input).val('');
-		button.removeClass(this._cancelIcon).addClass(this._searchIcon);
-	};
-
-	SearchFormView.prototype.transformIcon = function (e)
-	{
-		var button 	= this._container.find(this._clearButton);
-		var input 	= this._container.find(this._input);
-
-		button.removeClass(this._searchIcon).addClass(this._cancelIcon);
-	};
-
-	SearchFormView.prototype.bindEvents = function ()
-	{
-		this._container.on('input', this._input, this._form.input);
-		this._container.on('click', this._clearButton, this._form.clear);
-	};
-
-	SearchFormView.prototype.render = function (value, param, placeholder)
-	{
-		this._container.append(hbs('search-form', {
-			value: value,
-			param: param,
-			placeholder: placeholder			
-		}));
-
-		if (value.length)
-		{
-			this._container.find(this._clearButton).addClass(this._animationClass);
-		}
-	};
-
-
-	this.SearchFormView = SearchFormView;
-});
-namespace('OUI.Views', function (window) 
-{
-	var is 			= window.Plankton.is;
-	var hbs 		= window.OUI.Core.View.hbs;
-	var classify 	= window.Classy.classify;
-
-
-	/**
-	 * @class OUI.Views.TabsView
-	 */
-	function TabsView(tabs, buttonsSelector) 
-	{
-		classify(this);
-
-		this._tabs 			= tabs;
-
-		this._activeClass 	= 'active';
-		this._hiddenClass 	= 'hidden';
-		this._dataAttr 		= 'oui-tab';
-
-		this._buttons 		= $(buttonsSelector);
-
-		this._buttons.on('click', this._onClick);
-	}
-
-
-	TabsView.prototype._onClick = function (e)
-	{
-		this._tabs.select($(e.target).data(this._dataAttr));
-	};
-
-	TabsView.prototype._forEachTab = function (tabId, index)
-	{
-		var tabButton 		= this._buttons.eq(index);
-		var tabContainer 	= $('#' + tabButton.data(this._dataAttr));
-
-		if (tabButton.data(this._dataAttr) === tabId)
-		{
-			tabButton.addClass(this._activeClass);
-			tabContainer.removeClass(this._hiddenClass);
-		}
-		else
-		{
-			tabContainer.addClass(this._hiddenClass);	
-		}
-	};
-
-
-	TabsView.prototype.select = function (tabId)
-	{
-		this._buttons.removeClass(this._activeClass);
-		this._buttons.each(this._forEachTab.bind(this, tabId));
-	};
-
-
-	this.TabsView = TabsView;
-});
-namespace('OUI.Views', function (window) 
-{
-	var hbs 		= window.OUI.Core.View.hbs;
-	var fadeRemove 	= window.OUI.Core.View.fadeRemove;
-	var classify 	= window.Classy.classify;
-	
-
-	/**
-	 * @class OUI.Views.ToastView
-	 */
-	function ToastView(toast, delay)
-	{
-		classify(this);
-
-		delay = delay || 5000;
-
-		this._toast 	= toast;
-		this._delay 	= delay;
-
-		this._dismiss 	= 'a[data-oui-dismiss]';
-	};
-
-	ToastView.prototype.bindDismiss = function ()
-	{
-		this.getContainer().on('click', this._dismiss, this._toast.dismiss);
-	};
-
-	ToastView.prototype.show = function (message)
-	{
-		this._onAdd.add(callback);
-	};
-
-	ToastView.prototype.getContainer = function ()
-	{
-		return $('#' + this._toast.getId());
-	};
-
-	ToastView.prototype.show = function (message)
-	{
-		var view = this;
-
-		$('body').append(hbs('toast', {
-			message: message,
-			id: this._toast.getId()
-		}));
-
-		setTimeout(function () {
-			fadeRemove(view.getContainer());
-		}, this._delay);
-	};
-
-	ToastView.prototype.remove = function ()
-	{
-		fadeRemove(this.getContainer());
-	};
-
-
-	this.ToastView = ToastView;
-});
-namespace('OUI.Views', function (window) 
-{
-	var classify 	= window.Classy.classify;
-
-
-	/**
-	 * @class OUI.Views.WrapperView
-	 */
-	function WrapperView(wrapper, container, template) 
-	{
-		classify(this);
-
-		this._wrapper 	= wrapper;
-		this._container = $(container);
-		this._template 	= template;
-	};
-
-
-	WrapperView.prototype.getContainer = function ()
-	{
-		return this._container;
-	};
-
-	WrapperView.prototype.render = function (params)
-	{
-		params = params || {};
-		return this._container.empty().append(this._template.hbs(params));
-	};
-
-
-	this.WrapperView = WrapperView;
 });
 namespace('Plankton', function(root) {
 	'use strict';
@@ -2154,6 +1328,1184 @@ namespace('Plankton', function (root)
 	
 	this.obj = obj;
 });
+namespace('OUI.Components', function (window) 
+{
+	var classify 	= window.Classy.classify;
+	var md5 		= window.md5;
+
+
+	/**
+	 * @see https://en.gravatar.com/site/implement/images/
+	 * @param {jQuery} elements
+	 */
+	function Gravatar(elements, size, defaultImage)
+	{
+		classify(this);
+
+		this._elements 	= elements;
+		this._base 		= 'https://www.gravatar.com/avatar/';
+		this._size 		= size || 160;
+		this._default 	= defaultImage || 'identicon';
+
+		this._init();
+	};
+
+
+	Gravatar.prototype._init = function ()
+	{
+		var getAvatar = this._getAvatar;
+
+		if (this._elements.length > 1)
+		{
+			this._elements.each(function () { $(this).attr('src', getAvatar($(this))); });
+		}
+		else (this._elements.length === 1)
+		{
+			this._elements.attr('src', getAvatar(this._elements));
+		}
+	};
+
+	Gravatar.prototype._getAvatar = function (elem)
+	{
+		return this._base + md5(elem.data('gravatar').toLowerCase()) + '?s=' + this._size + '&d=' + this._default;
+	};
+
+
+	this.Gravatar = Gravatar;
+});
+namespace('OUI.Core.Events', function (window)
+{
+	var classify = window.Classy.classify;
+
+
+	function DeferCallback(threshold, callback)
+	{
+		classify(this);
+
+		this._threshold 		= threshold;
+		this._callback 			= callback;
+		this._callbackTimeout 	= null;
+	}
+
+
+	/**
+	 * Execute the callback function in defer time
+	 * @param {*} data
+	 */
+	DeferCallback.prototype.deferAction = function (data) 
+	{
+		clearTimeout(this._callbackTimeout);
+		this._callbackTimeout = setTimeout(this._callback.bind(null, data), this._threshold);
+	};
+
+	/**
+	 * Cancel previous and execute the call immediately
+	 * @param {*} data
+	 */
+	DeferCallback.prototype.executeAction = function (data) 
+	{
+		clearTimeout(this._callbackTimeout);
+		this._callback(data);
+	};
+
+	/**
+	 * Prevents the callback to execute if it is now deferred
+	 */
+	DeferCallback.prototype.cancel = function () 
+	{
+		clearTimeout(this._callbackTimeout);
+	};
+
+	/**
+	 * @param {int} threshold
+	 */
+	DeferCallback.prototype.setThreshold = function (threshold) 
+	{
+		this._threshold = threshold;
+	};
+
+	/**
+	 * @param {Function} callback
+	 */
+	DeferCallback.prototype.setCallback = function (callback) 
+	{
+		this._callback = callback;
+	};
+
+
+	this.DeferCallback = DeferCallback;
+});
+namespace('OUI.Core.Pos', function (window)
+{
+	var is 			= window.Plankton.is;
+	var classify 	= window.Classy.classify; 
+	
+	
+	/**
+	 * @class OUI.Core.Pos.Area
+	 */
+	function Area(box, initial, areaName, positionName) 
+	{	
+		classify(this);
+		
+		/** @type {OUI.Core.Pos.Box} */
+		this.box = box;
+		
+		this.initial = initial;
+		this.areaName = areaName;
+		this.positionName = positionName;
+	}
+	
+	
+	Area.prototype.getName = function () 
+	{
+		var name = this.areaName;
+		
+		if (is.string(this.positionName) && this.positionName.length > 0)
+		{
+			name = name + '-' + this.positionName;
+		}
+		
+		return name;	
+	};
+	
+	
+	this.Area = Area;
+});
+namespace('OUI.Core.Pos', function (window) 
+{
+	var classify = window.Classy.classify;
+	
+	
+	/**
+	 * @class OUI.Core.Pos.Box
+	 */
+	var Box = function (point, size) 
+	{
+		classify(this);
+		
+		/** @type {OUI.Core.Pos.Point} */
+		this._point = point;
+
+		/** @type {OUI.Core.Pos.Point} */
+		this._size = size;
+	};	
+	
+	
+	Box.prototype._debug = function () 
+	{
+		console.log(this.x(), this.y(), this.w(), this.h());	
+	};
+	
+	Box.prototype._isIntersectHorizontal = function (x, w)
+	{
+		return !(this.x()+this.w() <= x || x+w <= this.x());
+	};
+
+	Box.prototype._isIntersectVertical = function (y, h)
+	{
+		return !(this.y()+this.h() <= y || y+h <= this.y());
+	};
+	
+	Box.prototype._crossHorizontalBorder = function (x, w)
+	{
+		return ((this.x() < x) && (this.x() + this.w() >= x)) || 
+			(((this.x() + this.w()) > (x + w)) && (this.x() >= x));
+	};
+
+	Box.prototype._crossVerticalBorder = function (y, h)
+	{
+		return ((this.y() < y) && (this.y() + this.h() >= y)) || 
+			((this.y() + this.h() > y + h) && (this.y() >= y));
+	};
+	
+	Box.prototype._intersectHorizontal = function (x, w) 
+	{
+		if (x > this.x())
+		{
+			var widthSubtract = x - this.x();
+			this._point.x = x;
+			this._size.x -= widthSubtract > 0 ? widthSubtract : -widthSubtract; 
+		}
+		
+		if ((x + w) < (this.x() + this.w()))
+		{
+			this._size.x = x + w - this.x();
+		}
+	};
+	
+	Box.prototype._intersectVertical = function (y, h) 
+	{
+		if (y > this.y())
+		{
+			var heightSubtract = y - this.y();
+			this._point.y = y;
+			this._size.y -= heightSubtract > 0 ? heightSubtract : -heightSubtract; 
+		}
+		
+		if ((y + h) < (this.y() + this.h()))
+		{
+			this._size.y = y + h - this.y();
+		}
+	};
+		
+	
+	Box.prototype.x = function ()
+	{
+		return this._point.x;	
+	};
+
+	Box.prototype.y = function ()
+	{
+		return this._point.y;	
+	};
+
+	Box.prototype.w = function ()
+	{
+		return this._size.x;	
+	};
+		
+	Box.prototype.h = function ()
+	{
+		return this._size.y;	
+	};
+	
+	Box.prototype.isIntersect = function (box) 
+	{
+		return this._isIntersectHorizontal(box.x(), box.w()) && this._isIntersectVertical(box.y(), box.h());
+	};
+	
+	Box.prototype.isCrossBorder = function (box) 
+	{
+		return this._crossHorizontalBorder(box.x(), box.w()) || this._crossVerticalBorder(box.y(), box.h());
+	};
+	
+	Box.prototype.intersect = function (box) 
+	{
+		this._intersectHorizontal(box.x(), box.w());
+		this._intersectVertical(box.y(), box.h());
+	};
+	
+	
+	this.Box = Box;
+});
+namespace('OUI.Core.Pos', function (window)
+{
+	var classify = window.Classy.classify; 
+	
+	
+	/**
+	 * @class OUI.Core.Pos.Point
+	 */
+	function Point(x, y) 
+	{	
+		classify(this);
+		
+		this.x = x;
+		this.y = y;
+	}
+	
+	
+	this.Point = Point;
+});
+namespace('OUI.Views', function (window) 
+{
+	var hbs 		= window.OUI.Core.View.hbs;
+	var classify 	= window.Classy.classify;
+	var fadeRemove 	= window.OUI.Core.View.fadeRemove;
+
+
+	/**
+	 * @class OUI.Views.DialogView
+	 */
+	function DialogView(dialog, okButtonText, cancelButtonText) 
+	{
+		classify(this);
+
+		this._dialog 			= dialog;
+		this._okButtonText 		= okButtonText || 'OK';
+		this._cancelButtonText 	= cancelButtonText || 'Cancel';
+		this._okButton 			= 'a.ok-button';
+		this._cancelButton 		= 'a.cancel-button';
+	}
+
+
+	DialogView.prototype.getContainer = function ()
+	{
+		return $('#' + this._dialog.getId());
+	};
+
+	DialogView.prototype.bindEvents = function ()
+	{
+		var $container = this.getContainer();
+
+		$container.find(this._okButton).on('click', this._dialog.confirm);
+		$container.find(this._cancelButton).on('click', this._dialog.cancel);
+	};
+
+	DialogView.prototype.show = function (message)
+	{
+		$('body').append(hbs('dialog', {
+			id: this._dialog.getId(),
+			message: message,
+			okButtonText: this._okButtonText,
+			cancelButtonText: this._cancelButtonText
+		}));
+	};
+
+	DialogView.prototype.remove = function ()
+	{
+		fadeRemove(this.getContainer());
+	};
+
+	
+	this.DialogView = DialogView;
+});
+namespace('OUI.Views', function (window) 
+{
+	var classify = window.Classy.classify;
+
+	/**
+	 * @class FileUploadView
+	 * @param {string} input
+	 * @param {string} button
+	 * @param {string} dropzone
+	 */
+	function FileUploadView(input, button, dropzone)
+	{
+		classify(this);
+
+		this._input 			= $(input);
+		this._dropzone 			= $(dropzone);
+		this._button 			= $(button);
+		this._dropzoneTimeout 	= null;
+
+		this._button.on('click', this._onButtonClick);
+		$(document).on('dragover', this._onDragover);
+	};
+
+
+	FileUploadView.prototype._onButtonClick = function (e)
+	{
+		this._input.trigger('click');
+	};
+
+	FileUploadView.prototype._onDragover = function (e)
+	{
+		var target 	= $(e.target);
+		
+		if (this._dropzoneTimeout) 
+	    {
+	        clearTimeout(this._dropzoneTimeout);
+	    } 
+	    else 
+	    {
+	        this._dropzone.addClass('in');
+	    }
+
+	    this._dropzone.toggleClass('hover', target.closest(this._dropzone).length);
+	    this._dropzoneTimeout = setTimeout(this._resetHover, 100);
+	};
+
+	FileUploadView.prototype._resetHover = function ()
+	{
+		this._dropzoneTimeout = null;
+		this._dropzone.removeClass('in hover');
+	};
+
+
+	this.FileUploadView = FileUploadView;
+});
+namespace('OUI.Views.List', function (window) 
+{
+	var hbs 		= window.OUI.Core.View.hbs;
+	var classify 	= window.Classy.classify;
+	var obj			= window.Plankton.obj;
+
+
+	/**
+	 * @class OUI.Views.List.ListPaginationView
+	 */
+	function ListPaginationView(listPagination, container) 
+	{
+		classify(this);
+
+		this._pagination 	= listPagination;
+		this._container 	= $(container);
+
+		this._nextSelector	= 'a[data-next]';
+		this._prevSelector 	= 'a[data-prev]';
+
+		this._bindEvents();
+		this.render();
+	}
+
+
+	ListPaginationView.prototype._getLink = function (params)
+	{
+		return window.location.pathname + '?' + $.param(params);
+	};
+
+	ListPaginationView.prototype._getNextPageLink = function (page, total, count)
+	{
+		var params = obj.copy(this._pagination.getParams());
+
+		if ((page + 1) * count < total)
+		{
+			params['_page'] = page + 1;
+		}
+
+		return this._getLink(params);
+	};
+
+	ListPaginationView.prototype._getPrevPageLink = function (page, total, count)
+	{
+		var params = obj.copy(this._pagination.getParams());
+
+		if (page > 0)
+		{
+			params['_page'] = page - 1;
+		}
+
+		return this._getLink(params);
+	};
+
+	ListPaginationView.prototype._getViewParams = function ()
+	{
+		var total 	= this._pagination.getTotal();
+		var page 	= this._pagination.getPage();
+		var count 	= this._pagination.getCount();
+
+		var showingFrom = (page * count) + 1;
+		var showingTo 	= (page + 1) * count < total ? (page + 1) * count : total;
+
+		var data = 
+		{
+			showingFrom: 	showingFrom,
+			showingTo: 		showingTo,
+			prevPageLink: 	this._getPrevPageLink(page, total, count),
+			nextPageLink: 	this._getNextPageLink(page, total, count),
+			hasNextPage: 	(page + 1) * count < total,
+			hasPrevPage: 	page > 0,
+			total: total
+		};
+
+		return data;
+	};
+
+	ListPaginationView.prototype._bindEvents = function ()
+	{
+		this._container.on('click', this._nextSelector, this._pagination.next);
+		this._container.on('click', this._prevSelector, this._pagination.prev);
+	};
+
+
+	ListPaginationView.prototype.render = function ()
+	{		
+		this._container.empty().append(hbs('pagination', this._getViewParams()));
+	};
+
+	
+	this.ListPaginationView = ListPaginationView;
+});
+namespace('OUI.Views.List', function (window) 
+{
+	var classify = window.Classy.classify;
+
+
+	/**
+	 * @class OUI.Views.List.ListSearchView
+	 */
+	function ListSearchView()
+	{
+		classify(this);
+		
+		this._itemsContainer 		= null;
+		this._itemsWrapper			= null;
+		this._nullstateContainer 	= null;
+	}
+
+
+	ListSearchView.prototype.setItemsContainer = function (container)
+	{
+		this._itemsContainer 	= $(container);
+		this._itemsWrapper 		= this.getItemsWrapper();
+	};
+
+	ListSearchView.prototype.getItemsWrapper = function ()
+	{
+		var container = this._itemsContainer;
+		return container.parent()[0].tagName === 'TABLE' ? container.parent() : container;
+	};
+
+	ListSearchView.prototype.setNullstate = function (container)
+	{
+		this._nullstateContainer = $(container);
+	};
+
+	ListSearchView.prototype.hideNullstate = function ()
+	{
+		this._itemsWrapper.removeClass('hidden');
+		this._nullstateContainer.empty().addClass('hidden');
+	};
+
+	ListSearchView.prototype.showNullstate = function ()
+	{
+		this._itemsWrapper.addClass('hidden');
+		this._nullstateContainer.removeClass('hidden');
+	};
+
+	
+	this.ListSearchView = ListSearchView;
+});
+namespace('OUI.Views.List', function (window) 
+{
+	var classify = window.Classy.classify;
+
+
+	/**
+	 * @class OUI.Views.List.ListSelectionView
+	 */
+	function ListSelectionView(selection, itemsContainer, itemsSelector, selectAll) 
+	{
+		classify(this);
+
+		this._selection 	= selection;
+		
+		this._container 	= $(itemsContainer);
+		this._itemsSelector = itemsSelector;
+		this._selectAll 	= $(selectAll);
+		this._selectedClass = 'selected';
+
+		this._bindEvents();
+	};
+
+
+	ListSelectionView.prototype._bindEvents = function ()
+	{
+		this._container.on('change', this._itemsSelector, this._onChange);
+		this._selectAll.on('change', this._toggleSelectAll);
+	};
+
+	ListSelectionView.prototype._toggleSelectAll = function (e)
+	{
+		var checkbox 	= $(e.target);
+		var items 		= this._container.find(this._itemsSelector);
+		var ids 		= [];
+
+		items.each(function () 
+		{
+			ids.push($(this).attr('id'));
+		});
+
+		if (checkbox.is(':checked'))
+		{
+			this._selection.select(ids);
+		}
+		else
+		{
+			this._selection.deselect(ids);
+		}
+	};
+
+	ListSelectionView.prototype._onChange = function (e)
+	{
+		var checkbox 	= $(e.target);
+		var checkboxId 	= $(e.target).attr('id');
+
+		if (checkbox.is(':checked'))
+		{
+			this._selection.select([checkboxId]);
+		}
+		else
+		{
+			this._selection.deselect([checkboxId]);
+		}
+	};
+
+
+	ListSelectionView.prototype.selectItem = function (itemId)
+	{
+		$('[data-id="' + itemId + '"]').addClass(this._selectedClass);
+		$('#' + itemId).prop('checked', true);
+	};
+
+	ListSelectionView.prototype.deselectItem = function (itemId)
+	{
+		$('[data-id="' + itemId + '"]').removeClass(this._selectedClass);
+		$('#' + itemId).prop('checked', false);
+	};
+
+	
+	this.ListSelectionView = ListSelectionView;
+});
+namespace('OUI.Views.List', function (window) 
+{
+	var classify = window.Classy.classify;
+
+
+	/**
+	 * @class OUI.Views.List.ListSortingView
+	 */
+	function ListSortingView(sorting, params, selector)
+	{
+		classify(this);
+
+		this._sorting = sorting;
+
+		this._sortColumns = $('a.sortable');
+		this._sortColumns.on('click', this.updateLink);
+	}
+
+
+	ListSortingView.prototype._setOrder = function (elem)
+	{
+		var order 		= elem.data();
+		var orderWay 	= order.orderWay === 1 ? 0 : 1;
+
+		this._sorting.setParam('_page', 0);
+		this._sorting.setParam('_order', order.orderBy + ',' + orderWay);
+
+		if (orderWay === 1)
+		{
+			elem.addClass('asc');
+		}
+		else 
+		{
+			elem.removeClass('asc');
+		}
+
+		elem.data('order-way', orderWay);
+	};
+
+	ListSortingView.prototype._updateLink = function (elem)
+	{
+		var path 		= window.location.pathname;
+		var queryString = $.param(this._sorting.getParams());
+
+		elem.attr('href', path + (queryString.length ? '?' + queryString : ''));
+	};
+
+	
+	ListSortingView.prototype.setActive = function (e)
+	{
+		this._sortColumns.removeClass('active');
+		$(e.target).addClass('active');
+	};
+
+	ListSortingView.prototype.updateLink = function (e)
+	{
+		var elem = $(e.target);
+		
+		this._setOrder(elem);
+		this._updateLink(elem);
+		this._sorting.sort(e);
+	};
+
+	
+	this.ListSortingView = ListSortingView;
+});
+namespace('OUI.Views', function (window) 
+{
+	var is  		= window.Plankton.is;
+	var hbs 		= window.OUI.Core.View.hbs;
+	var classify 	= window.Classy.classify;
+
+
+	/**
+	 * @class OUI.Views.ModalView
+	 */
+	function ModalView(modal, contents, className) 
+	{
+		classify(this);
+
+		className = className || '';
+
+		this._modal 		= modal;
+		this._underlay 		= 'div.oui-modal-underlay';
+		this._closeButton 	= 'a[data-oui-modal-close]';
+		
+		this._escapeEvent 	= 'keyup.' + modal.getId();
+
+		this._className		= className;
+		this._contents		= contents;
+	};
+	
+
+	ModalView.prototype.getContainer = function ()
+	{
+		return $('#' + this._modal.getId());
+	};
+
+	ModalView.prototype.onOpen = function ()
+	{
+		var modal = this._modal;
+
+		$(document).on(this._escapeEvent, function (e) 
+		{
+			if (e.keyCode === 27)
+			{
+				modal.close();
+			}
+		});
+
+		this.getContainer().on('click', this._closeButton, this._modal.close);
+		this.getContainer().on('click', this._underlay, this._modal.underlayClick);
+	};
+
+	ModalView.prototype.show = function () 
+	{
+		$('body').append(hbs('modal', {
+			id: this._modal.getId(),
+			contents: this._contents,
+			extraClass: this._className
+		}));
+	};
+
+	ModalView.prototype.remove = function ()
+	{
+		$(document).off(this._escapeEvent);
+		this.getContainer().remove();
+	};
+
+	
+	this.ModalView = ModalView;
+});
+namespace('OUI.Views', function (window) 
+{
+	var hbs 		= window.OUI.Core.View.hbs;
+	var classify 	= window.Classy.classify;
+
+
+	function SearchFormView(form, container, value, param, placeholder)
+	{
+		classify(this);
+
+		this._form 			= form;
+		this._container 	= $(container);
+
+		this._input 		= 'input[type="text"]';
+		this._clearButton 	= 'i.toggle-button';
+		
+		this._cancelIcon 	= 'icon-cancel-squared';
+		this._searchIcon	= 'icon-search';
+
+		this.render(value, param, placeholder);
+		this.bindEvents();
+	}
+
+
+	SearchFormView.prototype.getValue = function ()
+	{
+		return this._container.find(this._input).val();
+	};
+
+	SearchFormView.prototype.clearInput = function (e)
+	{
+		var button = this._container.find(this._clearButton);
+
+		this._container.find(this._input).val('');
+		button.removeClass(this._cancelIcon).addClass(this._searchIcon);
+	};
+
+	SearchFormView.prototype.transformIcon = function (e)
+	{
+		var button 	= this._container.find(this._clearButton);
+		var input 	= this._container.find(this._input);
+
+		button.removeClass(this._searchIcon).addClass(this._cancelIcon);
+	};
+
+	SearchFormView.prototype.bindEvents = function ()
+	{
+		this._container.on('input', this._input, this._form.input);
+		this._container.on('click', this._clearButton, this._form.clear);
+	};
+
+	SearchFormView.prototype.render = function (value, param, placeholder)
+	{
+		this._container.append(hbs('search-form', {
+			value: value,
+			param: param,
+			placeholder: placeholder			
+		}));
+
+		if (value.length)
+		{
+			this._container.find(this._clearButton).addClass(this._animationClass);
+		}
+	};
+
+
+	this.SearchFormView = SearchFormView;
+});
+namespace('OUI.Views', function (window) 
+{
+	var is 			= window.Plankton.is;
+	var hbs 		= window.OUI.Core.View.hbs;
+	var classify 	= window.Classy.classify;
+
+
+	/**
+	 * @class OUI.Views.TabsView
+	 */
+	function TabsView(tabs, buttonsSelector) 
+	{
+		classify(this);
+
+		this._tabs 			= tabs;
+
+		this._activeClass 	= 'active';
+		this._hiddenClass 	= 'hidden';
+		this._dataAttr 		= 'oui-tab';
+
+		this._buttons 		= $(buttonsSelector);
+
+		this._buttons.on('click', this._onClick);
+	}
+
+
+	TabsView.prototype._onClick = function (e)
+	{
+		this._tabs.select($(e.target).data(this._dataAttr));
+	};
+
+	TabsView.prototype._forEachTab = function (tabId, index)
+	{
+		var tabButton 		= this._buttons.eq(index);
+		var tabContainer 	= $('#' + tabButton.data(this._dataAttr));
+
+		if (tabButton.data(this._dataAttr) === tabId)
+		{
+			tabButton.addClass(this._activeClass);
+			tabContainer.removeClass(this._hiddenClass);
+		}
+		else
+		{
+			tabContainer.addClass(this._hiddenClass);	
+		}
+	};
+
+
+	TabsView.prototype.select = function (tabId)
+	{
+		this._buttons.removeClass(this._activeClass);
+		this._buttons.each(this._forEachTab.bind(this, tabId));
+	};
+
+
+	this.TabsView = TabsView;
+});
+namespace('OUI.Views', function (window) 
+{
+	var hbs 		= window.OUI.Core.View.hbs;
+	var fadeRemove 	= window.OUI.Core.View.fadeRemove;
+	var classify 	= window.Classy.classify;
+	
+
+	/**
+	 * @class OUI.Views.ToastView
+	 */
+	function ToastView(toast, delay)
+	{
+		classify(this);
+
+		delay = delay || 5000;
+
+		this._toast 	= toast;
+		this._delay 	= delay;
+
+		this._dismiss 	= 'a[data-oui-dismiss]';
+	};
+
+	ToastView.prototype.bindDismiss = function ()
+	{
+		this.getContainer().on('click', this._dismiss, this._toast.dismiss);
+	};
+
+	ToastView.prototype.show = function (message)
+	{
+		this._onAdd.add(callback);
+	};
+
+	ToastView.prototype.getContainer = function ()
+	{
+		return $('#' + this._toast.getId());
+	};
+
+	ToastView.prototype.show = function (message)
+	{
+		var view = this;
+
+		$('body').append(hbs('toast', {
+			message: message,
+			id: this._toast.getId()
+		}));
+
+		setTimeout(function () {
+			fadeRemove(view.getContainer());
+		}, this._delay);
+	};
+
+	ToastView.prototype.remove = function ()
+	{
+		fadeRemove(this.getContainer());
+	};
+
+
+	this.ToastView = ToastView;
+});
+namespace('OUI.Views', function (window) 
+{
+	var classify 	= window.Classy.classify;
+
+
+	/**
+	 * @class OUI.Views.WrapperView
+	 */
+	function WrapperView(wrapper, container, template) 
+	{
+		classify(this);
+
+		this._wrapper 	= wrapper;
+		this._container = $(container);
+		this._template 	= template;
+	};
+
+
+	WrapperView.prototype.getContainer = function ()
+	{
+		return this._container;
+	};
+
+	WrapperView.prototype.render = function (params)
+	{
+		params = params || {};
+		return this._container.empty().append(this._template.hbs(params));
+	};
+
+
+	this.WrapperView = WrapperView;
+});
+namespace('Plankton', function (root) 
+{
+	var is		= root.Plankton.is;
+	var obj		= root.Plankton.obj;
+	var array	= root.Plankton.array;
+	
+	
+	function getForEachForSubject(subject)
+	{
+		if (is.array(subject))
+		{
+			return array.forEach;
+		}
+		else if (is.jsObject(subject))
+		{
+			return obj.forEach;
+		}
+		else
+		{
+			throw Error('Subject must be Array or Object');
+		}
+	}
+	
+	
+	/**
+	 * @class Plankton.foreach
+	 * @alias foreach
+	 * 
+	 * @param {Array|Object} subject
+	 * @param {function(*)} callback
+	 * @param {*=} scope
+	 */
+	var foreach = function (subject, callback, scope)
+	{
+		var method = getForEachForSubject(subject);
+		method.value(subject, callback, scope);
+	};
+	
+	/**
+	 * @param {Array} subject
+	 * @param {function(*)} callback
+	 * @param {*=} scope
+	 */
+	foreach.value = foreach;
+	
+	/**
+	 * @param {Array} subject
+	 * @param {function(Number)} callback
+	 * @param {*=} scope
+	 */
+	foreach.key = function (subject, callback, scope)
+	{
+		var method = getForEachForSubject(subject);
+		method.key(subject, callback, scope);
+	};
+	
+	/**
+	 * @param {Array} subject
+	 * @param {function(Number *)} callback
+	 * @param {*=} scope
+	 */
+	foreach.pair = function(subject, callback, scope)
+	{
+		var method = getForEachForSubject(subject);
+		method.pair(subject, callback, scope);
+	};
+	
+	/**
+	 * @param {Array} subject
+	 * @param {function(Array)} callback
+	 * @param {*=} scope
+	 */
+	foreach.item = function(subject, callback, scope)
+	{
+		var method = getForEachForSubject(subject);
+		method.item(subject, callback, scope);
+	};
+	
+	
+	this.foreach = foreach;
+});
+namespace('Duct.Debug', function (root)
+{
+	var foreach = root.Plankton.foreach;
+	
+	
+	var DEFAULT_FILTER = /.*/;
+	
+	
+	/**
+	 * @param {Event} event
+	 * @param {Array} params
+	 */
+	var DEFAULT_LOGGER = function (event, params)
+	{ 
+		console.groupCollapsed('Event %c' + event.name(), 'color: green');
+		
+		foreach(params, function (value)
+		{
+			console.log(value);
+		});
+		
+		console.groupEnd();
+	};
+	
+	
+	/**
+	 * @param {RegExp=} filter
+	 * @constructor
+	 */
+	var EventDebug = function (filter)
+	{
+		/**
+		 * @type {RegExp}
+		 * @private
+		 */
+		this._filter = filter || DEFAULT_FILTER;
+	
+		/**
+		 * @type {boolean}
+		 * @private
+		 */
+		this._log = false;
+	
+		/**
+		 * @private
+		 */
+		this._logger = DEFAULT_LOGGER;
+	};
+	
+	
+	EventDebug.prototype.log = function ()
+	{
+		this._log = true;
+	};
+	
+	/**
+	 * @param {RegExp} filter
+	 */
+	EventDebug.prototype.filter = function (filter)
+	{
+		this._filter = filter;
+	};
+	
+	/**
+	 * @param {string} data
+	 */
+	EventDebug.prototype.filterStartsWith = function (data)
+	{
+		this._filter = new RegExp('^' + data + '.*$');
+	};
+	
+	EventDebug.prototype.reset = function ()
+	{
+		this._filter = DEFAULT_FILTER;
+		this._log = false;
+	};
+	
+	/**
+	 * @param {function} logger
+	 */
+	EventDebug.prototype.setLogger = function(logger)
+	{
+		this._logger = logger;
+	};
+	
+	/**
+	 * @param {Event} event
+	 * @param {Array} args
+	 */
+	EventDebug.prototype.onTrigger = function(event, args) 
+	{
+		if (!this._log || !this._filter.test(event.name()))
+		{
+			return;
+		}
+		
+		this._logger(event, args)
+	};
+	
+	
+	this.EventDebug = EventDebug;
+});
+namespace('Duct', function (root)
+{
+	var func		= root.Plankton.func;
+	var foreach		= root.Plankton.foreach;
+	
+	
+	/**
+	 * @name {Duct.Trigger}
+	 * @alias {Trigger}
+	 */
+	var Trigger = {
+		
+		asyncHandle: function (callbacks, args, next)
+		{
+			foreach(callbacks, function(callback)
+			{
+				func.async.do(function() 
+				{
+					next([callback], args);
+				});
+			});
+		},
+		
+		asyncTrigger: function (callbacks, args, next)
+		{
+			func.async.do(function() 
+			{
+				next(callbacks, args);
+			});
+		},
+		
+	};
+	
+	
+	this.Trigger = Trigger;
+});
 namespace('OUI.Core.Pos', function (window) 
 {
 	var is 			= window.Plankton.is;
@@ -2374,278 +2726,277 @@ namespace('OUI.Core.Pos', function (window)
 });
 namespace('OUI.Views.List', function (window) 
 {
-	var hbs 		= window.OUI.Core.View.hbs;
 	var classify 	= window.Classy.classify;
-	var obj			= window.Plankton.obj;
+	var foreach 	= window.Plankton.foreach;
+	var fadeRemove 	= window.OUI.Core.View.fadeRemove;
 
 
 	/**
-	 * @class OUI.Views.List.ListPaginationView
+	 * @class OUI.Views.List.ListItemsView
 	 */
-	function ListPaginationView(listPagination, container) 
+	function ListItemsView(listItems, container) 
 	{
 		classify(this);
 
-		this._pagination 	= listPagination;
-		this._container 	= $(container);
+		this._listItems = listItems;
+		this._container = $(container);
 
-		this._nextSelector	= 'a[data-next]';
-		this._prevSelector 	= 'a[data-prev]';
-
-		this._bindEvents();
-		this.render();
+		this._loadingClass 	= 'loading';
 	}
 
 
-	ListPaginationView.prototype._getLink = function (params)
+	ListItemsView.prototype._bindEvents = function ()
 	{
-		return window.location.pathname + '?' + $.param(params);
-	};
-
-	ListPaginationView.prototype._getNextPageLink = function (page, total, count)
-	{
-		var params = obj.copy(this._pagination.getParams());
-
-		if ((page + 1) * count < total)
+		var self = this;
+		
+		this._container.find('[data-id]').click(function (e)
 		{
-			params['_page'] = page + 1;
-		}
-
-		return this._getLink(params);
+			if (!$(e.target).is(':checkbox'))
+			{
+				self._listItems.handleClick($(this).data('id'));
+			}
+		});
 	};
-
-	ListPaginationView.prototype._getPrevPageLink = function (page, total, count)
-	{
-		var params = obj.copy(this._pagination.getParams());
-
-		if (page > 0)
-		{
-			params['_page'] = page - 1;
-		}
-
-		return this._getLink(params);
-	};
-
-	ListPaginationView.prototype._getViewParams = function ()
-	{
-		var total 	= this._pagination.getTotal();
-		var page 	= this._pagination.getPage();
-		var count 	= this._pagination.getCount();
-
-		var showingFrom = (page * count) + 1;
-		var showingTo 	= (page + 1) * count < total ? (page + 1) * count : total;
-
-		var data = 
-		{
-			showingFrom: 	showingFrom,
-			showingTo: 		showingTo,
-			prevPageLink: 	this._getPrevPageLink(page, total, count),
-			nextPageLink: 	this._getNextPageLink(page, total, count),
-			hasNextPage: 	(page + 1) * count < total,
-			hasPrevPage: 	page > 0,
-			total: total
-		};
-
-		return data;
-	};
-
-	ListPaginationView.prototype._bindEvents = function ()
-	{
-		this._container.on('click', this._nextSelector, this._pagination.next);
-		this._container.on('click', this._prevSelector, this._pagination.prev);
-	};
-
-
-	ListPaginationView.prototype.render = function ()
-	{		
-		this._container.empty().append(hbs('pagination', this._getViewParams()));
-	};
-
-	
-	this.ListPaginationView = ListPaginationView;
-});
-namespace('Plankton', function (root) 
-{
-	var is		= root.Plankton.is;
-	var obj		= root.Plankton.obj;
-	var array	= root.Plankton.array;
 	
 	
-	function getForEachForSubject(subject)
+	ListItemsView.prototype.getItemsWrapper = function ()
 	{
-		if (is.array(subject))
+		var container = this._container;
+		return container.parent()[0].tagName === 'TABLE' ? container.parent() : container;
+	};
+
+	ListItemsView.prototype.getContainer = function ()
+	{
+		return this._container;
+	};
+
+	ListItemsView.prototype.render = function (items, template)
+	{
+		var container = this._container;
+
+		container.empty();
+		this.getItemsWrapper().removeClass(this._loadingClass);
+		
+		foreach(items, function (item) 
 		{
-			return array.forEach;
-		}
-		else if (is.jsObject(subject))
+			container.append(template.hbs(item));
+		});
+		
+		this._bindEvents();
+	};
+
+	ListItemsView.prototype.highlightTerm = function (term)
+	{
+		if (term.length)
 		{
-			return obj.forEach;
+			this._container.highlight(term);
 		}
 		else
 		{
-			throw Error('Subject must be Array or Object');
+			this._container.unhighlight();
 		}
+	};
+
+	ListItemsView.prototype.removeItems = function (ids)
+	{
+		foreach(ids, function (id) 
+		{
+			fadeRemove($('[data-id="' + id + '"]'));
+		});
+	};
+
+	ListItemsView.prototype.setLoading = function ()
+	{
+		this.getItemsWrapper().addClass(this._loadingClass);
+	};
+
+	
+	this.ListItemsView = ListItemsView;
+});
+namespace('Duct', function (root)
+{
+	var Trigger		= root.Duct.Trigger;
+	var EventDebug	= root.Duct.Debug.EventDebug;
+	
+	var func		= root.Plankton.func;
+	var foreach		= root.Plankton.foreach;
+	var classify	= root.Classy.classify;
+	
+	
+	/**
+	 * @template T
+	 * 
+	 * @constructor
+	 * @class Duct.Event
+	 * 
+	 * @property {Array<T>} _callbacks
+	 * @property {string} _name
+	 * @property {function(err)} _errorHandler
+	 * 
+	 * @param {string} name
+	 * @param {EventDebug=} debug
+	 */
+	function Event(name, debug)
+	{
+		classify(this);
+		
+		this._callbacks	= [];
+		this._name		= name || '';
+		this._debug		= debug || Event.DEFAULT_DEBUG;
+		this._trigger	= this._defaultTrigger;
+		
+		this._errorHandler = function(err)
+		{
+			console.error('Error when executing event ' + this._name, err);
+		};
 	}
 	
 	
 	/**
-	 * @class Plankton.foreach
-	 * @alias foreach
 	 * 
-	 * @param {Array|Object} subject
-	 * @param {function(*)} callback
-	 * @param {*=} scope
+	 * @param {array} callbacks
+	 * @param {array} callbackArgs
+	 * @private
 	 */
-	var foreach = function (subject, callback, scope)
+	Event.prototype._defaultTrigger = function (callbacks, callbackArgs)
 	{
-		var method = getForEachForSubject(subject);
-		method.value(subject, callback, scope);
+		foreach(callbacks, 
+			function(callback)
+			{
+				this._triggerCallback(callback, callbackArgs);
+			}, 
+			this);
 	};
 	
 	/**
-	 * @param {Array} subject
-	 * @param {function(*)} callback
-	 * @param {*=} scope
+	 * @param {Function} callback
+	 * @param {Array} callbackArgs
+	 * @private
 	 */
-	foreach.value = foreach;
-	
-	/**
-	 * @param {Array} subject
-	 * @param {function(Number)} callback
-	 * @param {*=} scope
-	 */
-	foreach.key = function (subject, callback, scope)
+	Event.prototype._triggerCallback = function (callback, callbackArgs)
 	{
-		var method = getForEachForSubject(subject);
-		method.key(subject, callback, scope);
-	};
-	
-	/**
-	 * @param {Array} subject
-	 * @param {function(Number *)} callback
-	 * @param {*=} scope
-	 */
-	foreach.pair = function(subject, callback, scope)
-	{
-		var method = getForEachForSubject(subject);
-		method.pair(subject, callback, scope);
-	};
-	
-	/**
-	 * @param {Array} subject
-	 * @param {function(Array)} callback
-	 * @param {*=} scope
-	 */
-	foreach.item = function(subject, callback, scope)
-	{
-		var method = getForEachForSubject(subject);
-		method.item(subject, callback, scope);
-	};
-	
-	
-	this.foreach = foreach;
-});
-namespace('Duct.Debug', function (root)
-{
-	var foreach = root.Plankton.foreach;
-	
-	
-	var DEFAULT_FILTER = /.*/;
-	
-	
-	/**
-	 * @param {Event} event
-	 * @param {Array} params
-	 */
-	var DEFAULT_LOGGER = function (event, params)
-	{ 
-		console.groupCollapsed('Event %c' + event.name(), 'color: green');
+		if (this._callbacks === null) return;
 		
-		foreach(params, function (value)
-		{
-			console.log(value);
-		});
+		var wrappedCallback = func.safe(callback, this._errorHandler); 
+		wrappedCallback.apply(null, callbackArgs);
+	};
+	
+	
+	/**
+	 * @returns {string}
+	 */
+	Event.prototype.name = function ()
+	{
+		return this._name;
+	};
+	
+	/**
+	 * @param {function(err)} handler
+	 */
+	Event.prototype.setErrorHandler = function (handler)
+	{
+		this._errorHandler = handler;
+	};
+	
+	Event.prototype.clear = function ()
+	{
+		if (this._callbacks !== null)
+			this._callbacks = [];
+	};
+	
+	/**
+	 * @template T
+	 * @param {T} callback
+	 * @return {Event}
+	 */
+	Event.prototype.add = function (callback)
+	{
+		if (this._callbacks !== null)
+			this._callbacks.push(callback);
 		
-		console.groupEnd();
-	};
-	
-	
-	/**
-	 * @param {RegExp=} filter
-	 * @constructor
-	 */
-	var EventDebug = function (filter)
-	{
-		/**
-		 * @type {RegExp}
-		 * @private
-		 */
-		this._filter = filter || DEFAULT_FILTER;
-	
-		/**
-		 * @type {boolean}
-		 * @private
-		 */
-		this._log = false;
-	
-		/**
-		 * @private
-		 */
-		this._logger = DEFAULT_LOGGER;
-	};
-	
-	
-	EventDebug.prototype.log = function ()
-	{
-		this._log = true;
+		return this;
 	};
 	
 	/**
-	 * @param {RegExp} filter
+	 * @template T
+	 * @param {T} callback
+	 * @return {Event}
 	 */
-	EventDebug.prototype.filter = function (filter)
+	Event.prototype.remove = function (callback)
 	{
-		this._filter = filter;
-	};
-	
-	/**
-	 * @param {string} data
-	 */
-	EventDebug.prototype.filterStartsWith = function (data)
-	{
-		this._filter = new RegExp('^' + data + '.*$');
-	};
-	
-	EventDebug.prototype.reset = function ()
-	{
-		this._filter = DEFAULT_FILTER;
-		this._log = false;
-	};
-	
-	/**
-	 * @param {function} logger
-	 */
-	EventDebug.prototype.setLogger = function(logger)
-	{
-		this._logger = logger;
-	};
-	
-	/**
-	 * @param {Event} event
-	 * @param {Array} args
-	 */
-	EventDebug.prototype.onTrigger = function(event, args) 
-	{
-		if (!this._log || !this._filter.test(event.name()))
+		if (this._callbacks === null) return this;
+		
+		var index = this._callbacks.indexOf(callback);
+		
+		if (index >= 0)
 		{
-			return;
+			this._callbacks.splice(index, 1);
 		}
 		
-		this._logger(event, args)
+		return this;
+	};
+	
+	/**
+	 * @returns {Number}
+	 */
+	Event.prototype.count = function ()
+	{
+		return this._callbacks.length;
+	};
+	
+	/**
+	 * @template T
+	 * @type T
+	 */
+	Event.prototype.trigger = function()
+	{
+		if (this._callbacks === null) return this;
+		
+		var callbackArgs = [].slice.apply(arguments);
+		
+		this._debug.onTrigger(this, callbackArgs);
+		this._trigger(this._callbacks.concat(), callbackArgs);
+	};
+	
+	/**
+	 * @param {Function} triggerCallback
+	 */
+	Event.prototype.addTrigger = function (triggerCallback)
+	{
+		var next = this._trigger;
+		this._trigger = function (callbacks, args) { triggerCallback(callbacks, args, next); };
+	};
+	
+	/**
+	 * @param {boolean=false} triggerOnly If true, only the trigger called asynchonisuly, but all of the handlers,
+	 * called one after another.
+	 */
+	Event.prototype.async = function (triggerOnly)
+	{
+		if (triggerOnly === true)
+			this.addTrigger(Trigger.asyncTrigger);
+		else
+			this.addTrigger(Trigger.asyncHandle);
+	};
+	
+	/**
+	 * @return {boolean}
+	 */
+	Event.prototype.isDestroyed = function ()
+	{
+		return this._callbacks === null;
+	};
+	
+	Event.prototype.destroy = function ()
+	{
+		this._callbacks = null;
 	};
 	
 	
-	this.EventDebug = EventDebug;
+	Event.DEFAULT_DEBUG = new EventDebug();
+	
+	
+	this.Event = Event;
 });
 namespace('OUI.Core.Pos.Prepared', function (window) 
 {
@@ -3074,336 +3425,6 @@ namespace('OUI.Core.Pos.Prepared', function (window)
 	
 
 	this.BasePreparedWithOffsets = BasePreparedWithOffsets;
-});
-namespace('OUI.Views.List', function (window) 
-{
-	var classify 	= window.Classy.classify;
-	var foreach 	= window.Plankton.foreach;
-	var fadeRemove 	= window.OUI.Core.View.fadeRemove;
-
-
-	/**
-	 * @class OUI.Views.List.ListItemsView
-	 */
-	function ListItemsView(listItems, container) 
-	{
-		classify(this);
-
-		this._listItems = listItems;
-		this._container = $(container);
-
-		this._loadingClass 	= 'loading';
-	}
-
-
-	ListItemsView.prototype._bindEvents = function ()
-	{
-		var self = this;
-		
-		this._container.find('[data-id]').click(function (e)
-		{
-			if (!$(e.target).is(':checkbox'))
-			{
-				self._listItems.handleClick($(this).data('id'));
-			}
-		});
-	};
-	
-	
-	ListItemsView.prototype.getItemsWrapper = function ()
-	{
-		var container = this._container;
-		return container.parent()[0].tagName === 'TABLE' ? container.parent() : container;
-	};
-
-	ListItemsView.prototype.getContainer = function ()
-	{
-		return this._container;
-	};
-
-	ListItemsView.prototype.render = function (items, template)
-	{
-		var container = this._container;
-
-		container.empty();
-		this.getItemsWrapper().removeClass(this._loadingClass);
-		
-		foreach(items, function (item) 
-		{
-			container.append(template.hbs(item));
-		});
-		
-		this._bindEvents();
-	};
-
-	ListItemsView.prototype.highlightTerm = function (term)
-	{
-		if (term.length)
-		{
-			this._container.highlight(term);
-		}
-		else
-		{
-			this._container.unhighlight();
-		}
-	};
-
-	ListItemsView.prototype.removeItems = function (ids)
-	{
-		foreach(ids, function (id) 
-		{
-			fadeRemove($('[data-id="' + id + '"]'));
-		});
-	};
-
-	ListItemsView.prototype.setLoading = function ()
-	{
-		this.getItemsWrapper().addClass(this._loadingClass);
-	};
-
-	
-	this.ListItemsView = ListItemsView;
-});
-namespace('Duct', function (root)
-{
-	var EventDebug = root.Duct.Debug.EventDebug;
-	
-	var func	= root.Plankton.func;
-	var foreach	= root.Plankton.foreach;
-	
-	
-	/**
-	 * @template T
-	 * 
-	 * @constructor
-	 * @class Duct.Event
-	 * 
-	 * @property {Array<T>} _callbacks
-	 * @property {string} _name
-	 * @property {function(err)} _errorHandler
-	 * 
-	 * @param {string} name
-	 * @param {EventDebug=} debug
-	 */
-	function Event(name, debug)
-	{
-		this._callbacks	= [];
-		this._name		= name || '';
-		this._debug		= debug || Event.DEFAULT_DEBUG;
-		
-		
-		this._errorHandler = function(err)
-		{
-			console.error('Error when executing event ' + this._name, err);
-		};
-	}
-	
-	
-	/**
-	 * @param {Function} callback
-	 * @param {Array} callbackArgs
-	 * @private
-	 */
-	Event.prototype._triggerCallback = function (callback, callbackArgs)
-	{
-		var wrappedCallback = func.safe(callback, this._errorHandler);
-		wrappedCallback = func.async(wrappedCallback); 
-		wrappedCallback.apply(null, callbackArgs);
-	};
-	
-	
-	/**
-	 * @returns {string}
-	 */
-	Event.prototype.name = function ()
-	{
-		return this._name;
-	};
-	
-	/**
-	 * @param {function(err)} handler
-	 */
-	Event.prototype.setErrorHandler = function (handler)
-	{
-		this._errorHandler = handler;
-	};
-	
-	Event.prototype.clear = function()
-	{
-		this._callbacks = [];
-	};
-	
-	/**
-	 * @template T
-	 * @param {T} callback
-	 * @return {Event}
-	 */
-	Event.prototype.add = function (callback)
-	{
-		this._callbacks.push(callback);
-		return this;
-	};
-	
-	/**
-	 * @template T
-	 * @param {T} callback
-	 * @return {Event}
-	 */
-	Event.prototype.remove = function (callback)
-	{
-		var index = this._callbacks.indexOf(callback);
-		
-		if (index >= 0)
-		{
-			this._callbacks.splice(index, 1);
-		}
-		
-		return this;
-	};
-	
-	/**
-	 * @returns {Number}
-	 */
-	Event.prototype.count = function count()
-	{
-		return this._callbacks.length;
-	};
-	
-	/**
-	 * @template T
-	 * @type T
-	 */
-	Event.prototype.trigger = function()
-	{
-		var callbackArgs = [].slice.apply(arguments);
-		var self = this;
-		
-		this._debug.onTrigger(this, callbackArgs);
-		
-		func.async.do(
-			function() 
-			{
-				foreach(self._callbacks, function(callback)
-				{
-					self._triggerCallback(callback, callbackArgs);
-				});
-			});
-	};
-	
-	
-	Event.DEFAULT_DEBUG = new EventDebug();
-	
-	
-	this.Event = Event;
-});
-namespace('OUI.Core.Pos.Prepared', function (window) 
-{
-	var classify				= window.Classy.classify;
-	var TargetSide 				= window.OUI.Core.Pos.Enum.TargetSide;
-	var TargetPosition 			= window.OUI.Core.Pos.Enum.TargetPosition;
-	var BasePreparedWithOffsets = window.OUI.Core.Pos.Prepared.BasePreparedWithOffsets;
-
-	
-	var defaults = {
-		initialSide: TargetSide.top,
-		initialPosition: TargetPosition.center
-	};
-	
-
-	/**
-	 * @class OUI.Core.Pos.Prepared.ConfigurablePosition
-	 */
-	function ConfigurablePosition(options, sides)
-	{
-		sides = sides || [];
-		
-		classify(this);
-
-		BasePreparedWithOffsets.call(this, options, defaults);
-		
-		this._availableSides = [
-			TargetSide.top,
-			TargetSide.right,
-			TargetSide.bottom,
-			TargetSide.left,
-		];
-		
-		if (sides.length > 0)
-		{
-			this._availableSides = sides;
-		}
-	}
-	
-	
-	ConfigurablePosition.get = function (options, sides) 
-	{
-		var configurablePosition = new ConfigurablePosition(options, sides);
-		return configurablePosition.getPosition();
-	};
-	
-
-	ConfigurablePosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
-	ConfigurablePosition.prototype.constructor = ConfigurablePosition;
-	
-	
-	ConfigurablePosition.prototype._getAvailableSides = function () 
-	{
-		return this._availableSides;	
-	};
-	
-	
-	this.ConfigurablePosition = ConfigurablePosition;
-});
-namespace('OUI.Core.Pos.Prepared', function (window) 
-{
-	var classify				= window.Classy.classify;
-	var TargetSide 				= window.OUI.Core.Pos.Enum.TargetSide;
-	var TargetPosition 			= window.OUI.Core.Pos.Enum.TargetPosition;
-	var BasePreparedWithOffsets = window.OUI.Core.Pos.Prepared.BasePreparedWithOffsets;
-
-	
-	var defaults = {
-		initialSide: TargetSide.top,
-		initialPosition: TargetPosition.center
-	};
-	
-
-	/**
-	 * @class OUI.Core.Pos.Prepared.RoundPosition
-	 */
-	function RoundPosition(options)
-	{
-		classify(this);
-
-		BasePreparedWithOffsets.call(this, options, defaults);
-		
-		this._availableSides = [
-			TargetSide.top,
-			TargetSide.right,
-			TargetSide.bottom,
-			TargetSide.left,
-		];
-	}
-	
-	
-	RoundPosition.get = function (options) 
-	{
-		var roundPosition = new RoundPosition(options);
-		return roundPosition.getPosition();
-	};
-	
-
-	RoundPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
-	RoundPosition.prototype.constructor = RoundPosition;
-	
-	
-	RoundPosition.prototype._getAvailableSides = function () 
-	{
-		return this._availableSides;	
-	};
-	
-	
-	this.RoundPosition = RoundPosition;
 });
 namespace('OUI.Components', function (window) 
 {
@@ -4170,525 +4191,114 @@ namespace('OUI.Components', function (window)
 
 	this.Wrapper = Wrapper;
 });
-namespace('OUI.Views', function (window) 
+namespace('OUI.Core.Pos.Prepared', function (window) 
 {
-	var hbs 			= window.OUI.Core.View.hbs;
-	var classify		= window.Classy.classify;
-	var obj 			= window.Plankton.obj;
+	var classify				= window.Classy.classify;
+	var TargetSide 				= window.OUI.Core.Pos.Enum.TargetSide;
+	var TargetPosition 			= window.OUI.Core.Pos.Enum.TargetPosition;
+	var BasePreparedWithOffsets = window.OUI.Core.Pos.Prepared.BasePreparedWithOffsets;
+
 	
-	var ConfigurablePosition	= window.OUI.Core.Pos.Prepared.ConfigurablePosition;
-	var TargetPosition			= window.OUI.Core.Pos.Enum.TargetPosition;
-	var TargetSide				= window.OUI.Core.Pos.Enum.TargetSide;
-
-
-	function HoverMenuView(menu, $toggleElement, contents, canPersist, extraClass, positionConfig)
-	{
-		classify(this);
-
-		extraClass = extraClass || '';
-		
-
-		this._menu 				= menu;
-		this._toggleElement 	= $toggleElement;
-		this._contents 			= contents;
-		this._extraClass 		= extraClass;
-		this._underlay 			= 'div.oui-hover-menu-underlay';
-		this._dataAttr			= 'oui-hover-menu';
-		this._positionConfig	= positionConfig || {};
-		this._canPersist		= canPersist || false;
-		
-		if (this.isOpen())
-		{
-			return;
-		}
-		
-		this._bindOpen();
-		this._bindRemove();
-		
-		if (this._canPersist)
-		{
-			this._bindPersistInit();
-		}
-	}
-
-
-	HoverMenuView.prototype._bindOpen = function ()
-	{
-		this._toggleElement.on('mouseenter.' + this._menu.getId(), this._menu.open);
-	};
-
-	HoverMenuView.prototype._bindRemove = function ()
-	{
-		this._toggleElement.on('mouseleave.' + this._menu.getId() , this._menu.close);
+	var defaults = {
+		initialSide: TargetSide.top,
+		initialPosition: TargetPosition.center
 	};
 	
-	HoverMenuView.prototype._bindPersistInit = function () 
-	{
-		var self = this;
-		
-		this._toggleElement.on('click.' + this._menu.getId(), function () 
-		{
-			if(self.isOpen() && self._menu.isPersist())
-			{
-				self.getContainer().toggle();
-				
-				if (!self.getContainer().is(':visible'))
-				{
-					self.disablePersist();
-				}
-				else 
-				{
-					self.enablePersist();
-				}
-			}
-			else 
-			{
-				self._menu.togglePersist();
-			}
-		});
-	};
-	
-	HoverMenuView.prototype._unbindHover = function () 
-	{
-		this._toggleElement.off('mouseenter.' + this._menu.getId());
-		this._toggleElement.off('mouseleave.' + this._menu.getId());	
-	};
-	
-	HoverMenuView.prototype._unbindPersistEvents = function () 
-	{
-		this._toggleElement.off('click.' + this._menu.getId());
-		this._unbindPersistClose();	
-	};
-	
-	HoverMenuView.prototype._bindPersistClose = function ()
-	{	
-		var self = this;
-		
-		$(document).on('click.' + self._menu.getId(), function (event) 
-		{
-			if (!$(event.target).closest(self._toggleElement).length &&
-				!$(event.target).closest('#' + self._menu.getId()).length)
-			{
-				self._menu.close();
-			}
-		});
-	};
-	
-	HoverMenuView.prototype._unbindPersistClose = function () 
-	{
-		$(document).off('click.' + this._menu.getId());
-	};
-	
-
-	HoverMenuView.prototype.enablePersist = function () 
-	{
-		this._unbindHover();
-		this._bindPersistClose();
-	};
-	
-	HoverMenuView.prototype.disablePersist = function () 
-	{
-		this._bindOpen();
-		this._bindRemove();
-
-		this._unbindPersistClose();
-	};
-
-	HoverMenuView.prototype.getContainer = function ()
-	{
-		return $('#' + this._menu.getId());
-	};
-
-	HoverMenuView.prototype.remove = function ()
-	{
-		this.getContainer().remove();
-		this._unbindHover();
-		this._unbindPersistEvents();
-		
-		this._toggleElement.removeData(this._dataAttr);
-	};
-
-	HoverMenuView.prototype.show = function ()
-	{
-		var menu = hbs('hover-menu', 
-		{
-			id: this._menu.getId(),
-			contents: this._contents,
-			extraClass: this._extraClass
-		});
-		
-		var $container = $('body');
-		
-		$container.append(menu);
-		
-		var $target 	= this.getContainer();
-		var $related 	= this._toggleElement;
-		
-		var baseConfig = {
-			container: $container,
-			containerOffset: 10,
-			relatedElement: $related,
-			targetElement: $target,
-			initialPosition: TargetPosition.center,
-			initialSide: TargetSide.right,
-			sides: [TargetSide.right, TargetSide.left]
-		};
-		
-		var config = obj.merge(baseConfig, this._positionConfig);
-
-		var pos = ConfigurablePosition.get(config, config.sides);
-
-		$target.offset(
-		{
-			top: pos.coordinates.top,
-			left: pos.coordinates.left
-		});
-
-		$target.addClass(pos.name);
-		
-		this._toggleElement.data(this._dataAttr, this._menu.getId());
-	};
-	
-	HoverMenuView.prototype.isOpen = function () 
-	{
-		return this._toggleElement.data(this._dataAttr) !== undefined;	
-	};
-
-
-	this.HoverMenuView = HoverMenuView;
-});
-namespace('OUI.Views', function (window) 
-{
-	var hbs 			= window.OUI.Core.View.hbs;
-	var classify		= window.Classy.classify;
-	var obj 			= window.Plankton.obj;
-	
-	var ConfigurablePosition	= window.OUI.Core.Pos.Prepared.ConfigurablePosition;
-	var TargetPosition			= window.OUI.Core.Pos.Enum.TargetPosition;
-	var TargetSide				= window.OUI.Core.Pos.Enum.TargetSide;
-
-
-	function MenuView(menu, $toggleElement, contents, extraClass, positionConfig)
-	{
-		classify(this);
-
-		extraClass = extraClass || '';
-
-		this._menu 				= menu;
-		this._toggleElement 	= $toggleElement;
-		this._contents 			= contents;
-		this._extraClass 		= extraClass;
-		this._underlay 			= 'div.oui-menu-underlay';
-		this._positionConfig	= positionConfig || {};
-
-		this._bindOpen();
-	}
-
-
-	MenuView.prototype._bindOpen = function ()
-	{
-		this._toggleElement.on('click.' + this._menu.getId(), this._menu.open);
-	};
-	
-	MenuView.prototype._unbindOpen = function () 
-	{
-		this._toggleElement.off('click.' + this._menu.getId());	
-	};
-
-
-	MenuView.prototype.bindRemove = function ()
-	{
-		this.getContainer().on('click.' + this._menu.getId(), this._underlay, this._menu.close);
-	};
-
-	MenuView.prototype.getContainer = function ()
-	{
-		return $('#' + this._menu.getId());
-	};
-
-	MenuView.prototype.remove = function (unbindEvent)
-	{
-		this.getContainer().remove();
-
-		if (unbindEvent)
-		{
-			this._unbindOpen();
-		}
-	};
-
-	MenuView.prototype.show = function ()
-	{
-		$('body').append(hbs('menu', 
-		{
-			id: this._menu.getId(),
-			contents: this._contents,
-			extraClass: this._extraClass
-		}));
-		
-		var $container 	= this.getContainer();
-		var $target 	= $container.find('div.wrapper');
-		var $related 	= this._toggleElement;
-		
-		var baseConfig = {
-			container: $container,
-			containerOffset: 10,
-			relatedElement: $related,
-			targetElement: $target,
-			initialPosition: TargetPosition.center,
-			sides: [TargetSide.bottom]
-		};
-		
-		var config = obj.merge(baseConfig, this._positionConfig);
-
-		var pos = ConfigurablePosition.get(config, config.sides);
-
-		$target.offset(
-		{
-			top: pos.coordinates.top,
-			left: pos.coordinates.left
-		});
-
-		$target.addClass(pos.name);
-	};
-
-
-	this.MenuView = MenuView;
-});
-namespace('OUI.Views', function (window) 
-{
-	var RoundPosition 	= window.OUI.Core.Pos.Prepared.RoundPosition;
-    var TargetPosition 	= window.OUI.Core.Pos.Enum.TargetPosition;
-    var TargetSide 		= window.OUI.Core.Pos.Enum.TargetSide;
-
-    var classify		= window.Classy.classify;
-    var obj 			= window.Plankton.obj;
-
 
 	/**
-	 * @class OUI.Views.TipView
+	 * @class OUI.Core.Pos.Prepared.ConfigurablePosition
 	 */
-	function TipView(tip, baseName, positionConfig)
+	function ConfigurablePosition(options, sides)
 	{
+		sides = sides || [];
+		
 		classify(this);
 
-		this._tip 				= tip;
-
-		this._tipBaseName 		= baseName;
-		this._tipSelector 		= '*[data-' + baseName + ']';
-		this._tipContentAttr 	= 'title';
-		this._invisibleClass 	= 'invisible';
-
-		this._positionConfig	= positionConfig || {};
-	};
-
-
-	TipView.prototype._getContent = function ($element)
-	{
-		var content = $element.data(this._tipBaseName);
-
-		content = content.replace(/\[/g, '<');
-		content = content.replace(/\]/g, '>');
-
-		return content;
-	};
-
-	TipView.prototype._getPosition = function ($related, $target)
-	{
-		var baseConfig = 
-		{			
-			relatedElement:  $related,
-		    targetElement: $target,
-		    relatedOffset: 10,
-		    initialPosition: TargetPosition.center,
-		    initialSide: TargetSide.bottom
-		};
-
-		var options = obj.merge(baseConfig, this._positionConfig);
-
-		return RoundPosition.get(options);
-	};
-
-
-	TipView.prototype.bindHover = function ()
-	{
-		var view = this;
-
-		$(document).on(
+		BasePreparedWithOffsets.call(this, options, defaults);
+		
+		this._availableSides = [
+			TargetSide.top,
+			TargetSide.right,
+			TargetSide.bottom,
+			TargetSide.left,
+		];
+		
+		if (sides.length > 0)
 		{
-		    'mouseenter.tip': function () 
-		    {
-		        view._tip.add($(this));
-		    },
-		    'mouseleave.tip': function () 
-		    {
-		        view._tip.remove();
-		    }
-		}, this._tipSelector);
-
-		$(document).on('click.tip', this._tipSelector, function () 
-		{
-			view._tip.remove();
-		});
-	};
-
-	TipView.prototype.getContainer = function ()
+			this._availableSides = sides;
+		}
+	}
+	
+	
+	ConfigurablePosition.get = function (options, sides) 
 	{
-		return $('#' + this._tip.getId());
+		var configurablePosition = new ConfigurablePosition(options, sides);
+		return configurablePosition.getPosition();
 	};
+	
 
-	TipView.prototype.show = function ($element)
+	ConfigurablePosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
+	ConfigurablePosition.prototype.constructor = ConfigurablePosition;
+	
+	
+	ConfigurablePosition.prototype._getAvailableSides = function () 
 	{
-		var position;
-		var $tip = $('<div>')
-			.attr('id', this._tip.getId())
-			.addClass(this._tipBaseName)
-			.addClass(this._invisibleClass)
-			.html(this._getContent($element));
-
-		$('body').append($tip);
-
-		position = this._getPosition($element, $tip);
-
-		$tip
-			.addClass(position.name)
-			.removeClass(this._invisibleClass)
-			.css({ 
-				left: position.coordinates.left, 
-				top: position.coordinates.top 
-			});
+		return this._availableSides;	
 	};
-
-	TipView.prototype.remove = function ()
-	{
-		this.getContainer().remove();
-	};
-
-
-	this.TipView = TipView;
+	
+	
+	this.ConfigurablePosition = ConfigurablePosition;
 });
-namespace('OUI.Components', function (window) 
+namespace('OUI.Core.Pos.Prepared', function (window) 
 {
-	var Event 			= window.Duct.Event;
-	var HoverMenuView 	= window.OUI.Views.HoverMenuView;
+	var classify				= window.Classy.classify;
+	var TargetSide 				= window.OUI.Core.Pos.Enum.TargetSide;
+	var TargetPosition 			= window.OUI.Core.Pos.Enum.TargetPosition;
+	var BasePreparedWithOffsets = window.OUI.Core.Pos.Prepared.BasePreparedWithOffsets;
 
-	var classify 		= window.Classy.classify;
-	var idGenerator 	= window.OUI.Core.View.idGenerator;
-
+	
+	var defaults = {
+		initialSide: TargetSide.top,
+		initialPosition: TargetPosition.center
+	};
+	
 
 	/**
-	 * @class OUI.Components.HoverMenu
+	 * @class OUI.Core.Pos.Prepared.RoundPosition
 	 */
-	function HoverMenu($toggleElement, contents, canPersist, extraClass, positionConfig)
+	function RoundPosition(options)
 	{
 		classify(this);
 
-		this._id 				= idGenerator('oui-hover-menu');
+		BasePreparedWithOffsets.call(this, options, defaults);
 		
-		this._view 				= new HoverMenuView(this, $toggleElement, contents, canPersist, extraClass, positionConfig);
-		
-		this._onBeforeOpen 		= new Event('hoverMenu.onBeforeOpen');
-		this._onAfterOpen 		= new Event('hoverMenu.onAfterOpen');
-		this._onBeforeClose 	= new Event('hoverMenu.onBeforeClose');
-		this._onAfterClose 		= new Event('hoverMenu.onAfterClose');
-		
-		this._onBeforePersist	= new Event('hoverMenu.onBeforePersist');
-		this._onAfterPersist	= new Event('hoverMenu.onAfterPersist');
-		
-		this._isPersist	= false;
+		this._availableSides = [
+			TargetSide.top,
+			TargetSide.right,
+			TargetSide.bottom,
+			TargetSide.left,
+		];
 	}
-
-
-	HoverMenu.prototype.getId = function ()
+	
+	
+	RoundPosition.get = function (options) 
 	{
-		return this._id;
+		var roundPosition = new RoundPosition(options);
+		return roundPosition.getPosition();
 	};
 	
-	HoverMenu.prototype.getContainer = function () 
-	{
-		return this._view.getContainer();	
-	};
 
-	HoverMenu.prototype.onBeforeOpen = function (callback)
+	RoundPosition.prototype = Object.create(BasePreparedWithOffsets.prototype);
+	RoundPosition.prototype.constructor = RoundPosition;
+	
+	
+	RoundPosition.prototype._getAvailableSides = function () 
 	{
-		this._onBeforeOpen.add(callback);
-	};
-
-	HoverMenu.prototype.onAfterOpen = function (callback)
-	{
-		this._onAfterOpen.add(callback);
-	};
-
-	HoverMenu.prototype.onBeforeClose = function (callback)
-	{
-		this._onBeforeClose.add(callback);
-	};
-
-	HoverMenu.prototype.onAfterClose = function (callback)
-	{
-		this._onAfterClose.add(callback);
+		return this._availableSides;	
 	};
 	
-	HoverMenu.prototype.onBeforePersist = function (callback)
-	{
-		this._onBeforePersist.add(callback);
-	};
 	
-	HoverMenu.prototype.onAfterPersist = function (callback)
-	{
-		this._onAfterPersist.add(callback);	
-	};
-	
-	HoverMenu.prototype.open = function ()
-	{
-		if (this._view.isOpen())
-		{
-			return;
-		}
-		
-		this._onBeforeOpen.trigger(this.getId());
-		this._view.show();
-		this._onAfterOpen.trigger(this._view.getContainer());
-	};
-
-	HoverMenu.prototype.close = function ()
-	{
-		if (this._isPersist)
-		{
-			this._isPersist = false;
-			this._view.disablePersist();
-		}
-		
-		this._onBeforeClose.trigger(this._view.getContainer());
-		this._view.remove();
-		this._onAfterClose.trigger(this.getId());
-	};
-	
-	HoverMenu.prototype.togglePersist = function ()
-	{
-		if (this.isOpen() && this.isPersist())
-		{
-			this.close();
-			return;
-		}
-		
-		this._onBeforePersist.trigger(this._view.getContainer());
-		this._isPersist = true;
-		this._view.enablePersist();
-		this._onAfterPersist.trigger(this._view.getContainer());
-	};
-	
-	HoverMenu.prototype.isOpen = function () 
-	{
-		return this._view.isOpen();	
-	};
-	
-	HoverMenu.prototype.isPersist = function () 
-	{
-		return this._isPersist;	
-	};
-
-	
-	this.HoverMenu = HoverMenu;
+	this.RoundPosition = RoundPosition;
 });
 namespace('OUI.Components.List', function (window) 
 {
@@ -5032,6 +4642,545 @@ namespace('OUI.Components.List', function (window)
 
 	this.ListSearch = ListSearch;
 });
+namespace('OUI.Views', function (window) 
+{
+	var hbs 			= window.OUI.Core.View.hbs;
+	var classify		= window.Classy.classify;
+	var obj 			= window.Plankton.obj;
+	
+	var ConfigurablePosition	= window.OUI.Core.Pos.Prepared.ConfigurablePosition;
+	var TargetPosition			= window.OUI.Core.Pos.Enum.TargetPosition;
+	var TargetSide				= window.OUI.Core.Pos.Enum.TargetSide;
+
+
+	function HoverMenuView(menu, $toggleElement, contents, canPersist, extraClass, positionConfig)
+	{
+		classify(this);
+
+		extraClass = extraClass || '';
+		
+
+		this._menu 				= menu;
+		this._toggleElement 	= $toggleElement;
+		this._contents 			= contents;
+		this._extraClass 		= extraClass;
+		this._underlay 			= 'div.oui-hover-menu-underlay';
+		this._dataAttr			= 'oui-hover-menu';
+		this._positionConfig	= positionConfig || {};
+		this._canPersist		= canPersist || false;
+		
+		if (this.isOpen())
+		{
+			return;
+		}
+		
+		this._bindOpen();
+		this._bindRemove();
+		
+		if (this._canPersist)
+		{
+			this._bindPersistInit();
+		}
+	}
+
+
+	HoverMenuView.prototype._bindOpen = function ()
+	{
+		this._toggleElement.on('mouseenter.' + this._menu.getId(), this._menu.open);
+	};
+
+	HoverMenuView.prototype._bindRemove = function ()
+	{
+		this._toggleElement.on('mouseleave.' + this._menu.getId() , this._menu.close);
+	};
+	
+	HoverMenuView.prototype._bindPersistInit = function () 
+	{
+		var self = this;
+		
+		this._toggleElement.on('click.' + this._menu.getId(), function () 
+		{
+			if(self.isOpen() && self._menu.isPersist())
+			{
+				self.getContainer().toggle();
+				
+				if (!self.getContainer().is(':visible'))
+				{
+					self.disablePersist();
+				}
+				else 
+				{
+					self.enablePersist();
+				}
+			}
+			else 
+			{
+				self._menu.togglePersist();
+			}
+		});
+	};
+	
+	HoverMenuView.prototype._unbindHover = function () 
+	{
+		this._toggleElement.off('mouseenter.' + this._menu.getId());
+		this._toggleElement.off('mouseleave.' + this._menu.getId());	
+	};
+	
+	HoverMenuView.prototype._unbindPersistEvents = function () 
+	{
+		this._toggleElement.off('click.' + this._menu.getId());
+		this._unbindPersistClose();	
+	};
+	
+	HoverMenuView.prototype._bindPersistClose = function ()
+	{	
+		var self = this;
+		
+		$(document).on('click.' + self._menu.getId(), function (event) 
+		{
+			if (!$(event.target).closest(self._toggleElement).length &&
+				!$(event.target).closest('#' + self._menu.getId()).length)
+			{
+				self._menu.close();
+			}
+		});
+	};
+	
+	HoverMenuView.prototype._unbindPersistClose = function () 
+	{
+		$(document).off('click.' + this._menu.getId());
+	};
+	
+
+	HoverMenuView.prototype.enablePersist = function () 
+	{
+		this._unbindHover();
+		this._bindPersistClose();
+	};
+	
+	HoverMenuView.prototype.disablePersist = function () 
+	{
+		this._bindOpen();
+		this._bindRemove();
+
+		this._unbindPersistClose();
+	};
+
+	HoverMenuView.prototype.getContainer = function ()
+	{
+		return $('#' + this._menu.getId());
+	};
+
+	HoverMenuView.prototype.remove = function ()
+	{
+		this.getContainer().remove();
+		this._unbindHover();
+		this._unbindPersistEvents();
+		
+		this._toggleElement.removeData(this._dataAttr);
+	};
+
+	HoverMenuView.prototype.show = function ()
+	{
+		var menu = hbs('hover-menu', 
+		{
+			id: this._menu.getId(),
+			contents: this._contents,
+			extraClass: this._extraClass
+		});
+		
+		var $container = $('body');
+		
+		$container.append(menu);
+		
+		var $target 	= this.getContainer();
+		var $related 	= this._toggleElement;
+		
+		var baseConfig = {
+			container: $container,
+			containerOffset: 10,
+			relatedElement: $related,
+			targetElement: $target,
+			initialPosition: TargetPosition.center,
+			initialSide: TargetSide.right,
+			sides: [TargetSide.right, TargetSide.left]
+		};
+		
+		var config = obj.merge(baseConfig, this._positionConfig);
+
+		var pos = ConfigurablePosition.get(config, config.sides);
+
+		$target.offset(
+		{
+			top: pos.coordinates.top,
+			left: pos.coordinates.left
+		});
+
+		$target.addClass(pos.name);
+		
+		this._toggleElement.data(this._dataAttr, this._menu.getId());
+	};
+	
+	HoverMenuView.prototype.isOpen = function () 
+	{
+		return this._toggleElement.data(this._dataAttr) !== undefined;	
+	};
+
+
+	this.HoverMenuView = HoverMenuView;
+});
+namespace('OUI.Views', function (window) 
+{
+	var hbs 			= window.OUI.Core.View.hbs;
+	var classify		= window.Classy.classify;
+	var obj 			= window.Plankton.obj;
+	var is				= window.Plankton.is;
+	
+	var ConfigurablePosition	= window.OUI.Core.Pos.Prepared.ConfigurablePosition;
+	var TargetPosition			= window.OUI.Core.Pos.Enum.TargetPosition;
+	var TargetSide				= window.OUI.Core.Pos.Enum.TargetSide;
+
+
+	function MenuView(menu, $toggleElement, contents, extraClass, positionConfig)
+	{
+		classify(this);
+
+		extraClass = extraClass || '';
+
+		this._menu 				= menu;
+		this._toggleElement 	= $toggleElement;
+		this._contents 			= contents;
+		this._extraClass 		= extraClass;
+		this._underlay 			= 'div.oui-menu-underlay';
+		this._positionConfig	= positionConfig || {};
+		
+		this._positionClass = null;
+
+		this._bindOpen();
+	}
+
+
+	MenuView.prototype._bindOpen = function ()
+	{
+		this._toggleElement.on('click.' + this._menu.getId(), this._menu.open);
+	};
+	
+	MenuView.prototype._unbindOpen = function () 
+	{
+		this._toggleElement.off('click.' + this._menu.getId());	
+	};
+	
+	MenuView.prototype._putInPosition = function ()
+	{
+		var $container 	= this.getContainer();
+		var $target 	= $container.find('div.wrapper');
+		var $related 	= this._toggleElement;
+		
+		var baseConfig = {
+			container: $container,
+			containerOffset: 10,
+			relatedElement: $related,
+			targetElement: $target,
+			initialPosition: TargetPosition.center,
+			sides: [TargetSide.bottom]
+		};
+		
+		var config = obj.merge(baseConfig, this._positionConfig);
+
+		var pos = ConfigurablePosition.get(config, config.sides);
+
+		$target.offset(
+		{
+			top: pos.coordinates.top,
+			left: pos.coordinates.left
+		});
+		
+		if (!is.null(this._positionClass))
+		{
+			$target.removeClass(this._positionClass);
+		}
+
+		this._positionClass = pos.name;
+		$target.addClass(pos.name);
+	};
+
+
+	MenuView.prototype.bindRemove = function ()
+	{
+		this.getContainer().on('click.' + this._menu.getId(), this._underlay, this._menu.close);
+	};
+
+	MenuView.prototype.getContainer = function ()
+	{
+		return $('#' + this._menu.getId());
+	};
+
+	MenuView.prototype.remove = function (unbindEvent)
+	{
+		this.getContainer().remove();
+
+		if (unbindEvent)
+		{
+			this._unbindOpen();
+		}
+	};
+
+	MenuView.prototype.show = function ()
+	{
+		$('body').append(hbs('menu', 
+		{
+			id: this._menu.getId(),
+			contents: this._contents,
+			extraClass: this._extraClass
+		}));
+	
+		this._putInPosition();
+	};
+	
+	MenuView.prototype.refreshPosition = function ()
+	{
+		this._putInPosition();
+	};
+
+
+	this.MenuView = MenuView;
+});
+namespace('OUI.Views', function (window) 
+{
+	var RoundPosition 	= window.OUI.Core.Pos.Prepared.RoundPosition;
+    var TargetPosition 	= window.OUI.Core.Pos.Enum.TargetPosition;
+    var TargetSide 		= window.OUI.Core.Pos.Enum.TargetSide;
+
+    var classify		= window.Classy.classify;
+    var obj 			= window.Plankton.obj;
+
+
+	/**
+	 * @class OUI.Views.TipView
+	 */
+	function TipView(tip, baseName, positionConfig)
+	{
+		classify(this);
+
+		this._tip 				= tip;
+
+		this._tipBaseName 		= baseName;
+		this._tipSelector 		= '*[data-' + baseName + ']';
+		this._tipContentAttr 	= 'title';
+		this._invisibleClass 	= 'invisible';
+
+		this._positionConfig	= positionConfig || {};
+	};
+
+
+	TipView.prototype._getContent = function ($element)
+	{
+		var content = $element.data(this._tipBaseName);
+
+		content = content.replace(/\[/g, '<');
+		content = content.replace(/\]/g, '>');
+
+		return content;
+	};
+
+	TipView.prototype._getPosition = function ($related, $target)
+	{
+		var baseConfig = 
+		{			
+			relatedElement:  $related,
+		    targetElement: $target,
+		    relatedOffset: 10,
+		    initialPosition: TargetPosition.center,
+		    initialSide: TargetSide.bottom
+		};
+
+		var options = obj.merge(baseConfig, this._positionConfig);
+
+		return RoundPosition.get(options);
+	};
+
+
+	TipView.prototype.bindHover = function ()
+	{
+		var view = this;
+
+		$(document).on(
+		{
+		    'mouseenter.tip': function () 
+		    {
+		        view._tip.add($(this));
+		    },
+		    'mouseleave.tip': function () 
+		    {
+		        view._tip.remove();
+		    }
+		}, this._tipSelector);
+
+		$(document).on('click.tip', this._tipSelector, function () 
+		{
+			view._tip.remove();
+		});
+	};
+
+	TipView.prototype.getContainer = function ()
+	{
+		return $('#' + this._tip.getId());
+	};
+
+	TipView.prototype.show = function ($element)
+	{
+		var position;
+		var $tip = $('<div>')
+			.attr('id', this._tip.getId())
+			.addClass(this._tipBaseName)
+			.addClass(this._invisibleClass)
+			.html(this._getContent($element));
+
+		$('body').append($tip);
+
+		position = this._getPosition($element, $tip);
+
+		$tip
+			.addClass(position.name)
+			.removeClass(this._invisibleClass)
+			.css({ 
+				left: position.coordinates.left, 
+				top: position.coordinates.top 
+			});
+	};
+
+	TipView.prototype.remove = function ()
+	{
+		this.getContainer().remove();
+	};
+
+
+	this.TipView = TipView;
+});
+namespace('OUI.Components', function (window) 
+{
+	var Event 			= window.Duct.Event;
+	var HoverMenuView 	= window.OUI.Views.HoverMenuView;
+
+	var classify 		= window.Classy.classify;
+	var idGenerator 	= window.OUI.Core.View.idGenerator;
+
+
+	/**
+	 * @class OUI.Components.HoverMenu
+	 */
+	function HoverMenu($toggleElement, contents, canPersist, extraClass, positionConfig)
+	{
+		classify(this);
+
+		this._id 				= idGenerator('oui-hover-menu');
+		
+		this._view 				= new HoverMenuView(this, $toggleElement, contents, canPersist, extraClass, positionConfig);
+		
+		this._onBeforeOpen 		= new Event('hoverMenu.onBeforeOpen');
+		this._onAfterOpen 		= new Event('hoverMenu.onAfterOpen');
+		this._onBeforeClose 	= new Event('hoverMenu.onBeforeClose');
+		this._onAfterClose 		= new Event('hoverMenu.onAfterClose');
+		
+		this._onBeforePersist	= new Event('hoverMenu.onBeforePersist');
+		this._onAfterPersist	= new Event('hoverMenu.onAfterPersist');
+		
+		this._isPersist	= false;
+	}
+
+
+	HoverMenu.prototype.getId = function ()
+	{
+		return this._id;
+	};
+	
+	HoverMenu.prototype.getContainer = function () 
+	{
+		return this._view.getContainer();	
+	};
+
+	HoverMenu.prototype.onBeforeOpen = function (callback)
+	{
+		this._onBeforeOpen.add(callback);
+	};
+
+	HoverMenu.prototype.onAfterOpen = function (callback)
+	{
+		this._onAfterOpen.add(callback);
+	};
+
+	HoverMenu.prototype.onBeforeClose = function (callback)
+	{
+		this._onBeforeClose.add(callback);
+	};
+
+	HoverMenu.prototype.onAfterClose = function (callback)
+	{
+		this._onAfterClose.add(callback);
+	};
+	
+	HoverMenu.prototype.onBeforePersist = function (callback)
+	{
+		this._onBeforePersist.add(callback);
+	};
+	
+	HoverMenu.prototype.onAfterPersist = function (callback)
+	{
+		this._onAfterPersist.add(callback);	
+	};
+	
+	HoverMenu.prototype.open = function ()
+	{
+		if (this._view.isOpen())
+		{
+			return;
+		}
+		
+		this._onBeforeOpen.trigger(this.getId());
+		this._view.show();
+		this._onAfterOpen.trigger(this._view.getContainer());
+	};
+
+	HoverMenu.prototype.close = function ()
+	{
+		if (this._isPersist)
+		{
+			this._isPersist = false;
+			this._view.disablePersist();
+		}
+		
+		this._onBeforeClose.trigger(this._view.getContainer());
+		this._view.remove();
+		this._onAfterClose.trigger(this.getId());
+	};
+	
+	HoverMenu.prototype.togglePersist = function ()
+	{
+		if (this.isOpen() && this.isPersist())
+		{
+			this.close();
+			return;
+		}
+		
+		this._onBeforePersist.trigger(this._view.getContainer());
+		this._isPersist = true;
+		this._view.enablePersist();
+		this._onAfterPersist.trigger(this._view.getContainer());
+	};
+	
+	HoverMenu.prototype.isOpen = function () 
+	{
+		return this._view.isOpen();	
+	};
+	
+	HoverMenu.prototype.isPersist = function () 
+	{
+		return this._isPersist;	
+	};
+
+	
+	this.HoverMenu = HoverMenu;
+});
 namespace('OUI.Components', function (window) 
 {
 	var Event 		= window.Duct.Event;
@@ -5111,7 +5260,11 @@ namespace('OUI.Components', function (window)
 	{
 		this._unbindEvent = true;
 	};
-
+	
+	Menu.prototype.refreshPosition = function ()
+	{
+		this._view.refreshPosition();	
+	};
 
 	this.Menu = Menu;
 });
