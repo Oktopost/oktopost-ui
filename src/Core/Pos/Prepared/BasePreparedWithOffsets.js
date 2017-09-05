@@ -40,6 +40,11 @@ namespace('OUI.Core.Pos.Prepared', function (window)
 	}
 	
 	
+	BasePreparedWithOffsets.prototype._isSVG = function (el)
+	{
+		return (el instanceof SVGElement);
+	};
+	
 	BasePreparedWithOffsets.prototype._getAvailableSides = function () 
 	{
 		return [];
@@ -56,9 +61,9 @@ namespace('OUI.Core.Pos.Prepared', function (window)
 	};
 	
 	BasePreparedWithOffsets.prototype._settingsIsValid = function () 
-	{		
+	{
 		return (is.object(this.settings.container) || $.isWindow(this.settings.container)) 
-			&& (is.object(this.settings.relatedElement))
+			&& (is.object(this.settings.relatedElement) || (this._isSVG(this.settings.relatedElement)))
 			&& (is.object(this.settings.targetElement));
 	};
 	
@@ -97,9 +102,14 @@ namespace('OUI.Core.Pos.Prepared', function (window)
 	{
 		var position = {left: 0, top: 0};
 		
-		if (!$.isWindow(el))
+		if (!$.isWindow(el) && !this._isSVG(el))
 		{
 			position = el.offset();	
+		}
+		
+		if (this._isSVG(el))
+		{
+			position = $(el).offset();
 		}
 
 		return this._applyOffset(position, offset, canOffsetInside);
@@ -125,9 +135,19 @@ namespace('OUI.Core.Pos.Prepared', function (window)
 		{
 			yOffsetModifier = 2;
 		}
-		
-		var width = el.outerWidth();
-		var height = el.outerHeight();
+
+		if (!this._isSVG(el))
+		{
+			var width = el.outerWidth();
+			var height = el.outerHeight();
+		}
+		else 
+		{
+			var rect = el.getBoundingClientRect();
+			
+			var width = rect.right - rect.left;
+			var height = rect.bottom - rect.top;
+		}
 		
 		return {
 			width: width + offset * xOffsetModifier, 
