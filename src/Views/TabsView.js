@@ -18,7 +18,7 @@ namespace('OUI.Views', function (window)
 		this._hiddenClass 	= 'hidden';
 		this._dataAttr 		= 'oui-tab';
 
-		this._buttons 		= $(buttonsSelector);
+		this._buttons 		= is.object(buttonsSelector) ? buttonsSelector : $(buttonsSelector);
 
 		this._buttons.on('click', this._onClick);
 	}
