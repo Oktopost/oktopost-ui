@@ -1,5 +1,6 @@
 namespace('OUI.Components', function (window) 
 {
+	var obj 		= window.Plankton.obj;
 	var classify 	= window.Classy.classify;
 	var md5 		= window.md5;
 
@@ -23,19 +24,22 @@ namespace('OUI.Components', function (window)
 
 	Gravatar.prototype._init = function ()
 	{
-		var getAvatar = this._getAvatar;
+		var avatar = this;
 
 		if (this._elements.length > 1)
 		{
-			this._elements.each(function () { $(this).attr('src', getAvatar($(this))); });
+			obj.forEach(function (image)
+			{
+				$(image).attr('src', avatar._get($(image)));
+			});
 		}
 		else (this._elements.length === 1)
 		{
-			this._elements.attr('src', getAvatar(this._elements));
+			this._elements.attr('src', avatar._get(this._elements));
 		}
 	};
 
-	Gravatar.prototype._getAvatar = function (elem)
+	Gravatar.prototype._get = function (elem)
 	{
 		return this._base + md5(elem.data('gravatar').toLowerCase()) + '?s=' + this._size + '&d=' + this._default;
 	};
