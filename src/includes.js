@@ -11,6 +11,7 @@ namespace('OUI.includes', function (window)
 	var Tabs		= window.OUI.Components.Tabs;
 	var FileUpload	= window.OUI.Components.FileUpload;
 	var Gravatar	= window.OUI.Components.Gravatar;
+	var Video		= window.OUI.Components.Video;
 
 	var ListMediator 	= window.OUI.Components.List.ListMediator;
 	var ListItems 		= window.OUI.Components.List.ListItems;

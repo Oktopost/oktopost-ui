@@ -24,6 +24,7 @@ Place the following files in your HTML template:
 9. [Tabs](docs/TABS.md)
 10. [FileUpload](docs/FILE_UPLOAD.md)
 11. [Gravatar](docs/GRAVATAR.md)
+12. [Video](docs/VIDEO.md)
 
 ## Helpers
 1. [View Helpers](docs/VIEW.md)

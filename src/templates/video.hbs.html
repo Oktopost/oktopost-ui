@@ -1,0 +1,20 @@
+<div class="video-container loading">
+	{{#if sources}}
+	<video controls {{#if autoRepeat}}loop{{/if}} class="hidden">
+		{{#each sources}}
+		<source src="{{this}}"></source>
+		{{/each}}
+	</video>
+	{{/if}}
+
+	<div 
+		{{#if preview}}
+		style="background: 
+			linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+				url({{preview}}) no-repeat center/contain;  
+	    	background-color: #001f2d;"
+		{{/if}}
+		class="video-preview">
+		play
+	</div>
+</div>

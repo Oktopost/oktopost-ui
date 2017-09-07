@@ -94,3 +94,33 @@ this["OUI"]["templates"]["toast"]["hbs"] = Handlebars.template({"compiler":[6,">
     + alias3(((helper = (helper = helpers.message || (depth0 != null ? depth0.message : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"message","hash":{},"data":data}) : helper)))
     + "</p>\n	<a href=\"\" data-oui-dismiss class=\"icon-cancel\"></a>\n</div>";
 },"useData":true});
+this["OUI"]["templates"]["video"] = this["OUI"]["templates"]["video"] || {};
+this["OUI"]["templates"]["video"]["hbs"] = Handlebars.template({"1":function(depth0,helpers,partials,data) {
+    var stack1;
+
+  return "	<video controls "
+    + ((stack1 = helpers['if'].call(depth0,(depth0 != null ? depth0.autoRepeat : depth0),{"name":"if","hash":{},"fn":this.program(2, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
+    + " class=\"hidden\">\n"
+    + ((stack1 = helpers.each.call(depth0,(depth0 != null ? depth0.sources : depth0),{"name":"each","hash":{},"fn":this.program(4, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
+    + "	</video>\n";
+},"2":function(depth0,helpers,partials,data) {
+    return "loop";
+},"4":function(depth0,helpers,partials,data) {
+    return "		<source src=\""
+    + this.escapeExpression(this.lambda(depth0, depth0))
+    + "\"></source>\n";
+},"6":function(depth0,helpers,partials,data) {
+    var helper;
+
+  return "		style=\"background: \n			linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), \n				url("
+    + this.escapeExpression(((helper = (helper = helpers.preview || (depth0 != null ? depth0.preview : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0,{"name":"preview","hash":{},"data":data}) : helper)))
+    + ") no-repeat center/contain;  \n	    	background-color: #001f2d;\"\n";
+},"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+    var stack1;
+
+  return "<div class=\"video-container loading\">\n"
+    + ((stack1 = helpers['if'].call(depth0,(depth0 != null ? depth0.sources : depth0),{"name":"if","hash":{},"fn":this.program(1, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
+    + "\n	<div \n"
+    + ((stack1 = helpers['if'].call(depth0,(depth0 != null ? depth0.preview : depth0),{"name":"if","hash":{},"fn":this.program(6, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
+    + "		class=\"video-preview\">\n		play\n	</div>\n</div>";
+},"useData":true});
