@@ -222,8 +222,10 @@ namespace('OUI.Components.List', function (window)
 		}
 	};
 
-	ListMediator.prototype.render = function (data)
+	ListMediator.prototype.render = function (data, nullstateData)
 	{
+		nullstateData = nullstateData || {};
+		
 		this._onBeforeRender.trigger(data);
 		
 		if (data.Items.length === 0)
@@ -234,7 +236,7 @@ namespace('OUI.Components.List', function (window)
 			}
 			else
 			{
-				this._nullstate.render();
+				this._nullstate.render(nullstateData);
 			}
 		}
 		else
