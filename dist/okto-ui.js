@@ -1328,13 +1328,13 @@ namespace('Plankton', function (root)
 	
 	this.obj = obj;
 });
-namespace('OUI.Components', function (window) 
+namespace('OUI.Components', function (window)
 {
 	var obj 		= window.Plankton.obj;
 	var classify 	= window.Classy.classify;
 	var md5 		= window.md5;
-
-
+	
+	
 	/**
 	 * @see https://en.gravatar.com/site/implement/images/
 	 * @param {jQuery} elements
@@ -1342,39 +1342,32 @@ namespace('OUI.Components', function (window)
 	function Gravatar(elements, size, defaultImage)
 	{
 		classify(this);
-
+		
 		this._elements 	= elements;
 		this._base 		= 'https://www.gravatar.com/avatar/';
 		this._size 		= size || 160;
 		this._default 	= defaultImage || 'identicon';
-
+		
 		this._init();
 	};
-
-
+	
+	
 	Gravatar.prototype._init = function ()
 	{
-		var avatar = this;
-
-		if (this._elements.length > 1)
-		{
-			obj.forEach(function (image)
-			{
-				$(image).attr('src', avatar._get($(image)));
-			});
-		}
-		else (this._elements.length === 1)
-		{
-			this._elements.attr('src', avatar._get(this._elements));
-		}
+		obj.forEach(this._elements.toArray(), this._set);
 	};
-
+	
+	Gravatar.prototype._set = function (elem)
+	{
+		$(elem).attr('src', this._get($(elem)));
+	};
+	
 	Gravatar.prototype._get = function (elem)
 	{
 		return this._base + md5(elem.data('gravatar').toLowerCase()) + '?s=' + this._size + '&d=' + this._default;
 	};
-
-
+	
+	
 	this.Gravatar = Gravatar;
 });
 namespace('OUI.Core.Events', function (window)
@@ -4067,7 +4060,7 @@ namespace('OUI.Views.List', function (window)
 
 	ListItemsView.prototype._handleItemClick = function (e)
 	{
-		var elem = $(e.target);
+		var elem = $(e.currentTarget);
 
 		if (!elem.is(':checkbox'))
 		{
