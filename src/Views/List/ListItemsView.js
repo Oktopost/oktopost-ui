@@ -21,7 +21,7 @@ namespace('OUI.Views.List', function (window)
 
 	ListItemsView.prototype._handleItemClick = function (e)
 	{
-		var elem = $(e.target);
+		var elem = $(e.currentTarget);
 
 		if (!elem.is(':checkbox'))
 		{
