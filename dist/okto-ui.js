@@ -4039,6 +4039,7 @@ namespace('OUI.Core.Pos.Prepared', function (window)
 });
 namespace('OUI.Views.List', function (window) 
 {
+	var is 			= window.Plankton.is;
 	var classify 	= window.Classy.classify;
 	var foreach 	= window.Plankton.foreach;
 	var fadeRemove 	= window.OUI.Core.View.fadeRemove;
@@ -4060,12 +4061,13 @@ namespace('OUI.Views.List', function (window)
 
 	ListItemsView.prototype._handleItemClick = function (e)
 	{
-		var elem = $(e.currentTarget);
+		var target 	= $(e.currentTarget);
+		var elem 	= $(e.target);
 
-		if (!elem.is(':checkbox'))
-		{
-			this._onClick.trigger(elem.data('id'));
-		}
+		if (elem.is(':checkbox') || is(elem.data('o-link'))) 
+			return;
+		
+		this._onClick.trigger(target.data('id'));
 	};
 	
 	
