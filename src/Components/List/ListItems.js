@@ -13,11 +13,13 @@ namespace('OUI.Components.List', function (window)
 	{
 		classify(this);
 		
-		this._view 		= new ListItemsView(this, container);
+		this._view 		= new ListItemsView(container);
 		
 		this._onRender 	= new Event('ListItems.onRender');
 		this._onRemove 	= new Event('ListItems.onRemove');
 		this._onClick	= new Event('ListItems.onClick');
+
+		this._view.onClick(this._onClick.trigger);
 	}
 
 

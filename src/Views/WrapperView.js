@@ -6,11 +6,10 @@ namespace('OUI.Views', function (window)
 	/**
 	 * @class OUI.Views.WrapperView
 	 */
-	function WrapperView(wrapper, container, template) 
+	function WrapperView(container, template) 
 	{
 		classify(this);
 
-		this._wrapper 	= wrapper;
 		this._container = $(container);
 		this._template 	= template;
 	};

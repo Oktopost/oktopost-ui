@@ -16,13 +16,13 @@ namespace('OUI.Components', function (window)
 
 		this._id 		= idGenerator('oui-toast');
 
-		this._view 		= new ToastView(this, delay);
+		this._view 		= new ToastView(this._id, delay);
 				
 		this._onAdd 	= new Event('toast.onAdd');
 		this._onDismiss = new Event('toast.onDismiss');
 
-		this.onAdd(this._view.bindDismiss);
-	};
+		this._view.onDismiss(this._onDismiss.trigger);
+	}
 
 
 	Toast.prototype.getId = function ()
@@ -39,7 +39,6 @@ namespace('OUI.Components', function (window)
 	{
 		this._onDismiss.add(callback);
 	};
-
 
 	Toast.prototype.add = function (message)
 	{

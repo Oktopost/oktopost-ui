@@ -13,7 +13,7 @@ namespace('OUI.Components', function (window)
 	{
 		classify(this);
 
-		this._view 		= new WrapperView(this, container, template);
+		this._view 		= new WrapperView(container, template);
 		this._onRender 	= new Event('Wrapper.onRender');
 	};
 

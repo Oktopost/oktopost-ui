@@ -3,33 +3,30 @@ namespace('OUI.Views.List', function (window)
 	var classify 	= window.Classy.classify;
 	var foreach 	= window.Plankton.foreach;
 	var fadeRemove 	= window.OUI.Core.View.fadeRemove;
+	var Event 		= window.Duct.Event;
 
 
 	/**
 	 * @class OUI.Views.List.ListItemsView
 	 */
-	function ListItemsView(listItems, container) 
+	function ListItemsView(container) 
 	{
 		classify(this);
 
-		this._listItems = listItems;
-		this._container = $(container);
-
+		this._container 	= $(container);
 		this._loadingClass 	= 'loading';
+		this._onClick 		= new Event('ListItemsView.onClick');
 	}
 
 
-	ListItemsView.prototype._bindEvents = function ()
+	ListItemsView.prototype._handleItemClick = function (e)
 	{
-		var self = this;
-		
-		this._container.find('[data-id]').click(function (e)
+		var elem = $(e.target);
+
+		if (!elem.is(':checkbox'))
 		{
-			if (!$(e.target).is(':checkbox'))
-			{
-				self._listItems.handleClick($(this).data('id'));
-			}
-		});
+			this._onClick.trigger(elem.data('id'));
+		}
 	};
 	
 	
@@ -56,7 +53,7 @@ namespace('OUI.Views.List', function (window)
 			container.append(template.hbs(item));
 		});
 		
-		this._bindEvents();
+		this._container.find('[data-id]').on('click', this._handleItemClick);
 	};
 
 	ListItemsView.prototype.highlightTerm = function (term)
@@ -82,6 +79,11 @@ namespace('OUI.Views.List', function (window)
 	ListItemsView.prototype.setLoading = function ()
 	{
 		this.getItemsWrapper().addClass(this._loadingClass);
+	};
+
+	ListItemsView.prototype.onClick = function (callback)
+	{
+		this._onClick.add(callback);
 	};
 
 	
