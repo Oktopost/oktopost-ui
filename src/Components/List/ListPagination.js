@@ -57,6 +57,11 @@ namespace('OUI.Components.List', function (window)
 		var oldPagesAmount = this._countPages(total, count);
 		var newPagesAmount = this._countPages(newTotal, count);
 		
+		if (newPagesAmount === 0)
+		{
+			return 0;
+		}
+		
 		if ((page === (oldPagesAmount - 1) || (page > (newPagesAmount - 1))) && oldPagesAmount !== newPagesAmount)
 		{
 			return newPagesAmount - 1;
