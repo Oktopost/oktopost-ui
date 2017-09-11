@@ -35,6 +35,8 @@ namespace('OUI.Components.List', function (window)
 		this._onUpdateParam 	= new Event('ListMediator.onUpdateParam');
 		this._onBeforeRender 	= new Event('ListMediator.onBeforeRender');
 		this._onAfterRender 	= new Event('ListMediator.onAfterRender');
+		
+		this._onItemsRemoved 	= new Event('ListMediator.onItemsRemoved');
 	}
 
 
@@ -201,6 +203,11 @@ namespace('OUI.Components.List', function (window)
 	{
 		this._pagination.onChange(callback);
 	};
+	
+	ListMediator.prototype.onItemsRemoved = function (callback)
+	{
+		this._onItemsRemoved.add(callback);
+	};
 
 	ListMediator.prototype.setLoadingState = function ()
 	{
@@ -214,12 +221,15 @@ namespace('OUI.Components.List', function (window)
 		if (is(this._pagination))
 		{
 			this._pagination.updatePageOnRemoveItems(this._pagination.getTotal() - ids.length);
+			this.setParam('_page', this._pagination.getPage());
 		}
 
 		if (is(this._selection))
 		{
 			this._selection.deselect(ids);
 		}
+		
+		this._onItemsRemoved.trigger(ids);
 	};
 
 	ListMediator.prototype.render = function (data, nullstateData)

@@ -3450,6 +3450,45 @@ namespace('OUI.Components.List', function (window)
 
 		this.onChange(this._view.render);
 	}
+	
+	
+	ListPagination.prototype._countPages = function (total, size)
+	{
+		var pages = Math.floor(total / size);
+
+		if (total % size > 0)
+		{
+			pages++;
+		}
+		
+		return pages;
+	};
+	
+	ListPagination.prototype._isNeedToRefresh = function (page, count, total, newTotal)
+	{
+		var oldPagesAmount = this._countPages(total, count);
+		var newPagesAmount = this._countPages(newTotal, count);
+		
+		if (page === (oldPagesAmount - 1) && oldPagesAmount === newPagesAmount && newTotal > 0)
+		{
+			return false;
+		}
+		
+		return true;
+	};
+	
+	ListPagination.prototype._getNewPage = function (page, count, total, newTotal)
+	{
+		var oldPagesAmount = this._countPages(total, count);
+		var newPagesAmount = this._countPages(newTotal, count);
+		
+		if ((page === (oldPagesAmount - 1) || (page > (newPagesAmount - 1))) && oldPagesAmount !== newPagesAmount)
+		{
+			return newPagesAmount - 1;
+		}
+		
+		return page;
+	};
 
 
 	ListPagination.prototype.updatePageOnRemoveItems = function (newTotal)
@@ -3457,19 +3496,16 @@ namespace('OUI.Components.List', function (window)
 		var page 		= this.getPage();
 		var count 		= this.getCount();
 		var total 		= this.getTotal();
-		var toRemove 	= total - newTotal;
-		var delta 		= Math.ceil(toRemove / count);
 
-		if (page === 0)
-			return;
-
-		if (newTotal > (page - delta + 1) * count) 
-			return;
-
-		this.setPage(page - delta);
 		this.setTotal(newTotal);
+		this.render();
+				
+		if (!this._isNeedToRefresh(page, count, total, newTotal))
+		{
+			return;
+		}
 
-		this._onChange.trigger(this.getPage());
+		this.setPage(this._getNewPage(page, count, total, newTotal));
 	};
 
 	ListPagination.prototype.onNext = function (callback)
@@ -3527,7 +3563,7 @@ namespace('OUI.Components.List', function (window)
 
 	ListPagination.prototype.setTotal = function (total)
 	{
-		if (total != this._total)
+		if (total !== this._total)
 		{
 			this._total = total;
 		}
@@ -3535,7 +3571,7 @@ namespace('OUI.Components.List', function (window)
 
 	ListPagination.prototype.setParam = function (param, value)
 	{
-		if (this._params[param] != value) 
+		if (this._params[param] !== value) 
 		{
 			this._params[param] = value;
 		}
@@ -5085,6 +5121,8 @@ namespace('OUI.Components.List', function (window)
 		this._onUpdateParam 	= new Event('ListMediator.onUpdateParam');
 		this._onBeforeRender 	= new Event('ListMediator.onBeforeRender');
 		this._onAfterRender 	= new Event('ListMediator.onAfterRender');
+		
+		this._onItemsRemoved 	= new Event('ListMediator.onItemsRemoved');
 	}
 
 
@@ -5251,6 +5289,11 @@ namespace('OUI.Components.List', function (window)
 	{
 		this._pagination.onChange(callback);
 	};
+	
+	ListMediator.prototype.onItemsRemoved = function (callback)
+	{
+		this._onItemsRemoved.add(callback);
+	};
 
 	ListMediator.prototype.setLoadingState = function ()
 	{
@@ -5264,12 +5307,15 @@ namespace('OUI.Components.List', function (window)
 		if (is(this._pagination))
 		{
 			this._pagination.updatePageOnRemoveItems(this._pagination.getTotal() - ids.length);
+			this.setParam('_page', this._pagination.getPage());
 		}
 
 		if (is(this._selection))
 		{
 			this._selection.deselect(ids);
 		}
+		
+		this._onItemsRemoved.trigger(ids);
 	};
 
 	ListMediator.prototype.render = function (data, nullstateData)
