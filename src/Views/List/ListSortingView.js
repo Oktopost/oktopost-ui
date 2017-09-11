@@ -1,5 +1,6 @@
 namespace('OUI.Views.List', function (window) 
 {
+	var is		 = window.Plankton.is;
 	var classify = window.Classy.classify;
 
 

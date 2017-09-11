@@ -1151,6 +1151,7 @@ namespace('OUI.Views.List', function (window)
 });
 namespace('OUI.Views.List', function (window) 
 {
+	var is		 = window.Plankton.is;
 	var classify = window.Classy.classify;
 
 
@@ -1173,6 +1174,10 @@ namespace('OUI.Views.List', function (window)
 	ListSortingView.prototype._setInitialSorting = function ()
 	{
 		var order = this._sorting.getParams()._order;
+		
+		if (!is.defined(order))
+			return;
+		
 		var orderData = order.split(',');
 		
 		var elem = $("a.sortable[data-order-by='" + orderData[0] +"']");
