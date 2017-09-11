@@ -14,8 +14,33 @@ namespace('OUI.Views.List', function (window)
 
 		this._sortColumns = $('a.sortable');
 		this._sortColumns.on('click', this.updateLink);
+		
+		this._setInitialSorting();
 	}
 
+	
+	ListSortingView.prototype._setInitialSorting = function ()
+	{
+		var order = this._sorting.getParams()._order;
+		
+		if (!is.defined(order))
+			return;
+		
+		var orderData = order.split(',');
+		
+		var elem = $("a.sortable[data-order-by='" + orderData[0] +"']");
+		
+		if (elem.length > 0)
+		{
+			var orderWay = orderData[1] === "0" ? 1 : 0;
+			elem.data('order-way', orderWay);
+			
+			this._setOrder(elem);
+			this._updateLink(elem);
+			
+			elem.addClass('active');
+		}
+	};
 
 	ListSortingView.prototype._setOrder = function (elem)
 	{

@@ -1165,8 +1165,29 @@ namespace('OUI.Views.List', function (window)
 
 		this._sortColumns = $('a.sortable');
 		this._sortColumns.on('click', this.updateLink);
+		
+		this._setInitialSorting();
 	}
 
+	
+	ListSortingView.prototype._setInitialSorting = function ()
+	{
+		var order = this._sorting.getParams()._order;
+		var orderData = order.split(',');
+		
+		var elem = $("a.sortable[data-order-by='" + orderData[0] +"']");
+		
+		if (elem.length > 0)
+		{
+			var orderWay = orderData[1] === "0" ? 1 : 0;
+			elem.data('order-way', orderWay);
+			
+			this._setOrder(elem);
+			this._updateLink(elem);
+			
+			elem.addClass('active');
+		}
+	};
 
 	ListSortingView.prototype._setOrder = function (elem)
 	{
@@ -3448,11 +3469,6 @@ namespace('OUI.Components.List', function (window)
 		var oldPagesAmount = this._countPages(total, count);
 		var newPagesAmount = this._countPages(newTotal, count);
 		
-		if (newPagesAmount === 0)
-		{
-			return 0;
-		}
-		
 		if (page === (oldPagesAmount - 1) && oldPagesAmount === newPagesAmount && newTotal > 0)
 		{
 			return false;
@@ -3465,6 +3481,11 @@ namespace('OUI.Components.List', function (window)
 	{
 		var oldPagesAmount = this._countPages(total, count);
 		var newPagesAmount = this._countPages(newTotal, count);
+		
+		if (newPagesAmount === 0)
+		{
+			return 0;
+		}
 		
 		if ((page === (oldPagesAmount - 1) || (page > (newPagesAmount - 1))) && oldPagesAmount !== newPagesAmount)
 		{
