@@ -22,6 +22,8 @@ namespace('OUI.Components.List', function (window)
 	{
 		classify(this);
 
+		this._isNullstate = false;
+		
 		this._params 		= obj.merge({ '_page': 0,'_count': 20 }, params);
 		this._excludeParams = [];
 		this._pagination 	= null;
@@ -246,15 +248,22 @@ namespace('OUI.Components.List', function (window)
 			}
 			else
 			{
+				this._isNullstate = true;
 				this._nullstate.render(nullstateData);
 			}
 		}
 		else
 		{
+			this._isNullstate = false;
 			this._items.render(data.Items, this._template);	
 		}
 
 		this._onAfterRender.trigger(data);
+	};
+	
+	ListMediator.prototype.isNullstate = function ()
+	{
+		return this._isNullstate;	
 	};
 	
 	ListMediator.prototype.select = function (itemIds)
