@@ -3952,7 +3952,7 @@ namespace('OUI.Components', function (window)
 
 		this._view 		= new WrapperView(container, template);
 		this._onRender 	= new Event('Wrapper.onRender');
-	};
+	}
 
 
 	Wrapper.prototype.getContainer = function ()
@@ -3968,7 +3968,7 @@ namespace('OUI.Components', function (window)
 	Wrapper.prototype.render = function (params)
 	{
 		this._view.render(params);
-		this._onRender.trigger();
+		this._onRender.trigger(this.getContainer());
 	};
 
 
@@ -5136,6 +5136,8 @@ namespace('OUI.Components.List', function (window)
 	{
 		classify(this);
 
+		this._isNullstate = false;
+		
 		this._params 		= obj.merge({ '_page': 0,'_count': 20 }, params);
 		this._excludeParams = [];
 		this._pagination 	= null;
@@ -5360,15 +5362,22 @@ namespace('OUI.Components.List', function (window)
 			}
 			else
 			{
+				this._isNullstate = true;
 				this._nullstate.render(nullstateData);
 			}
 		}
 		else
 		{
+			this._isNullstate = false;
 			this._items.render(data.Items, this._template);	
 		}
 
 		this._onAfterRender.trigger(data);
+	};
+	
+	ListMediator.prototype.isNullstate = function ()
+	{
+		return this._isNullstate;	
 	};
 	
 	ListMediator.prototype.select = function (itemIds)

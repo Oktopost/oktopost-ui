@@ -15,7 +15,7 @@ namespace('OUI.Components', function (window)
 
 		this._view 		= new WrapperView(container, template);
 		this._onRender 	= new Event('Wrapper.onRender');
-	};
+	}
 
 
 	Wrapper.prototype.getContainer = function ()
@@ -31,7 +31,7 @@ namespace('OUI.Components', function (window)
 	Wrapper.prototype.render = function (params)
 	{
 		this._view.render(params);
-		this._onRender.trigger();
+		this._onRender.trigger(this.getContainer());
 	};
 
 
