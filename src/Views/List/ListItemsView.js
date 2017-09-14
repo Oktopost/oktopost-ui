@@ -25,7 +25,7 @@ namespace('OUI.Views.List', function (window)
 		var target 	= $(e.currentTarget);
 		var elem 	= $(e.target);
 
-		if (elem.is(':checkbox') || is(elem.data('o-link')) || is(elem.data('o-action'))) 
+		if (elem.is(':checkbox') || is.defined(elem.data('o-link')) || is.defined(elem.data('o-action'))) 
 			return;
 		
 		this._onClick.trigger(target.data('id'));
