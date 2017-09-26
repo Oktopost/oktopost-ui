@@ -1403,7 +1403,7 @@ namespace('OUI.Views', function (window)
 
 	TabsView.prototype._onClick = function (e)
 	{
-		this._tabs.select($(e.target).data(this._dataAttr));
+		this._tabs.select($(e.currentTarget).data(this._dataAttr));
 	};
 
 	TabsView.prototype._forEachTab = function (tabId, index)
