@@ -19,12 +19,12 @@ var ListSearch 		= window.OUI.Components.List.ListSearch;
 var listSearch = new ListSearch('div.search-form-wrapper', currentQuery);
 
 listSearch.setNullstate('div.search-nullstate', searchNullstateTemplate);
-listSearch.setItemsContainer('div.items-container');
+listSearch.setItemsContainer('.items-container');
 
 var myList = new ListMediator(queryParams);
 
-myList.setItems('div.items-container', itemsTemplate);
-myList.setPagination('div.pagination-container', totalItems);
+myList.setItems('.items-container', itemsTemplate);
+myList.setPagination('div.pagination', totalItems);
 myList.setNullstate('main', nullstateTemplate);
 myList.setSearch(listSearch);
 myList.setSorting();
