@@ -5152,6 +5152,8 @@ namespace('OUI.Components.List', function (window)
 		this._template 		= null;
 		this._nullstate 	= null;
 		this._sorting 		= null;
+		
+		this._nullstateParams = {};
 
 		this._onUpdateParam 	= new Event('ListMediator.onUpdateParam');
 		this._onBeforeRender 	= new Event('ListMediator.onBeforeRender');
@@ -5268,8 +5270,10 @@ namespace('OUI.Components.List', function (window)
 		this._template 	= template;
 	};
 
-	ListMediator.prototype.setNullstate = function (container, template)
+	ListMediator.prototype.setNullstate = function (container, template, params)
 	{
+		this._nullstateParams = params || {};
+		
 		this._nullstate = new Wrapper(container, template);
 	};
 
@@ -5353,10 +5357,8 @@ namespace('OUI.Components.List', function (window)
 		this._onItemsRemoved.trigger(ids);
 	};
 
-	ListMediator.prototype.render = function (data, nullstateData)
-	{
-		nullstateData = nullstateData || {};
-		
+	ListMediator.prototype.render = function (data)
+	{		
 		this._onBeforeRender.trigger(data);
 		
 		if (data.Items.length === 0)
@@ -5368,7 +5370,7 @@ namespace('OUI.Components.List', function (window)
 			else
 			{
 				this._isNullstate = true;
-				this._nullstate.render(nullstateData);
+				this._nullstate.render(this._nullstateParams);
 			}
 		}
 		else
