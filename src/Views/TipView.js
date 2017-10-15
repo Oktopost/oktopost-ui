@@ -40,7 +40,6 @@ namespace('OUI.Views', function (window)
 	{
 		var baseConfig = 
 		{	
-			container: $(document),
 			relatedElement:  $related,
 		    targetElement: $target,
 		    relatedOffset: 10,

@@ -107,6 +107,11 @@ namespace('OUI.Core.Pos.Prepared', function (window)
 			position = el.offset();	
 		}
 		
+		if ($.isWindow(el))
+		{
+			position = { left: $(el).scrollLeft(), top: $(el).scrollTop() }
+		}
+		
 		if (this._isSVG(el))
 		{
 			position = $(el).offset();
@@ -147,6 +152,12 @@ namespace('OUI.Core.Pos.Prepared', function (window)
 			
 			var width = rect.right - rect.left;
 			var height = rect.bottom - rect.top;
+		}
+		
+		if ($.isWindow(el))
+		{
+			var width = width + el.scrollLeft();
+			var height = height + el.scrollTop();
 		}
 		
 		return {
