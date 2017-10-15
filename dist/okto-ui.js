@@ -2681,7 +2681,7 @@ namespace('OUI.Core.Pos.Prepared', function (window)
 	
 	BasePreparedWithOffsets.prototype._isNeedToSubtractContainer = function () 
 	{
-		if ($.isWindow(this.settings.container))
+		if ($.isWindow(this.settings.container) || this.settings.container.is(document))
 		{
 			return false;
 		}
@@ -2714,7 +2714,7 @@ namespace('OUI.Core.Pos.Prepared', function (window)
 	{
 		var position = {left: 0, top: 0};
 		
-		if (!$.isWindow(el) && !this._isSVG(el))
+		if (!$.isWindow(el) && !this._isSVG(el) && !el.is(document))
 		{
 			position = el.offset();	
 		}
@@ -4416,7 +4416,8 @@ namespace('OUI.Views', function (window)
 	TipView.prototype._getPosition = function ($related, $target)
 	{
 		var baseConfig = 
-		{			
+		{	
+			container: $(document),
 			relatedElement:  $related,
 		    targetElement: $target,
 		    relatedOffset: 10,

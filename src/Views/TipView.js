@@ -39,7 +39,8 @@ namespace('OUI.Views', function (window)
 	TipView.prototype._getPosition = function ($related, $target)
 	{
 		var baseConfig = 
-		{			
+		{	
+			container: $(document),
 			relatedElement:  $related,
 		    targetElement: $target,
 		    relatedOffset: 10,
