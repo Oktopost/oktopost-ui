@@ -40,6 +40,8 @@ div.oui-modal {
 
 		div.body {
 			padding: 25px;
+			max-height: 50vh;
+			overflow-y: auto;
 		}
 
 		div.footer {
@@ -64,6 +66,10 @@ div.oui-modal {
 			height: 100%;
 			animation: fadeInRight 0.5s;
 			border-radius: 0;
+
+			div.body {
+				max-height: auto;
+			}
 		}
 	}
 
