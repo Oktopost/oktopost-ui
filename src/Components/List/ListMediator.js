@@ -145,10 +145,15 @@ namespace('OUI.Components.List', function (window)
 		});
 	};
 
+	ListMediator.prototype.setItemsTemplate = function (template)
+	{
+		this._template = template;
+	};
+
 	ListMediator.prototype.setItems = function (container, template)
 	{
-		this._items 	= new ListItems(container);
-		this._template 	= template;
+		this._items = new ListItems(container);
+		this.setItemsTemplate(template);
 	};
 
 	ListMediator.prototype.setNullstate = function (container, template, params)
