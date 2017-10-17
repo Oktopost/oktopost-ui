@@ -9,11 +9,11 @@ namespace('OUI.Components', function (window)
 	/**
 	 * @class OUI.Components.EditableContent
 	 */
-	function EditableContent(selector)
+	function EditableContent(selector, event)
 	{
 		classify(this);
 		
-		this._view = new EditableContentView(selector);
+		this._view = new EditableContentView(selector, event);
 		
 		this._view.onContentChanged(this._contentChanged);
 		this._view.onEditActivate(this.enable);

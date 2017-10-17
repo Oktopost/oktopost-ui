@@ -8,9 +8,11 @@ namespace('OUI.Views', function (window)
 	/**
 	 * @class OUI.Components.EditableContentView
 	 */
-	function EditableContentView(selector)
+	function EditableContentView(selector, event)
 	{
 		classify(this);
+		
+		this._event = is.string.notEmpty(event) ? event : 'click';
 
 		this._element = is.object(selector) ? selector : $(selector);
 
@@ -28,7 +30,7 @@ namespace('OUI.Views', function (window)
 	{
 		var activateEdit = this._onEditActivate;
 		
-		this._element.on('dblclick', function (e)
+		this._element.on(this._event, function (e)
 		{
 			activateEdit.trigger();
 			$(this).focus();
