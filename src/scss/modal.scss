@@ -62,6 +62,8 @@ div.oui-modal {
 		justify-content: flex-end;
 
 		div.wrapper {
+			display: flex;
+			flex-direction: column;
 			width: 66%;
 			height: 100%;
 			animation: fadeInRight 0.5s;
@@ -69,6 +71,7 @@ div.oui-modal {
 
 			div.body {
 				max-height: none;
+				flex-grow: 2;
 			}
 		}
 	}
