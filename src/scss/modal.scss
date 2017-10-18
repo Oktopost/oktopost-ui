@@ -69,6 +69,10 @@ div.oui-modal {
 			animation: fadeInRight 0.5s;
 			border-radius: 0;
 
+			div.head {
+				min-height: 55px;
+			}
+			
 			div.body {
 				max-height: none;
 				flex-grow: 2;
