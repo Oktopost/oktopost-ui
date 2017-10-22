@@ -1607,59 +1607,6 @@ namespace('OUI.Core.Pos', function (window)
 });
 namespace('OUI.Views', function (window) 
 {
-	var hbs 		= window.OUI.Core.View.hbs;
-	var classify 	= window.Classy.classify;
-	var fadeRemove 	= window.OUI.Core.View.fadeRemove;
-
-
-	/**
-	 * @class OUI.Views.DialogView
-	 */
-	function DialogView(dialog, okButtonText, cancelButtonText) 
-	{
-		classify(this);
-
-		this._dialog 			= dialog;
-		this._okButtonText 		= okButtonText || 'OK';
-		this._cancelButtonText 	= cancelButtonText || 'Cancel';
-		this._okButton 			= 'a.ok-button';
-		this._cancelButton 		= 'a.cancel-button';
-	}
-
-
-	DialogView.prototype.getContainer = function ()
-	{
-		return $('#' + this._dialog.getId());
-	};
-
-	DialogView.prototype.bindEvents = function ()
-	{
-		var $container = this.getContainer();
-
-		$container.find(this._okButton).on('click', this._dialog.confirm);
-		$container.find(this._cancelButton).on('click', this._dialog.cancel);
-	};
-
-	DialogView.prototype.show = function (message)
-	{
-		$('body').append(hbs('dialog', {
-			id: this._dialog.getId(),
-			message: message,
-			okButtonText: this._okButtonText,
-			cancelButtonText: this._cancelButtonText
-		}));
-	};
-
-	DialogView.prototype.remove = function ()
-	{
-		fadeRemove(this.getContainer());
-	};
-
-	
-	this.DialogView = DialogView;
-});
-namespace('OUI.Views', function (window) 
-{
 	var classify = window.Classy.classify;
 
 	/**
@@ -2027,72 +1974,6 @@ namespace('OUI.Views.List', function (window)
 
 	
 	this.ListSortingView = ListSortingView;
-});
-namespace('OUI.Views', function (window) 
-{
-	var is  		= window.Plankton.is;
-	var hbs 		= window.OUI.Core.View.hbs;
-	var classify 	= window.Classy.classify;
-
-
-	/**
-	 * @class OUI.Views.ModalView
-	 */
-	function ModalView(modal, contents, className) 
-	{
-		classify(this);
-
-		className = className || '';
-
-		this._modal 		= modal;
-		this._underlay 		= 'div.oui-modal-underlay';
-		this._closeButton 	= 'a[data-oui-modal-close]';
-		
-		this._escapeEvent 	= 'keyup.' + modal.getId();
-
-		this._className		= className;
-		this._contents		= contents;
-	};
-	
-
-	ModalView.prototype.getContainer = function ()
-	{
-		return $('#' + this._modal.getId());
-	};
-
-	ModalView.prototype.onOpen = function ()
-	{
-		var modal = this._modal;
-
-		$(document).on(this._escapeEvent, function (e) 
-		{
-			if (e.keyCode === 27)
-			{
-				modal.close();
-			}
-		});
-
-		this.getContainer().on('click', this._closeButton, this._modal.close);
-		this.getContainer().on('click', this._underlay, this._modal.underlayClick);
-	};
-
-	ModalView.prototype.show = function () 
-	{
-		$('body').append(hbs('modal', {
-			id: this._modal.getId(),
-			contents: this._contents,
-			extraClass: this._className
-		}));
-	};
-
-	ModalView.prototype.remove = function ()
-	{
-		$(document).off(this._escapeEvent);
-		this.getContainer().remove();
-	};
-
-	
-	this.ModalView = ModalView;
 });
 namespace('OUI.Views', function (window) 
 {
@@ -3333,74 +3214,6 @@ namespace('OUI.Core.Pos.Prepared', function (window)
 });
 namespace('OUI.Components', function (window) 
 {
-	var Event       = window.Duct.Event;
-	var DialogView 	= window.OUI.Views.DialogView;
-
-	var classify 	= window.Classy.classify;
-	var idGenerator = window.OUI.Core.View.idGenerator;
-
-
-	/**
-	 * @class OUI.Components.Dialog
-	 */
-	function Dialog(okButtonText, cancelButtonText) 
-	{
-		classify(this);
-
-		this._id 			= idGenerator('oui-dialog');
-		
-		this._view 			= new DialogView(this, okButtonText, cancelButtonText);
-
-		this._onCancel 		= new Event('dialog.onCancel');
-		this._onConfirm 	= new Event('dialog.onConfirm');
-		this._onOpen 		= new Event('dialog.onOpen');
-
-		this.onOpen(this._view.bindEvents);
-		this.onCancel(this._view.remove);
-		this.onConfirm(this._view.remove);
-	}
-
-	Dialog.prototype.getId = function ()
-	{
-		return this._id;
-	};
-
-	Dialog.prototype.onOpen = function (callback)
-	{
-		this._onOpen.add(callback);
-	};
-
-	Dialog.prototype.onCancel = function (callback)
-	{
-		this._onCancel.add(callback);
-	};
-
-	Dialog.prototype.onConfirm = function (callback)
-	{
-		this._onConfirm.add(callback);
-	};
-
-	Dialog.prototype.open = function (message) 
-	{
-		this._view.show(message);
-		this._onOpen.trigger(this._view.getContainer());
-	};
-
-	Dialog.prototype.confirm = function () 
-	{
-		this._onConfirm.trigger(this._id);
-	};
-
-	Dialog.prototype.cancel = function () 
-	{
-		this._onCancel.trigger(this._id);
-	};
-
-
-	this.Dialog = Dialog;
-});
-namespace('OUI.Components', function (window) 
-{
 	var Event 			= window.Duct.Event;
 	var classify 		= window.Classy.classify;
 
@@ -3780,93 +3593,6 @@ namespace('OUI.Components.List', function (window)
 });
 namespace('OUI.Components', function (window) 
 {
-	var Event       = window.Duct.Event;
-	var ModalView   = window.OUI.Views.ModalView;
-	
-	var classify 	= window.Classy.classify;
-	var idGenerator = window.OUI.Core.View.idGenerator;
-
-
-	/**
-	 * @class OUI.Components.Modal
-	 */
-	function Modal(contents, className) 
-	{
-		classify(this);
-
-		this._id 	= idGenerator('oui-modal');		
-		this._view  = new ModalView(this, contents, className);
-
-		this._onBeforeOpen 		= new Event('modal.beforeOpen');
-		this._onAfterOpen 		= new Event('modal.afterOpen');
-		this._onBeforeClose 	= new Event('modal.beforeClose');
-		this._onAfterClose 		= new Event('modal.afterClose');
-		this._onUnderlayClick 	= new Event('modal.onUnderlayClick');
-
-		this.onAfterOpen(this._view.onOpen);
-		this.onUnderlayClick(this.close);
-	};
-
-
-	Modal.prototype.getId = function ()
-	{
-		return this._id;
-	};
-
-	Modal.prototype.onBeforeOpen = function (callback)
-	{
-		this._onBeforeOpen.add(callback);
-	};
-
-	Modal.prototype.onAfterOpen = function (callback)
-	{
-		this._onAfterOpen.add(callback);
-	};
-
-	Modal.prototype.onBeforeClose = function (callback)
-	{
-		this._onBeforeClose.add(callback);
-	};
-
-	Modal.prototype.onAfterClose = function (callback)
-	{
-		this._onAfterClose.add(callback);
-	};
-
-	Modal.prototype.onUnderlayClick = function (callback)
-	{
-		this._onUnderlayClick.add(callback);
-	};
-
-	Modal.prototype.clearUnderlayClick = function ()
-	{
-		this._onUnderlayClick.clear();
-	};
-
-	Modal.prototype.underlayClick = function (e)
-	{
-		this._onUnderlayClick.trigger(e);
-	};
-
-	Modal.prototype.open = function() 
-	{
-		this._onBeforeOpen.trigger(this._id);
-		this._view.show();
-		this._onAfterOpen.trigger(this._view.getContainer());
-	};
-
-	Modal.prototype.close = function() 
-	{
-		this._onBeforeClose.trigger(this._view.getContainer());
-		this._view.remove();
-		this._onAfterClose.trigger(this._id);
-	};
-
-
-	this.Modal = Modal;
-});
-namespace('OUI.Components', function (window) 
-{
 	var Event 			= window.Duct.Event;
 	var SearchFormView 	= window.OUI.Views.SearchFormView;
 
@@ -4115,6 +3841,79 @@ namespace('OUI.Core.Pos.Prepared', function (window)
 	
 	this.RoundPosition = RoundPosition;
 });
+namespace('OUI.Views', function (window) 
+{
+	var hbs 		= window.OUI.Core.View.hbs;
+	var classify 	= window.Classy.classify;
+	var fadeRemove 	= window.OUI.Core.View.fadeRemove;
+	var Event 		= window.Duct.Event;
+
+
+	/**
+	 * @class OUI.Views.DialogView
+	 */
+	function DialogView(id, okButtonText, cancelButtonText) 
+	{
+		classify(this);
+
+		this._id 				= id;
+		this._okButtonText 		= okButtonText || 'OK';
+		this._cancelButtonText 	= cancelButtonText || 'Cancel';
+		this._okButton 			= 'a.ok-button';
+		this._cancelButton 		= 'a.cancel-button';
+
+		this._onConfirmClick 	= new Event('DialogView.onConfirmClick');
+		this._onCancelClick 	= new Event('DialogView.onCancelClick');
+
+		this.onConfirmClick(this.remove);
+		this.onCancelClick(this.remove);
+	}
+
+
+	DialogView.prototype.getContainer = function ()
+	{
+		return $('#' + this._id);
+	};
+
+	DialogView.prototype.bindEvents = function ()
+	{
+		var $container = this.getContainer();
+
+		$container.find(this._okButton).on('click', this._onConfirmClick.trigger);
+		$container.find(this._cancelButton).on('click', this._onCancelClick.trigger);
+	};
+
+	DialogView.prototype.show = function (message)
+	{
+		$('body').append(hbs('dialog', {
+			id: this._id,
+			message: message,
+			okButtonText: this._okButtonText,
+			cancelButtonText: this._cancelButtonText
+		}));
+
+		this.bindEvents();
+		this.getContainer().focus();		
+	};
+
+	DialogView.prototype.remove = function ()
+	{
+		fadeRemove(this.getContainer());
+	};
+
+	DialogView.prototype.onConfirmClick = function (callback)
+	{
+		this._onConfirmClick.add(callback);
+	};
+
+	DialogView.prototype.onCancelClick = function (callback)
+	{
+		this._onCancelClick.add(callback);
+	};
+
+	
+	this.DialogView = DialogView;
+});
 namespace('OUI.Views.List', function (window) 
 {
 	var is 			= window.Plankton.is;
@@ -4212,6 +4011,96 @@ namespace('OUI.Views.List', function (window)
 
 	
 	this.ListItemsView = ListItemsView;
+});
+namespace('OUI.Views', function (window) 
+{
+	var is  		= window.Plankton.is;
+	var hbs 		= window.OUI.Core.View.hbs;
+	var classify 	= window.Classy.classify;
+	var Event 		= window.Duct.Event;
+
+
+	/**
+	 * @class OUI.Views.ModalView
+	 */
+	function ModalView(id, contents, className) 
+	{
+		classify(this);
+
+		className = className || '';
+
+		this._id 			= id;
+		this._underlay 		= 'div.oui-modal-underlay';
+		this._closeButton 	= 'a[data-oui-modal-close]';
+		
+		this._escapeEvent 	= 'keyup.' + id;
+
+		this._className		= className;
+		this._contents		= contents;
+
+		this._onCloseClick 		= new Event('ModalView.onCloseClick');
+		this._onUnderlayClick 	= new Event('ModalView.onUnderlayClick');
+		this._onEscape 			= new Event('ModalView.onEscape');
+	};
+	
+
+	ModalView.prototype.getContainer = function ()
+	{
+		return $('#' + this._id);
+	};
+
+	ModalView.prototype.bindEvents = function ()
+	{
+		var onEscape = this._onEscape;
+
+		$(document).on(this._escapeEvent, function (e) 
+		{
+			if (e.keyCode === 27)
+			{
+				onEscape.trigger();
+			}
+		});
+
+		this.getContainer().on('click', this._closeButton, this._onCloseClick.trigger);
+		this.getContainer().on('click', this._underlay, this._onUnderlayClick.trigger);
+	};
+
+	ModalView.prototype.show = function () 
+	{
+		$('body').append(hbs('modal', {
+			id: this._id,
+			contents: this._contents,
+			extraClass: this._className
+		}));
+
+		this.bindEvents();
+		this.getContainer().focus();
+	};
+
+	ModalView.prototype.remove = function ()
+	{
+		$(document).off(this._escapeEvent);
+		this.getContainer().remove();
+	};
+
+	ModalView.prototype.onCloseClick = function (callback)
+	{
+		this._onCloseClick.add(callback);
+	};
+
+	ModalView.prototype.onUnderlayClick = function (callback)
+	{
+		this._onUnderlayClick.add(callback);
+	};
+
+	ModalView.prototype.onEscape = function (callback)
+	{
+		this._onEscape.add(callback);
+	};
+
+
+	
+	this.ModalView = ModalView;
 });
 namespace('OUI.Views', function (window) 
 {
@@ -4351,6 +4240,74 @@ namespace('OUI.Views', function (window)
 
 
 	this.VideoView = VideoView;
+});
+namespace('OUI.Components', function (window) 
+{
+	var Event       = window.Duct.Event;
+	var DialogView 	= window.OUI.Views.DialogView;
+
+	var classify 	= window.Classy.classify;
+	var idGenerator = window.OUI.Core.View.idGenerator;
+
+
+	/**
+	 * @class OUI.Components.Dialog
+	 */
+	function Dialog(okButtonText, cancelButtonText) 
+	{
+		classify(this);
+
+		this._id 			= idGenerator('oui-dialog');
+		
+		this._view 			= new DialogView(this._id, okButtonText, cancelButtonText);
+
+		this._onCancel 		= new Event('dialog.onCancel');
+		this._onConfirm 	= new Event('dialog.onConfirm');
+		this._onOpen 		= new Event('dialog.onOpen');
+
+		this._view.onCancelClick(this._onCancel.trigger);
+		this._view.onConfirmClick(this._onConfirm.trigger);
+	}
+
+
+	Dialog.prototype.getId = function ()
+	{
+		return this._id;
+	};
+
+	Dialog.prototype.onOpen = function (callback)
+	{
+		this._onOpen.add(callback);
+	};
+
+	Dialog.prototype.onCancel = function (callback)
+	{
+		this._onCancel.add(callback);
+	};
+
+	Dialog.prototype.onConfirm = function (callback)
+	{
+		this._onConfirm.add(callback);
+	};
+
+	Dialog.prototype.open = function (message) 
+	{
+		this._view.show(message);
+		this._onOpen.trigger(this._id);
+	};
+
+	Dialog.prototype.confirm = function () 
+	{
+		this._onConfirm.trigger(this._id);
+	};
+
+	Dialog.prototype.cancel = function () 
+	{
+		this._onCancel.trigger(this._id);
+	};
+
+
+	this.Dialog = Dialog;
 });
 namespace('OUI.Components.List', function (window) 
 {
@@ -4508,6 +4465,96 @@ namespace('OUI.Components.List', function (window)
 
 
 	this.ListSearch = ListSearch;
+});
+namespace('OUI.Components', function (window) 
+{
+	var Event       = window.Duct.Event;
+	var ModalView   = window.OUI.Views.ModalView;
+	
+	var classify 	= window.Classy.classify;
+	var idGenerator = window.OUI.Core.View.idGenerator;
+
+
+	/**
+	 * @class OUI.Components.Modal
+	 */
+	function Modal(contents, className) 
+	{
+		classify(this);
+
+		this._id 	= idGenerator('oui-modal');
+		this._view  = new ModalView(this._id, contents, className);
+
+		this._onBeforeOpen 		= new Event('modal.beforeOpen');
+		this._onAfterOpen 		= new Event('modal.afterOpen');
+		this._onBeforeClose 	= new Event('modal.beforeClose');
+		this._onAfterClose 		= new Event('modal.afterClose');
+		this._onUnderlayClick 	= new Event('modal.onUnderlayClick');
+
+		this._view.onCloseClick(this.close);
+		this._view.onEscape(this.close);
+		this._view.onUnderlayClick(this._onUnderlayClick.trigger);
+
+		this.onUnderlayClick(this.close);
+	};
+
+
+	Modal.prototype.getId = function ()
+	{
+		return this._id;
+	};
+
+	Modal.prototype.onBeforeOpen = function (callback)
+	{
+		this._onBeforeOpen.add(callback);
+	};
+
+	Modal.prototype.onAfterOpen = function (callback)
+	{
+		this._onAfterOpen.add(callback);
+	};
+
+	Modal.prototype.onBeforeClose = function (callback)
+	{
+		this._onBeforeClose.add(callback);
+	};
+
+	Modal.prototype.onAfterClose = function (callback)
+	{
+		this._onAfterClose.add(callback);
+	};
+
+	Modal.prototype.onUnderlayClick = function (callback)
+	{
+		this._onUnderlayClick.add(callback);
+	};
+
+	Modal.prototype.clearUnderlayClick = function ()
+	{
+		this._onUnderlayClick.clear();
+	};
+
+	Modal.prototype.underlayClick = function (e)
+	{
+		this._onUnderlayClick.trigger(e);
+	};
+
+	Modal.prototype.open = function() 
+	{
+		this._onBeforeOpen.trigger(this._id);
+		this._view.show();
+		this._onAfterOpen.trigger(this._view.getContainer());
+	};
+
+	Modal.prototype.close = function() 
+	{
+		this._onBeforeClose.trigger(this._view.getContainer());
+		this._view.remove();
+		this._onAfterClose.trigger(this._id);
+	};
+
+
+	this.Modal = Modal;
 });
 namespace('OUI.Components', function (window) 
 {
@@ -4781,43 +4828,41 @@ namespace('OUI.Views', function (window)
 });
 namespace('OUI.Views', function (window) 
 {
-	var hbs 			= window.OUI.Core.View.hbs;
-	var classify		= window.Classy.classify;
-	var obj 			= window.Plankton.obj;
-	var is				= window.Plankton.is;
+	var hbs 		= window.OUI.Core.View.hbs;
+	var classify	= window.Classy.classify;
+	var obj 		= window.Plankton.obj;
+	var is			= window.Plankton.is;
+	var Event 		= window.Duct.Event;
 	
 	var ConfigurablePosition	= window.OUI.Core.Pos.Prepared.ConfigurablePosition;
 	var TargetPosition			= window.OUI.Core.Pos.Enum.TargetPosition;
 	var TargetSide				= window.OUI.Core.Pos.Enum.TargetSide;
 
 
-	function MenuView(menu, $toggleElement, contents, extraClass, positionConfig)
+	function MenuView(id, toggleElement, contents, extraClass, positionConfig)
 	{
 		classify(this);
 
 		extraClass = extraClass || '';
 
-		this._menu 				= menu;
-		this._toggleElement 	= $toggleElement;
+		this._id 				= id;
+		this._toggleElement 	= toggleElement;
 		this._contents 			= contents;
 		this._extraClass 		= extraClass;
 		this._underlay 			= 'div.oui-menu-underlay';
 		this._positionConfig	= positionConfig || {};
-		
-		this._positionClass = null;
+		this._positionClass 	= null;
 
-		this._bindOpen();
+		this._onOpenClick 	= new Event('MenuView.onOpenClick');
+		this._onCloseClick 	= new Event('MenuView.onCloseClick');
+
+		this._toggleElement.on('click.' + id, this._onOpenClick.trigger);
 	}
 
-
-	MenuView.prototype._bindOpen = function ()
-	{
-		this._toggleElement.on('click.' + this._menu.getId(), this._menu.open);
-	};
 	
 	MenuView.prototype._unbindOpen = function () 
 	{
-		this._toggleElement.off('click.' + this._menu.getId());	
+		this._toggleElement.off('click.' + this._id);	
 	};
 	
 	MenuView.prototype._putInPosition = function ()
@@ -4855,14 +4900,9 @@ namespace('OUI.Views', function (window)
 	};
 
 
-	MenuView.prototype.bindRemove = function ()
-	{
-		this.getContainer().on('click.' + this._menu.getId(), this._underlay, this._menu.close);
-	};
-
 	MenuView.prototype.getContainer = function ()
 	{
-		return $('#' + this._menu.getId());
+		return $('#' + this._id);
 	};
 
 	MenuView.prototype.remove = function (unbindEvent)
@@ -4879,17 +4919,30 @@ namespace('OUI.Views', function (window)
 	{
 		$('body').append(hbs('menu', 
 		{
-			id: this._menu.getId(),
+			id: this._id,
 			contents: this._contents,
 			extraClass: this._extraClass
 		}));
 	
 		this._putInPosition();
+
+		this.getContainer().on('click.' + this._id, this._underlay, this._onCloseClick.trigger);
+		this.getContainer().focus();
 	};
 	
 	MenuView.prototype.refreshPosition = function ()
 	{
 		this._putInPosition();
+	};
+
+	MenuView.prototype.onOpenClick = function (callback)
+	{
+		this._onOpenClick.add(callback);
+	};
+
+	MenuView.prototype.onCloseClick = function (callback)
+	{
+		this._onCloseClick.add(callback);
 	};
 
 
@@ -5431,7 +5484,7 @@ namespace('OUI.Components', function (window)
 	/**
 	 * @class OUI.Components.Menu
 	 */
-	function Menu($toggleElement, contents, extraClass, positionConfig)
+	function Menu(toggleElement, contents, extraClass, positionConfig)
 	{
 		classify(this);
 
@@ -5439,14 +5492,14 @@ namespace('OUI.Components', function (window)
 
 		this._id 			= idGenerator('oui-menu');
 
-		this._view 			= new MenuView(this, $toggleElement, contents, extraClass, positionConfig);
+		this._view 			= new MenuView(this._id, toggleElement, contents, extraClass, positionConfig);
 		this._onBeforeOpen 	= new Event('menu.onBeforeOpen');
 		this._onAfterOpen 	= new Event('menu.onAfterOpen');
 		this._onBeforeClose = new Event('menu.onBeforeClose');
-
 		this._onAfterClose 	= new Event('menu.onAfterClose');
-		
-		this.onAfterOpen(this._view.bindRemove);
+
+		this._view.onOpenClick(this.open);
+		this._view.onCloseClick(this.close);
 	}
 
 	
@@ -5503,6 +5556,7 @@ namespace('OUI.Components', function (window)
 	{
 		this._view.refreshPosition();	
 	};
+
 
 	this.Menu = Menu;
 });

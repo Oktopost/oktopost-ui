@@ -10,22 +10,22 @@ namespace('OUI.Components', function (window)
 	/**
 	 * @class OUI.Components.Menu
 	 */
-	function Menu($toggleElement, contents, extraClass, positionConfig)
+	function Menu(toggleElement, contents, extraClass, positionConfig)
 	{
 		classify(this);
 
-		this._unbindEvent = true;
+		this._unbindEvent 	= true;
 
 		this._id 			= idGenerator('oui-menu');
 
-		this._view 			= new MenuView(this, $toggleElement, contents, extraClass, positionConfig);
+		this._view 			= new MenuView(this._id, toggleElement, contents, extraClass, positionConfig);
 		this._onBeforeOpen 	= new Event('menu.onBeforeOpen');
 		this._onAfterOpen 	= new Event('menu.onAfterOpen');
 		this._onBeforeClose = new Event('menu.onBeforeClose');
-
 		this._onAfterClose 	= new Event('menu.onAfterClose');
-		
-		this.onAfterOpen(this._view.bindRemove);
+
+		this._view.onOpenClick(this.open);
+		this._view.onCloseClick(this.close);
 	}
 
 	
@@ -82,6 +82,7 @@ namespace('OUI.Components', function (window)
 	{
 		this._view.refreshPosition();	
 	};
+
 
 	this.Menu = Menu;
 });

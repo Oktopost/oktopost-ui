@@ -14,8 +14,8 @@ namespace('OUI.Components', function (window)
 	{
 		classify(this);
 
-		this._id 	= idGenerator('oui-modal');		
-		this._view  = new ModalView(this, contents, className);
+		this._id 	= idGenerator('oui-modal');
+		this._view  = new ModalView(this._id, contents, className);
 
 		this._onBeforeOpen 		= new Event('modal.beforeOpen');
 		this._onAfterOpen 		= new Event('modal.afterOpen');
@@ -23,7 +23,10 @@ namespace('OUI.Components', function (window)
 		this._onAfterClose 		= new Event('modal.afterClose');
 		this._onUnderlayClick 	= new Event('modal.onUnderlayClick');
 
-		this.onAfterOpen(this._view.onOpen);
+		this._view.onCloseClick(this.close);
+		this._view.onEscape(this.close);
+		this._view.onUnderlayClick(this._onUnderlayClick.trigger);
+
 		this.onUnderlayClick(this.close);
 	};
 

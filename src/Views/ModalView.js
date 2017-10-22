@@ -3,56 +3,64 @@ namespace('OUI.Views', function (window)
 	var is  		= window.Plankton.is;
 	var hbs 		= window.OUI.Core.View.hbs;
 	var classify 	= window.Classy.classify;
+	var Event 		= window.Duct.Event;
 
 
 	/**
 	 * @class OUI.Views.ModalView
 	 */
-	function ModalView(modal, contents, className) 
+	function ModalView(id, contents, className) 
 	{
 		classify(this);
 
 		className = className || '';
 
-		this._modal 		= modal;
+		this._id 			= id;
 		this._underlay 		= 'div.oui-modal-underlay';
 		this._closeButton 	= 'a[data-oui-modal-close]';
 		
-		this._escapeEvent 	= 'keyup.' + modal.getId();
+		this._escapeEvent 	= 'keyup.' + id;
 
 		this._className		= className;
 		this._contents		= contents;
+
+		this._onCloseClick 		= new Event('ModalView.onCloseClick');
+		this._onUnderlayClick 	= new Event('ModalView.onUnderlayClick');
+		this._onEscape 			= new Event('ModalView.onEscape');
 	};
 	
 
 	ModalView.prototype.getContainer = function ()
 	{
-		return $('#' + this._modal.getId());
+		return $('#' + this._id);
 	};
 
-	ModalView.prototype.onOpen = function ()
+	ModalView.prototype.bindEvents = function ()
 	{
-		var modal = this._modal;
+		var onEscape = this._onEscape;
 
 		$(document).on(this._escapeEvent, function (e) 
 		{
 			if (e.keyCode === 27)
 			{
-				modal.close();
+				onEscape.trigger();
 			}
 		});
 
-		this.getContainer().on('click', this._closeButton, this._modal.close);
-		this.getContainer().on('click', this._underlay, this._modal.underlayClick);
+		this.getContainer().on('click', this._closeButton, this._onCloseClick.trigger);
+		this.getContainer().on('click', this._underlay, this._onUnderlayClick.trigger);
 	};
 
 	ModalView.prototype.show = function () 
 	{
 		$('body').append(hbs('modal', {
-			id: this._modal.getId(),
+			id: this._id,
 			contents: this._contents,
 			extraClass: this._className
 		}));
+
+		this.bindEvents();
+		this.getContainer().focus();
 	};
 
 	ModalView.prototype.remove = function ()
@@ -60,6 +68,22 @@ namespace('OUI.Views', function (window)
 		$(document).off(this._escapeEvent);
 		this.getContainer().remove();
 	};
+
+	ModalView.prototype.onCloseClick = function (callback)
+	{
+		this._onCloseClick.add(callback);
+	};
+
+	ModalView.prototype.onUnderlayClick = function (callback)
+	{
+		this._onUnderlayClick.add(callback);
+	};
+
+	ModalView.prototype.onEscape = function (callback)
+	{
+		this._onEscape.add(callback);
+	};
+
 
 	
 	this.ModalView = ModalView;

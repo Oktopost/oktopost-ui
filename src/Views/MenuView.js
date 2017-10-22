@@ -1,42 +1,40 @@
 namespace('OUI.Views', function (window) 
 {
-	var hbs 			= window.OUI.Core.View.hbs;
-	var classify		= window.Classy.classify;
-	var obj 			= window.Plankton.obj;
-	var is				= window.Plankton.is;
+	var hbs 		= window.OUI.Core.View.hbs;
+	var classify	= window.Classy.classify;
+	var obj 		= window.Plankton.obj;
+	var is			= window.Plankton.is;
+	var Event 		= window.Duct.Event;
 	
 	var ConfigurablePosition	= window.OUI.Core.Pos.Prepared.ConfigurablePosition;
 	var TargetPosition			= window.OUI.Core.Pos.Enum.TargetPosition;
 	var TargetSide				= window.OUI.Core.Pos.Enum.TargetSide;
 
 
-	function MenuView(menu, $toggleElement, contents, extraClass, positionConfig)
+	function MenuView(id, toggleElement, contents, extraClass, positionConfig)
 	{
 		classify(this);
 
 		extraClass = extraClass || '';
 
-		this._menu 				= menu;
-		this._toggleElement 	= $toggleElement;
+		this._id 				= id;
+		this._toggleElement 	= toggleElement;
 		this._contents 			= contents;
 		this._extraClass 		= extraClass;
 		this._underlay 			= 'div.oui-menu-underlay';
 		this._positionConfig	= positionConfig || {};
-		
-		this._positionClass = null;
+		this._positionClass 	= null;
 
-		this._bindOpen();
+		this._onOpenClick 	= new Event('MenuView.onOpenClick');
+		this._onCloseClick 	= new Event('MenuView.onCloseClick');
+
+		this._toggleElement.on('click.' + id, this._onOpenClick.trigger);
 	}
 
-
-	MenuView.prototype._bindOpen = function ()
-	{
-		this._toggleElement.on('click.' + this._menu.getId(), this._menu.open);
-	};
 	
 	MenuView.prototype._unbindOpen = function () 
 	{
-		this._toggleElement.off('click.' + this._menu.getId());	
+		this._toggleElement.off('click.' + this._id);	
 	};
 	
 	MenuView.prototype._putInPosition = function ()
@@ -74,14 +72,9 @@ namespace('OUI.Views', function (window)
 	};
 
 
-	MenuView.prototype.bindRemove = function ()
-	{
-		this.getContainer().on('click.' + this._menu.getId(), this._underlay, this._menu.close);
-	};
-
 	MenuView.prototype.getContainer = function ()
 	{
-		return $('#' + this._menu.getId());
+		return $('#' + this._id);
 	};
 
 	MenuView.prototype.remove = function (unbindEvent)
@@ -98,17 +91,30 @@ namespace('OUI.Views', function (window)
 	{
 		$('body').append(hbs('menu', 
 		{
-			id: this._menu.getId(),
+			id: this._id,
 			contents: this._contents,
 			extraClass: this._extraClass
 		}));
 	
 		this._putInPosition();
+
+		this.getContainer().on('click.' + this._id, this._underlay, this._onCloseClick.trigger);
+		this.getContainer().focus();
 	};
 	
 	MenuView.prototype.refreshPosition = function ()
 	{
 		this._putInPosition();
+	};
+
+	MenuView.prototype.onOpenClick = function (callback)
+	{
+		this._onOpenClick.add(callback);
+	};
+
+	MenuView.prototype.onCloseClick = function (callback)
+	{
+		this._onCloseClick.add(callback);
 	};
 
 
