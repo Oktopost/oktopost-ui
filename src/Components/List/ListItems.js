@@ -28,6 +28,11 @@ namespace('OUI.Components.List', function (window)
 		return this._view.getContainer();
 	};
 	
+	ListItems.prototype.setContainer = function (container)
+	{
+		this._view.setContainer(container);	
+	};
+	
 	ListItems.prototype.onRender = function (callback)
 	{
 		this._onRender.add(callback);

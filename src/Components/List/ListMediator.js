@@ -149,6 +149,11 @@ namespace('OUI.Components.List', function (window)
 	{
 		this._template = template;
 	};
+	
+	ListMediator.prototype.setItemsContainer = function (container)
+	{
+		this._items.setContainer(container);
+	};
 
 	ListMediator.prototype.setItems = function (container, template)
 	{

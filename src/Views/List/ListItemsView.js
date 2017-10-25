@@ -87,6 +87,11 @@ namespace('OUI.Views.List', function (window)
 	{
 		this.getItemsWrapper().addClass(this._loadingClass);
 	};
+	
+	ListItemsView.prototype.setContainer = function (container)
+	{
+		this._container = $(container);
+	};
 
 	ListItemsView.prototype.onClick = function (callback)
 	{
