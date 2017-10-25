@@ -3223,13 +3223,14 @@ namespace('OUI.Components', function (window)
 
 		$(input).fileupload(
 		{
-			url: 		url,
-			dataType: 	'json',
-			dropZone: 	$(dropzone),
-			headers:	headers,
-			add: 		this._onAdd.trigger,
-			done: 		this._onDone.trigger,
-			success: 	this._onSuccess.trigger
+			url: 				url,
+			dataType: 			'json',
+			dropZone: 			$(dropzone),
+			headers:			headers,
+			replaceFileInput: 	false,
+			add: 				this._onAdd.trigger,
+			done: 				this._onDone.trigger,
+			success: 			this._onSuccess.trigger
 		});
 
 		this.onAdd(function (e, data) {
