@@ -3206,11 +3206,14 @@ namespace('OUI.Components', function (window)
 	 * @param {string} input
 	 * @param {string} button
 	 * @param {string} dropzone
+	 * @param {object} headers
 	 * @param {string} url
 	 */
-	function FileUpload(input, button, dropzone, url)
+	function FileUpload(input, button, dropzone, url, headers)
 	{
 		classify(this);
+		
+		headers = headers || {};
 
 		this._view 		= new FileUploadView(input, button, dropzone);
 
@@ -3223,6 +3226,7 @@ namespace('OUI.Components', function (window)
 			url: 		url,
 			dataType: 	'json',
 			dropZone: 	$(dropzone),
+			headers:	headers,
 			add: 		this._onAdd.trigger,
 			done: 		this._onDone.trigger,
 			success: 	this._onSuccess.trigger
