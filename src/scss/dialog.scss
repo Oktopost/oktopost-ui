@@ -5,6 +5,8 @@ div.oui-modal.oui-dialog {
 
 	div.wrapper {
 		width: 280px;
+		min-width: auto;
+		max-width: none;
 
 		div.body {
 			padding: 20px;
@@ -35,6 +37,21 @@ div.oui-modal.oui-dialog {
 					color: lighten($colorBlue, 15%);
 				}
 			}
+		}
+	}
+}
+
+@media only screen and (max-width: $tabletWidth) {
+	div.oui-modal.oui-dialog {
+		align-items: center;
+		justify-content: center;
+
+		div.wrapper {
+			width: 280px;
+			border-radius: 3px;
+			box-shadow: $basicShadow;
+			min-width: auto;
+			max-width: none;
 		}
 	}
 }

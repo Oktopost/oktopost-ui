@@ -29,6 +29,8 @@ div.oui-modal {
 		box-shadow: $basicShadow;
 		animation: animateGrow 0.5s;
 		overflow-y: auto;
+		min-width: 480px;
+		max-width: 720px;
 
 		div.head {
 			background-color: $colorLightGrey;
@@ -46,28 +48,23 @@ div.oui-modal {
 
 		div.footer {
 			padding: 15px 25px;
-		    border-top: 1px solid #eee;
-		    display: flex;
-		    justify-content: space-between;
+			border-top: 1px solid #eee;
+			display: flex;
+			justify-content: space-between;
 		}
 	}
-
-	&.small {
-		div.wrapper {
-			width: 41.66%;
-		}
-	}
-
+	
 	&.big {
 		justify-content: flex-end;
 
 		div.wrapper {
 			display: flex;
 			flex-direction: column;
-			width: 66%;
 			height: 100%;
 			animation: fadeInRight 0.5s;
 			border-radius: 0;
+			min-width: 640px;
+			max-width: 900px;
 
 			div.head {
 				min-height: 55px;
@@ -98,6 +95,31 @@ div.oui-modal {
 		&:hover {
 			text-decoration: none;
 			color: $colorDarkBlue;
+		}
+	}
+}
+
+@media only screen and (max-width: $tabletWidth) {
+	div.oui-modal {
+		align-items: initial;
+		justify-content: flex-start;
+
+		div.wrapper,
+		&.big div.wrapper {
+			box-shadow: none;
+			width: 100%;
+			min-width: 100%;
+			max-width: 100%;
+		}
+
+		div.wrapper {
+			flex-direction: column;
+			border-radius: 0;
+
+			div.body {
+				max-height: none;
+				flex-grow: 2;
+			}
 		}
 	}
 }
