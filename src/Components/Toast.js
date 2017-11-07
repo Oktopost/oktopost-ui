@@ -1,6 +1,6 @@
 namespace('OUI.Components', function (window) 
 {
-	var Event 		= window.Duct.Event;	
+	var Event 		= window.Duct.Event;
 	var ToastView 	= window.OUI.Views.ToastView;
 
 	var classify	= window.Classy.classify;

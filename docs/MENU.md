@@ -37,6 +37,13 @@ var positionConfig = {
 var myMenu = new Menu(menuButton, menuContent, menuClass, positionConfig);
 ```
 
+### Menu Toggle
+By default, the menu button will unbind after the first click. To enable toggle, use:
+
+```JavaScript
+myMenu.disableUnbinding();
+```
+
 ## Events
 
 1. onAfterOpen

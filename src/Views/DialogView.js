@@ -19,6 +19,8 @@ namespace('OUI.Views', function (window)
 		this._okButton 			= 'a.ok-button';
 		this._cancelButton 		= 'a.cancel-button';
 
+		this._confirmEvent 		= 'keyup.' + id;
+
 		this._onConfirmClick 	= new Event('DialogView.onConfirmClick');
 		this._onCancelClick 	= new Event('DialogView.onCancelClick');
 
@@ -34,10 +36,19 @@ namespace('OUI.Views', function (window)
 
 	DialogView.prototype.bindEvents = function ()
 	{
-		var $container = this.getContainer();
+		var container 		= this.getContainer();
+		var onConfirmEvent 	= this._onConfirmClick;
 
-		$container.find(this._okButton).on('click', this._onConfirmClick.trigger);
-		$container.find(this._cancelButton).on('click', this._onCancelClick.trigger);
+		container.find(this._okButton).on('click', onConfirmEvent.trigger);
+		container.find(this._cancelButton).on('click', onConfirmEvent.trigger);
+
+		$(document).on(this._confirmEvent, function (e) 
+		{
+			if (e.keyCode === 13)
+			{
+				onConfirmEvent.trigger();
+			}
+		});
 	};
 
 	DialogView.prototype.show = function (message)
@@ -55,6 +66,7 @@ namespace('OUI.Views', function (window)
 
 	DialogView.prototype.remove = function ()
 	{
+		$(document).off(this._confirmEvent);
 		fadeRemove(this.getContainer());
 	};
 
