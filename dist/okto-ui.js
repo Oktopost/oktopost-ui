@@ -3886,9 +3886,10 @@ namespace('OUI.Views', function (window)
 	{
 		var container 		= this.getContainer();
 		var onConfirmEvent 	= this._onConfirmClick;
+		var onCancelEvent 	= this._onCancelClick;
 
 		container.find(this._okButton).on('click', onConfirmEvent.trigger);
-		container.find(this._cancelButton).on('click', onConfirmEvent.trigger);
+		container.find(this._cancelButton).on('click', onCancelEvent.trigger);
 
 		$(document).on(this._confirmEvent, function (e) 
 		{
