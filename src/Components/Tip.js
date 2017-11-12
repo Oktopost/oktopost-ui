@@ -14,9 +14,11 @@ namespace('OUI.Components', function (window)
 		classify(this);
 
 		this._id 		= idGenerator(baseName);
-		this._view 		= new TipView(this, baseName, positionConfig);
+		this._view 		= new TipView(this._id, baseName, positionConfig);
 
-		this._view.bindHover();
+		this._view.onMouseEnter(this.add);
+		this._view.onMouseOut(this.remove);
+		this._view.onClick(this.remove);
 	};
 
 
@@ -25,9 +27,9 @@ namespace('OUI.Components', function (window)
 		return this._id;
 	};
 
-	Tip.prototype.add = function ($element)
+	Tip.prototype.add = function (event)
 	{
-		this._view.show($element);
+		this._view.show(event);
 	};
 
 	Tip.prototype.remove = function ()

@@ -4978,6 +4978,8 @@ namespace('OUI.Views', function (window)
 });
 namespace('OUI.Views', function (window) 
 {
+	var Event 			= window.Duct.Event;
+
 	var RoundPosition 	= window.OUI.Core.Pos.Prepared.RoundPosition;
     var TargetPosition 	= window.OUI.Core.Pos.Enum.TargetPosition;
     var TargetSide 		= window.OUI.Core.Pos.Enum.TargetSide;
@@ -4989,24 +4991,30 @@ namespace('OUI.Views', function (window)
 	/**
 	 * @class OUI.Views.TipView
 	 */
-	function TipView(tip, baseName, positionConfig)
+	function TipView(id, baseName, positionConfig)
 	{
 		classify(this);
 
-		this._tip 				= tip;
+		this._id 				= id;
 
-		this._tipBaseName 		= baseName;
-		this._tipSelector 		= '*[data-' + baseName + ']';
-		this._tipContentAttr 	= 'title';
+		this._baseName 			= baseName;
+		this._selector 			= '*[data-' + baseName + ']';
+		this._contentAttr 		= 'title';
 		this._invisibleClass 	= 'invisible';
 
 		this._positionConfig	= positionConfig || {};
+
+		this._onMouseEnter 	= new Event('TipView.onMouseEnter');
+		this._onMouseOut 	= new Event('TipView.onMouseOut');
+		this._onClick 		= new Event('TipView.onClick');
+
+		this._bindEvents();
 	};
 
 
 	TipView.prototype._getContent = function ($element)
 	{
-		var content = $element.data(this._tipBaseName);
+		var content = $element.data(this._baseName);
 
 		content = content.replace(/\[/g, '<');
 		content = content.replace(/\]/g, '>');
@@ -5030,40 +5038,25 @@ namespace('OUI.Views', function (window)
 		return RoundPosition.get(options);
 	};
 
-
-	TipView.prototype.bindHover = function ()
+	TipView.prototype._bindEvents = function ()
 	{
-		var view = this;
-
 		$(document).on(
 		{
-		    'mouseenter.tip': function () 
-		    {
-		        view._tip.add($(this));
-		    },
-		    'mouseleave.tip': function () 
-		    {
-		        view._tip.remove();
-		    }
-		}, this._tipSelector);
+		    'mouseenter.tip': this._onMouseEnter.trigger,
+		    'mouseleave.tip': this._onMouseOut.trigger
+		}, this._selector);
 
-		$(document).on('click.tip', this._tipSelector, function () 
-		{
-			view._tip.remove();
-		});
+		$(document).on('click.tip', this._selector, this._onClick.trigger);
 	};
 
-	TipView.prototype.getContainer = function ()
-	{
-		return $('#' + this._tip.getId());
-	};
-
-	TipView.prototype.show = function ($element)
+	
+	TipView.prototype.show = function (event)
 	{
 		var position;
+		var $element = $(event.currentTarget);		
 		var $tip = $('<div>')
-			.attr('id', this._tip.getId())
-			.addClass(this._tipBaseName)
+			.attr('id', this._id)
+			.addClass(this._baseName)
 			.addClass(this._invisibleClass)
 			.html(this._getContent($element));
 
@@ -5082,7 +5075,22 @@ namespace('OUI.Views', function (window)
 
 	TipView.prototype.remove = function ()
 	{
-		this.getContainer().remove();
+		$('#' + this._id).remove();
+	};
+
+	TipView.prototype.onMouseEnter = function (callback)
+	{
+		this._onMouseEnter.add(callback);
+	};
+
+	TipView.prototype.onMouseOut = function (callback)
+	{
+		this._onMouseOut.add(callback);
+	};
+
+	TipView.prototype.onClick = function (callback)
+	{
+		this._onClick.add(callback);
 	};
 
 
@@ -5609,9 +5617,11 @@ namespace('OUI.Components', function (window)
 		classify(this);
 
 		this._id 		= idGenerator(baseName);
-		this._view 		= new TipView(this, baseName, positionConfig);
+		this._view 		= new TipView(this._id, baseName, positionConfig);
 
-		this._view.bindHover();
+		this._view.onMouseEnter(this.add);
+		this._view.onMouseOut(this.remove);
+		this._view.onClick(this.remove);
 	};
 
 
@@ -5620,9 +5630,9 @@ namespace('OUI.Components', function (window)
 		return this._id;
 	};
 
-	Tip.prototype.add = function ($element)
+	Tip.prototype.add = function (event)
 	{
-		this._view.show($element);
+		this._view.show(event);
 	};
 
 	Tip.prototype.remove = function ()
