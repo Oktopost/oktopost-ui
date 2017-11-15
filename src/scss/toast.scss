@@ -3,7 +3,7 @@
 
 div.oui-toast {
 	position: fixed;
-	display: flex;
+	display: inline-block;
 	bottom: 0;
 	left: 50%;
 	transform: translate(-50%, -30px);
@@ -12,17 +12,28 @@ div.oui-toast {
 	z-index: 100;	
 	justify-content: space-between;
 	background-color: rgba(0, 31, 45, 0.8);
-	min-width: 250px;
-	animation: toastFadeIn 0.35s;	
+	max-width: 50vw;
+	animation: toastFadeIn 0.35s;
+
+	div {
+		display: flex;
+	}
 
 	p {
 		margin-bottom: 0;
 		color: white;
-		margin-right: 1rem;
 	}
 
-	a {
-		color: white;
+	a.cta-link:link,
+	a.cta-link:visited {
+		margin-left: 15px;
+		font-weight: bold;
+		color: #96ceff;
+		white-space: nowrap;
+	}
+
+	a.cta-link:hover {
+		text-decoration: underline;
 	}
 
 	&.removing {

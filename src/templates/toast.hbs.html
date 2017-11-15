@@ -1,4 +1,9 @@
 <div class="oui-toast" id="{{id}}">
-	<p>{{message}}</p>
-	<a href="" data-oui-dismiss class="icon-cancel"></a>
+	<div>
+		<p>{{message}}</p>
+
+		{{#if cta}}
+		<a href="" class="cta-link">{{cta}}</a>
+		{{/if}}
+	</div>
 </div>

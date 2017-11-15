@@ -81,7 +81,7 @@ namespace('OUI.Views', function (window)
 			.addClass(this._baseName)
 			.addClass(this._invisibleClass)
 			.html(this._getContent($element));
-
+		
 		$('body').append($tip);
 
 		position = this._getPosition($element, $tip);

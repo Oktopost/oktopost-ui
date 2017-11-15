@@ -14,14 +14,16 @@ namespace('OUI.Components', function (window)
 	{
 		classify(this);
 
-		this._id 		= idGenerator('oui-toast');
+		this._id 			= idGenerator('oui-toast');
 
-		this._view 		= new ToastView(this._id, delay);
+		this._view 			= new ToastView(this._id, delay);
 				
-		this._onAdd 	= new Event('toast.onAdd');
-		this._onDismiss = new Event('toast.onDismiss');
+		this._onAdd 		= new Event('toast.onAdd');
+		this._onDismiss 	= new Event('toast.onDismiss');
+		this._onCtaClick 	= new Event('toast.onCtaClick');
 
 		this._view.onDismiss(this._onDismiss.trigger);
+		this._view.onCtaClick(this._onCtaClick.trigger);
 	}
 
 
@@ -40,9 +42,14 @@ namespace('OUI.Components', function (window)
 		this._onDismiss.add(callback);
 	};
 
-	Toast.prototype.add = function (message)
+	Toast.prototype.onCtaClick = function (callback)
 	{
-		this._view.show(message);
+		this._onCtaClick.add(callback);
+	};
+
+	Toast.prototype.add = function (message, cta)
+	{
+		this._view.show(message, cta);
 		this._onAdd.trigger(this._id);
 	};
 

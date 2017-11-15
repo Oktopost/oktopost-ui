@@ -18,8 +18,11 @@ namespace('OUI.Views', function (window)
 		this._id 			= toastId;
 		this._delay 		= delay;
 		this._dismissButton = 'a[data-oui-dismiss]';
+		this._ctaLink 		= '.cta-link';
 
-		this._onDismiss = new Event('ToastView.onDismiss');
+		this._onDismiss 	= new Event('ToastView.onDismiss');
+		this._onCtaClick 	= new Event('ToastView.onCtaClick');
+
 		this._onDismiss.add(this.remove);
 	}
 
@@ -29,17 +32,19 @@ namespace('OUI.Views', function (window)
 		return $('#' + this._id);
 	};
 
-	ToastView.prototype.show = function (message)
+	ToastView.prototype.show = function (message, cta)
 	{
 		$('body').append(hbs('toast', 
 		{
 			message: message,
+			cta: cta || '',
 			id: this._id
 		}));
 
 		setTimeout(this.remove, this._delay);
 
 		this.getContainer().on('click', this._dismissButton, this._onDismiss.trigger);
+		this.getContainer().on('click', this._ctaLink, this._onCtaClick.trigger);
 	};
 
 	ToastView.prototype.remove = function ()
@@ -50,6 +55,11 @@ namespace('OUI.Views', function (window)
 	ToastView.prototype.onDismiss = function (callback)
 	{
 		this._onDismiss.add(callback);
+	};
+
+	ToastView.prototype.onCtaClick = function (callback)
+	{
+		this._onCtaClick.add(callback);
 	};
 
 
