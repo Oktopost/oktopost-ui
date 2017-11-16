@@ -1,5 +1,4 @@
 @import 'vars';
-@import 'animations';
 
 
 div.oui-tip {
@@ -9,7 +8,6 @@ div.oui-tip {
 	color: white;
 	max-width: 240px;
 	border-radius: 3px;
-	animation: animateGrow 0.1s;
 	z-index: 100;
 
 	&:after {
