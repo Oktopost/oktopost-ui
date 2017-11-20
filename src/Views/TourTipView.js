@@ -38,7 +38,7 @@ namespace('OUI.Views', function (window)
 			relatedElement: 	this._attachTo,
 			targetElement: 		$target,
 			initialPosition: 	TargetPosition.center,
-			sides: 				[ TargetSide.bottom ]
+			sides: 				[ TargetSide.top, TargetSide.right, TargetSide.bottom, TargetSide.left ]
 		};
 		
 		var config 	= obj.merge(baseConfig, this._positionConfig);
