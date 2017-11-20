@@ -41,7 +41,7 @@ namespace('OUI.Components.List', function (window)
 			data[this._key].push(result);
 		},
 		this);
-	}
+	};
 	
 	ListItemsContainer.prototype._transform = function ()
 	{
@@ -71,7 +71,7 @@ namespace('OUI.Components.List', function (window)
 		this);
 		
 		this._data = data;
-	}
+	};
 	
 	
 	ListItemsContainer.prototype.setKey = function (key)
