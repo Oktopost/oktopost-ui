@@ -48,11 +48,11 @@ namespace('OUI.Views', function (window)
 	{
 		var baseConfig = 
 		{	
-			relatedElement:  $related,
-		    targetElement: $target,
-		    relatedOffset: 10,
-		    initialPosition: TargetPosition.center,
-		    initialSide: TargetSide.bottom
+			relatedElement:  	$related,
+		    targetElement: 		$target,
+		    relatedOffset: 		10,
+		    initialPosition: 	TargetPosition.center,
+		    initialSide: 		TargetSide.bottom
 		};
 
 		var options = obj.merge(baseConfig, this._positionConfig);
@@ -75,7 +75,7 @@ namespace('OUI.Views', function (window)
 	TipView.prototype.show = function (event)
 	{
 		var position;
-		var $element = $(event.currentTarget);		
+		var $element = $(event.currentTarget);
 		var $tip = $('<div>')
 			.attr('id', this._id)
 			.addClass(this._baseName)

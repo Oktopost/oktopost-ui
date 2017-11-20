@@ -19,7 +19,7 @@ namespace('OUI.Components', function (window)
 		this._view.onMouseEnter(this.add);
 		this._view.onMouseOut(this.remove);
 		this._view.onClick(this.remove);
-	};
+	}
 
 
 	Tip.prototype.getId = function ()
