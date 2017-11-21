@@ -5290,7 +5290,7 @@ namespace('OUI.Views', function (window)
 		
 		var baseConfig = {
 			container: 			$container,
-			containerOffset: 	10,
+			containerOffset: 	20,
 			relatedElement: 	this._attachTo,
 			targetElement: 		$target,
 			initialPosition: 	TargetPosition.center,

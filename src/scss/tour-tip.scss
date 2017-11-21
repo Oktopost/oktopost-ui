@@ -16,5 +16,10 @@ div.oui-tour-tip {
 	    box-shadow: $basicShadow;
 	    width: 300px;
 	    z-index: 100;
+	    padding: 20px;
+	}
+
+	.oui-tour-tip-underlay {
+		background-color: opacify($colorDarkBlue, 0.6);
 	}
 }
