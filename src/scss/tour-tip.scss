@@ -7,6 +7,7 @@ div.oui-tour-tip {
 
 	div.oui-tour-tip-underlay {
 		@include fixed-layer(90);
+		background-color: rgba(0, 31, 45, 0.6);
 	}
 
 	div.wrapper {
@@ -17,9 +18,5 @@ div.oui-tour-tip {
 	    width: 300px;
 	    z-index: 100;
 	    padding: 20px;
-	}
-
-	.oui-tour-tip-underlay {
-		background-color: opacify($colorDarkBlue, 0.6);
 	}
 }
