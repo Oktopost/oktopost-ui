@@ -48,13 +48,14 @@ namespace('OUI.Views.List', function (window)
 	
 	ListFilterView.prototype.reset = function ()
 	{
-		if (!$(this._el).hasClass("select2-hidden-accessible"))
+		if (!this._el.hasClass("select2-hidden-accessible"))
 		{
 			this._el.val('');
 		}
 		else
 		{
-			this._el.select2('val', '');
+			this._el.val('');
+			this._el.trigger('change');
 		}
 	};
 	
