@@ -5691,7 +5691,7 @@ namespace('OUI.Components.List', function (window)
 		{
 			mediator.setParam('_page', 0);
 			
-			obj.forEach.item(filters, function (name, value)
+			obj.forEach.pair(filters, function (name, value)
 			{
 				mediator.setParam(name, value);
 			});
@@ -5786,6 +5786,11 @@ namespace('OUI.Components.List', function (window)
 	ListMediator.prototype.onSearch = function (callback)
 	{
 		this._search.onSearch(callback);
+	};
+	
+	ListMediator.prototype.onFilter = function (callback)
+	{
+		this._filter.onFilter(callback);
 	};
 
 	ListMediator.prototype.onPaginationChange = function (callback)

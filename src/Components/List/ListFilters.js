@@ -55,7 +55,7 @@ namespace('OUI.Components.List', function (window)
 	{
 		var filters = {};
 		
-		obj.forEach.item(this._filters, function (key, filter)
+		obj.forEach.pair(this._filters, function (key, filter)
 		{
 			filters[filter.name()] = filter.value();
 		});
@@ -68,7 +68,7 @@ namespace('OUI.Components.List', function (window)
 	{
 		var filters = {};
 		
-		obj.forEach.item(this._filters, function (key, filter)
+		obj.forEach.pair(this._filters, function (key, filter)
 		{
 			filter.reset();
 			filters[filter.name()] = filter.value();
@@ -108,11 +108,16 @@ namespace('OUI.Components.List', function (window)
 		this.onFilter(this._view.hideNullstate);
 	};
 	
+	ListFilters.prototype.showNullstate = function ()
+	{
+		this._nullstate.render();
+	};
+	
 	ListFilters.prototype.isActive = function ()
 	{
 		var isActive = false;
 		
-		obj.forEach.item(this._filters, function (key, filter)
+		obj.forEach.pair(this._filters, function (key, filter)
 		{
 			if (filter.isActive())
 			{

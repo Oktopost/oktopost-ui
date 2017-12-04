@@ -28,7 +28,12 @@ namespace('OUI.Views.List', function (window)
 	
 	ListFilterView.prototype.value = function ()
 	{
-		return this._value;
+		if (is.defined(this._value) && !is.null(this._value))
+		{
+			return this._value;
+		}
+		
+		return '';
 	};
 	
 	ListFilterView.prototype.name = function ()
@@ -43,7 +48,14 @@ namespace('OUI.Views.List', function (window)
 	
 	ListFilterView.prototype.reset = function ()
 	{
-		this._el.val('');	
+		if (!$(this._el).hasClass("select2-hidden-accessible"))
+		{
+			this._el.val('');
+		}
+		else
+		{
+			this._el.select2('val', '');
+		}
 	};
 	
 	
