@@ -25,6 +25,7 @@ Place the following files in your HTML template:
 10. [FileUpload](docs/FILE_UPLOAD.md)
 11. [Gravatar](docs/GRAVATAR.md)
 12. [Video](docs/VIDEO.md)
+12. [Editable Content](docs/EDITABLE_CONTENT.md)
 
 ## Helpers
 1. [View Helpers](docs/VIEW.md)
