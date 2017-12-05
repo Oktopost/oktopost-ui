@@ -5611,6 +5611,11 @@ namespace('OUI.Components.List', function (window)
 		this._params[key] = value;
 		this._onUpdateParam.trigger(key, value);
 	};
+	
+	ListMediator.prototype.removeParam = function (key)
+	{
+		delete this._params[key];
+	};
 
 	ListMediator.prototype.setExcludeParams = function (keys)
 	{
@@ -5693,7 +5698,14 @@ namespace('OUI.Components.List', function (window)
 			
 			obj.forEach.pair(filters, function (name, value)
 			{
-				mediator.setParam(name, value);
+				if (is.string.notEmpty(value))
+				{
+					mediator.setParam(name, value);
+				}
+				else
+				{
+					mediator.removeParam(name);
+				}
 			});
 		});
 	};

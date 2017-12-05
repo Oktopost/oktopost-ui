@@ -60,7 +60,7 @@ namespace('OUI.Components.List', function (window)
 			filters[filter.name()] = filter.value();
 		});
 		
-		this._onFilter.trigger(filters);
+		this._onFilter.trigger(filters, this.isActive());
 		this._onApply.trigger(filters);
 	};
 	
@@ -74,7 +74,7 @@ namespace('OUI.Components.List', function (window)
 			filters[filter.name()] = filter.value();
 		});
 		
-		this._onFilter.trigger(filters);
+		this._onFilter.trigger(filters, this.isActive());
 		this._onReset.trigger(filters);
 	};
 	
