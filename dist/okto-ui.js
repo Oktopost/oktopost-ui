@@ -5692,7 +5692,7 @@ namespace('OUI.Components.List', function (window)
 		
 		this._filter = filterComponent;
 		
-		this._filter.onFilter(function (filters)
+		this._filter.onFilter(function (isActive, filters)
 		{
 			mediator.setParam('_page', 0);
 			
