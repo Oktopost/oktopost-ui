@@ -1,6 +1,6 @@
 {
   "name": "oktopost-ui",
-  "version": "1.1.6",
+  "version": "1.2.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -39,9 +39,9 @@
     "mocha": "^3.2.0"
   },
   "dependencies": {
-    "oktopost-classy": "^1.0.2",
-    "oktopost-duct": "git@github.com:Oktopost/duct.git",
+    "oktopost-classy": "^1.1.0",
+    "oktopost-duct": "^1.1.0",
     "oktopost-namespace": "^2.0.0",
-    "oktopost-plankton": "^1.1.0"
+    "oktopost-plankton": "^2.1.0"
   }
 }

@@ -28,19 +28,17 @@ namespace('OUI.Components.List', function (window)
 		
 		data[this._key] = [];
 		
-		foreach (original[this._key], function (record)
+		foreach (original[this._key], this, function (record)
 		{
 			var result = record;
 			
-			foreach (this._transformers, function (transformer)
+			foreach (this._transformers, this, function (transformer)
 			{
 				result = transformer(original, result, count++)
-			},
-			this);
+			});
 			
 			data[this._key].push(result);
-		},
-		this);
+		});
 	};
 	
 	ListItemsContainer.prototype._transform = function ()
@@ -56,19 +54,17 @@ namespace('OUI.Components.List', function (window)
 		
 		data[this._key] = [];
 		
-		foreach (original[this._key], function (record)
+		foreach (original[this._key], this, function (record)
 		{
 			var result = record;
 			
-			foreach (this._recordTransformers, function (transformer)
+			foreach (this._recordTransformers, this, function (transformer)
 			{
 				result = transformer(data, obj.copy(result), count++)
-			},
-			this);
+			});
 			
 			data[this._key].push(result);
-		},
-		this);
+		});
 		
 		this._data = data;
 	};

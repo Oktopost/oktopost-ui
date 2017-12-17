@@ -1,8 +1,9 @@
 namespace('OUI.Components.List', function (window)
 {
-	var Event				= window.Duct.Event;
 	var classify			= window.Classy.classify;
-	var obj					= window.Plankton.obj;
+	var foreach				= window.Plankton.foreach;
+	
+	var Event				= window.Duct.Event;
 	
 	var ListFiltersView		= window.OUI.Views.List.ListFiltersView;
 	var ListFilterView		= window.OUI.Views.List.ListFilterView;
@@ -55,7 +56,7 @@ namespace('OUI.Components.List', function (window)
 	{
 		var filters = {};
 		
-		obj.forEach.pair(this._filters, function (key, filter)
+		foreach.pair(this._filters, function (key, filter)
 		{
 			filters[filter.name()] = filter.value();
 		});
@@ -68,7 +69,7 @@ namespace('OUI.Components.List', function (window)
 	{
 		var filters = {};
 		
-		obj.forEach.pair(this._filters, function (key, filter)
+		foreach.pair(this._filters, function (key, filter)
 		{
 			filter.reset();
 			filters[filter.name()] = filter.value();
@@ -117,7 +118,7 @@ namespace('OUI.Components.List', function (window)
 	{
 		var isActive = false;
 		
-		obj.forEach.pair(this._filters, function (key, filter)
+		foreach.pair(this._filters, function (key, filter)
 		{
 			if (filter.isActive())
 			{

@@ -169,7 +169,7 @@ namespace('OUI.Components.List', function (window)
 		{
 			mediator.setParam('_page', 0);
 			
-			obj.forEach.pair(filters, function (name, value)
+			foreach.pair(filters, function (name, value)
 			{
 				if (is.string.notEmpty(value))
 				{

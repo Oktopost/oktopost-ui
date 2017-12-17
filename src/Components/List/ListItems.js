@@ -2,7 +2,6 @@ namespace('OUI.Components.List', function (window)
 {
 	var Event 			= window.Duct.Event;
 	var ListItemsView 	= window.OUI.Views.List.ListItemsView;
-	var foreach 		= window.Plankton.foreach;
 	var classify 		= window.Classy.classify;
 
 

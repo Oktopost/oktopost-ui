@@ -1,8 +1,9 @@
 namespace('OUI.Components', function (window)
 {
-	var obj 		= window.Plankton.obj;
-	var classify 	= window.Classy.classify;
 	var md5 		= window.md5;
+	
+	var foreach		= window.Plankton.foreach;
+	var classify 	= window.Classy.classify;
 	
 	
 	/**
@@ -19,12 +20,12 @@ namespace('OUI.Components', function (window)
 		this._default 	= defaultImage || 'identicon';
 		
 		this._init();
-	};
+	}
 	
 	
 	Gravatar.prototype._init = function ()
 	{
-		obj.forEach(this._elements.toArray(), this._set);
+		foreach(this._elements.toArray(), this._set);
 	};
 	
 	Gravatar.prototype._set = function (elem)
