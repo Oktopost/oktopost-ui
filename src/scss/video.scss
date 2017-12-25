@@ -1,0 +1,47 @@
+@import 'vars';
+
+
+.video-wrapper {
+	margin-bottom: 15px;
+
+	video {
+		max-width: 100%;
+	}
+
+	.video-spinner {
+		margin: 20px auto;
+
+		&.hidden {
+			display: none;
+		}
+	}
+
+	.video-preview {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		background-color: $colorDarkBlue;
+
+		svg {
+			width: 20%;
+		}
+
+		&.hidden {
+			display: none;
+		}
+	}
+
+	.video-error {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		background-color: $colorLightGrey;
+		padding: 20px 0;
+
+		&.hidden {
+			display: none;
+		}
+	}
+}

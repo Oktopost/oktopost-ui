@@ -19,23 +19,45 @@ namespace('OUI.Views', function (window)
 		this._videos 		= $(videoSelector);
 		
 		this._hiddenClass 	= 'hidden';
-		this._loadingClass 	= 'loading';
+		this._loader 		= '.video-spinner';
 		this._preview 		= '.video-preview';
+		this._error 		= '.video-error';
 
 		this._onError 		= new Event('VideoView.onError');
 
 		this._videos.each(this._initVideo);
+
+		this.onError(this._displayError);
 	}
 
 
+	VideoView.prototype._displayError = function (videoWrapper)
+	{
+		videoWrapper.find(this._loader).addClass(this._hiddenClass);
+		videoWrapper.find(this._error).removeClass(this._hiddenClass);
+	};
+
 	VideoView.prototype._onCanPlay = function (videoWrapper, settings)
 	{
-		videoWrapper.find('.video-container').removeClass('loading');
-
 		if (settings.autoPlay && settings.sources.length)
 		{
 			this._play(videoWrapper);
 		}
+	};
+
+	VideoView.prototype._onLoadedMeta = function (videoWrapper)
+	{
+		videoWrapper.find(this._loader).addClass(this._hiddenClass);
+		videoWrapper.find(this._preview).removeClass(this._hiddenClass).css('height', this._getHeight(videoWrapper));
+	};
+
+	VideoView.prototype._getHeight = function (videoWrapper)
+	{
+		var videoHeight = videoWrapper.find('video').get(0).videoHeight;
+		var videoWidth 	= videoWrapper.find('video').get(0).videoWidth;
+		var aspectRatio = videoWidth / videoHeight;
+		
+		return videoHeight / aspectRatio;
 	};
 
 	VideoView.prototype._initVideo = function (index, videoWrapper)
@@ -46,16 +68,24 @@ namespace('OUI.Views', function (window)
 		var videoView 	= this;
 		
 		videoWrapper.append(hbs('video', settings));
-
+		
 		videoWrapper.find('video').on('canplay', function ()
 		{
-			videoView._onCanPlay(videoWrapper, settings.autoPlay);
+			videoView._onCanPlay(videoWrapper, settings.autoPlay);			
 		});
 
-		videoWrapper.find('video').on('error', this._onError.trigger);
+		videoWrapper.find('video').on('loadedmetadata', function ()
+		{
+			videoView._onLoadedMeta(videoWrapper);
+		});
+
+		videoWrapper.find('video').on('error', function ()
+		{
+			videoView._onError.trigger(videoWrapper);
+		});
 
 		if (settings.sources.length)
-		{			
+		{
 			videoWrapper.find(this._preview).on('click', function ()
 			{
 				videoView._play(videoWrapper);
@@ -67,7 +97,7 @@ namespace('OUI.Views', function (window)
 	{
 		videoWrapper.find(this._preview).addClass(this._hiddenClass);
 		
-		videoWrapper.find('video').removeClass(this._hiddenClass);		
+		videoWrapper.find('video').removeClass(this._hiddenClass);
 		videoWrapper.find('video').get(0).play();
 	};
 

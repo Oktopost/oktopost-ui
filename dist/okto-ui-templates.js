@@ -150,9 +150,9 @@ this["OUI"]["templates"]["video"]["hbs"] = Handlebars.template({"1":function(dep
 },"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
     var stack1;
 
-  return "<div class=\"video-container loading\">\n"
+  return "<div class=\"video-container\">\n"
     + ((stack1 = helpers['if'].call(depth0,(depth0 != null ? depth0.sources : depth0),{"name":"if","hash":{},"fn":this.program(1, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
-    + "\n	<div \n"
+    + "\n	<div class=\"video-spinner\"></div>\n	<div class=\"video-error hidden\"><span>Unable to play video</span></div>\n\n	<div \n"
     + ((stack1 = helpers['if'].call(depth0,(depth0 != null ? depth0.preview : depth0),{"name":"if","hash":{},"fn":this.program(6, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
-    + "		class=\"video-preview\">\n		play\n	</div>\n</div>";
+    + "		class=\"video-preview hidden\">\n			<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 60 72\"><path opacity=\".8\" fill=\"#1DA1F2\" d=\"M30 12C16.768 12 6 22.765 6 36s10.766 23.998 24 23.998 24-10.765 24-24S43.235 12 30 12z\"/><path fill=\"#FFF\" d=\"M39.2 34.34l-12-9c-.606-.455-1.418-.528-2.094-.19-.677.34-1.106 1.032-1.106 1.79v18c0 .758.428 1.45 1.106 1.79.283.14.59.21.894.21.425 0 .847-.136 1.2-.4l12-9c.503-.377.8-.97.8-1.6 0-.63-.295-1.223-.8-1.6z\"/><path fill=\"#FFF\" d=\"M30 15c11.598 0 21 9.402 21 21s-9.4 20.998-21 20.998-21-9.402-21-21S18.4 15 30 15m0-6C15.112 9 3 21.11 3 36s12.112 26.998 27 26.998 27-12.11 27-27S44.888 9 30 9z\"/></svg>\n	</div>	\n</div>";
 },"useData":true});
