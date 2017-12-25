@@ -5509,7 +5509,7 @@ namespace('OUI.Views', function (window)
 		var videoWidth 	= videoWrapper.find('video').get(0).videoWidth;
 		var aspectRatio = videoWidth / videoHeight;
 		
-		return videoHeight / aspectRatio;
+		return videoWrapper.width() / aspectRatio;
 	};
 
 	VideoView.prototype._initVideo = function (index, videoWrapper)
