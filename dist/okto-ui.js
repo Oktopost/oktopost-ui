@@ -1075,7 +1075,7 @@ namespace('OUI.Views', function (window)
 
 		this._button.on('click', this._onButtonClick);
 		$(document).on('dragover', this._onDragover);
-	};
+	}
 
 
 	FileUploadView.prototype._onButtonClick = function (e)
@@ -3926,6 +3926,19 @@ namespace('Duct', function (root)
 	};
 	
 	
+	/**
+	 * @param eventName
+	 * @return {function(*, *=undefined): Listener}
+	 */
+	Event.createListener = function (eventName)
+	{
+		return function (item, callback)
+		{
+			return this[eventName].listener(item, callback);
+		};
+	};
+	
+	
 	Event.DEFAULT_DEBUG = new EventDebug();
 	
 	
@@ -4147,6 +4160,7 @@ namespace('OUI.Components', function (window)
 		this._onAdd 	= new Event('FileUpload.onAdd');
 		this._onDone 	= new Event('FileUpload.onDone');
 		this._onSuccess = new Event('FileUpload.onSuccess');
+		this._onError	= new Event('FileUpload.onError');
 
 		$(input).fileupload(
 		{
@@ -4157,13 +4171,14 @@ namespace('OUI.Components', function (window)
 			replaceFileInput: 	false,
 			add: 				this._onAdd.trigger,
 			done: 				this._onDone.trigger,
-			success: 			this._onSuccess.trigger
+			success: 			this._onSuccess.trigger,
+			error:				this._onError.trigger
 		});
 
 		this.onAdd(function (e, data) {
 			data.submit();
 		});
-	};
+	}
 
 
 	FileUpload.prototype.onAdd = function (callback)
@@ -4179,6 +4194,11 @@ namespace('OUI.Components', function (window)
 	FileUpload.prototype.onSuccess = function (callback)
 	{
 		this._onSuccess.add(callback);
+	};
+		
+	FileUpload.prototype.onError = function (callback)
+	{
+		this._onError.add(callback);	
 	};
 
 

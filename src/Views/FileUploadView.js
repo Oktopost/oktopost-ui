@@ -19,7 +19,7 @@ namespace('OUI.Views', function (window)
 
 		this._button.on('click', this._onButtonClick);
 		$(document).on('dragover', this._onDragover);
-	};
+	}
 
 
 	FileUploadView.prototype._onButtonClick = function (e)
