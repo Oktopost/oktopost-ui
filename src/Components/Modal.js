@@ -22,6 +22,7 @@ namespace('OUI.Components', function (window)
 		this._onBeforeClose 	= new Event('modal.beforeClose');
 		this._onAfterClose 		= new Event('modal.afterClose');
 		this._onUnderlayClick 	= new Event('modal.onUnderlayClick');
+		this._onEscapeClick		= new Event('modal.onEscapeClick');
 
 		this._view.onCloseClick(this.close);
 		this._view.onEscape(this._onEscapeClicked);
