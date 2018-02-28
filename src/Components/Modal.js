@@ -24,12 +24,25 @@ namespace('OUI.Components', function (window)
 		this._onUnderlayClick 	= new Event('modal.onUnderlayClick');
 
 		this._view.onCloseClick(this.close);
-		this._view.onEscape(this.close);
+		this._view.onEscape(this._onEscapeClicked);
 		this._view.onUnderlayClick(this._onUnderlayClick.trigger);
 
 		this.onUnderlayClick(this.close);
-	};
+	}
 
+	
+	Modal.prototype._onEscapeClicked = function () 
+	{
+		var params = { abort: false };
+		
+		this._onEscapeClick.trigger(params);
+		
+		if (params.abort === false)
+		{
+			this.close();
+		}
+	};
+	
 
 	Modal.prototype.getId = function ()
 	{
@@ -59,6 +72,11 @@ namespace('OUI.Components', function (window)
 	Modal.prototype.onUnderlayClick = function (callback)
 	{
 		this._onUnderlayClick.add(callback);
+	};
+	
+	Modal.prototype.onEscapeClick = function (item, callback)
+	{
+		return this._onEscapeClick.listener(item, callback);
 	};
 
 	Modal.prototype.clearUnderlayClick = function ()
