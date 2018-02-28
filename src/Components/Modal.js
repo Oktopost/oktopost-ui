@@ -43,7 +43,7 @@ namespace('OUI.Components', function (window)
 		}
 	};
 	
-
+	
 	Modal.prototype.getId = function ()
 	{
 		return this._id;
