@@ -20,6 +20,17 @@ namespace('OUI.Views', function (window)
 		this.render(value, param, placeholder);
 		this.bindEvents();
 	}
+	
+	
+	SearchFormView.prototype._onClearButtonClick = function ()
+	{
+		var button 	= this._container.find(this._clearButton);
+		
+		if (!button.hasClass(this._cancelIcon))
+			return;
+		
+		this._form.clear();
+	};
 
 
 	SearchFormView.prototype.getValue = function ()
@@ -27,7 +38,7 @@ namespace('OUI.Views', function (window)
 		return this._container.find(this._input).val();
 	};
 
-	SearchFormView.prototype.clearInput = function (e)
+	SearchFormView.prototype.clearInput = function ()
 	{
 		var button = this._container.find(this._clearButton);
 
@@ -35,18 +46,16 @@ namespace('OUI.Views', function (window)
 		button.removeClass(this._cancelIcon).addClass(this._searchIcon);
 	};
 
-	SearchFormView.prototype.transformIcon = function (e)
+	SearchFormView.prototype.transformIcon = function ()
 	{
 		var button 	= this._container.find(this._clearButton);
-		var input 	= this._container.find(this._input);
-
 		button.removeClass(this._searchIcon).addClass(this._cancelIcon);
 	};
 
 	SearchFormView.prototype.bindEvents = function ()
 	{
 		this._container.on('input', this._input, this._form.input);
-		this._container.on('click', this._clearButton, this._form.clear);
+		this._container.on('click', this._clearButton, this._onClearButtonClick);
 	};
 
 	SearchFormView.prototype.render = function (value, param, placeholder)
