@@ -29,6 +29,8 @@ namespace('OUI.Components', function (window)
 		this._view.onUnderlayClick(this._onUnderlayClick.trigger);
 
 		this.onUnderlayClick(this.close);
+		
+		this._mustKeepOpen = false;
 	}
 
 	
@@ -99,11 +101,20 @@ namespace('OUI.Components', function (window)
 
 	Modal.prototype.close = function() 
 	{
+		this._mustKeepOpen = false;
 		this._onBeforeClose.trigger(this._view.getContainer());
+		
+		if (this._mustKeepOpen)
+			return;
+		
 		this._view.remove();
 		this._onAfterClose.trigger(this._id);
 	};
 
+	Modal.prototype.preventClose = function ()
+	{
+		this._mustKeepOpen = true;
+	};
 
 	this.Modal = Modal;
 });
