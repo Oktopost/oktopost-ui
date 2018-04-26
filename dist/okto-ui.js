@@ -1354,6 +1354,17 @@ namespace('OUI.Views', function (window)
 		this.render(value, param, placeholder);
 		this.bindEvents();
 	}
+	
+	
+	SearchFormView.prototype._onClearButtonClick = function ()
+	{
+		var button 	= this._container.find(this._clearButton);
+		
+		if (!button.hasClass(this._cancelIcon))
+			return;
+		
+		this._form.clear();
+	};
 
 
 	SearchFormView.prototype.getValue = function ()
@@ -1361,7 +1372,7 @@ namespace('OUI.Views', function (window)
 		return this._container.find(this._input).val();
 	};
 
-	SearchFormView.prototype.clearInput = function (e)
+	SearchFormView.prototype.clearInput = function ()
 	{
 		var button = this._container.find(this._clearButton);
 
@@ -1369,18 +1380,16 @@ namespace('OUI.Views', function (window)
 		button.removeClass(this._cancelIcon).addClass(this._searchIcon);
 	};
 
-	SearchFormView.prototype.transformIcon = function (e)
+	SearchFormView.prototype.transformIcon = function ()
 	{
 		var button 	= this._container.find(this._clearButton);
-		var input 	= this._container.find(this._input);
-
 		button.removeClass(this._searchIcon).addClass(this._cancelIcon);
 	};
 
 	SearchFormView.prototype.bindEvents = function ()
 	{
 		this._container.on('input', this._input, this._form.input);
-		this._container.on('click', this._clearButton, this._form.clear);
+		this._container.on('click', this._clearButton, this._onClearButtonClick);
 	};
 
 	SearchFormView.prototype.render = function (value, param, placeholder)
@@ -2690,8 +2699,8 @@ namespace('Duct.LT', function (root)
 	var is			= root.Plankton.is;
 	var func		= root.Plankton.func;
 	var foreach		= root.Plankton.foreach;
-
-
+	
+	
 	/**
 	 * @class {Duct.LT.LifeBind}
 	 * @alias {LifeBind}
@@ -2762,8 +2771,8 @@ namespace('Duct.LT', function (root)
 			this._boundData[index].push([ onDestroy, bound ]);
 		}
 	};
-
-
+	
+	
 	/**
 	 * @param {function} callback
 	 * @param {function(Function, Function)=} onDestroy
@@ -3532,6 +3541,72 @@ namespace('OUI.Core.Pos.Prepared', function (window)
 });
 namespace('Duct.LT', function (root)
 {
+	var is			= root.Plankton.is;
+	var foreach		= root.Plankton.foreach;
+	var LifeBind	= root.Duct.LT.LifeBind;
+
+	
+	var Binder = {
+		
+		ATTACHMENT_KEY: '__LT__',
+		
+		/**
+		 * @param {object} target
+		 * @param {LifeBind} lt
+		 * @param {RegExp=} filter
+		 */
+		attach: function (target, lt, filter)
+		{
+			filter = filter || /^_handle.+/;
+			
+			foreach.pair(target, function (name, value)
+			{
+				if (filter.test(name))
+				{
+					value[Binder.ATTACHMENT_KEY] = lt;
+				}
+			});
+		},
+		
+		/** 
+		 * @param {*} callback
+		 * @return {boolean}
+		 */
+		isBinded: function (callback)
+		{
+			if (!is.function(callback) || !is(callback[Binder.ATTACHMENT_KEY]))
+				return false;
+			
+			return (callback[Binder.ATTACHMENT_KEY] instanceof LifeBind);
+		},
+		
+		/**
+		 * @param {*} callback
+		 * @return {LifeBind|null}
+		 */
+		get: function (callback)
+		{
+			return (Binder.isBinded(callback) ? 
+				callback[Binder.ATTACHMENT_KEY] : 
+				null);
+		},
+		
+		/**
+		 * @param {function} callback
+		 * @return {function}
+		 */
+		getBinded: function (callback)
+		{
+			var lt = Binder.get(callback);
+			return (is(lt) ? lt.bindToLife(callback) : callback);
+		}
+	};
+	
+	
+	this.Binder = Binder;
+});
+namespace('Duct.LT', function (root)
+{
 	var array	= root.Plankton.array;
 	var foreach	= root.Plankton.foreach;
 	
@@ -3706,6 +3781,7 @@ namespace('Duct', function (root)
 	var Trigger			= root.Duct.Trigger;
 	var Listener		= root.Duct.Listener;
 	var EventDebug		= root.Duct.Debug.EventDebug;
+	var Binder			= root.Duct.LT.Binder;
 	var LifeBindFactory	= root.Duct.LT.LifeBindFactory;
 	
 	var is			= root.Plankton.is;
@@ -3823,7 +3899,7 @@ namespace('Duct', function (root)
 		}
 		else 
 		{
-			this._callbacks.push(item);
+			this._callbacks.push(Binder.getBinded(item));
 		}
 		
 		return this;
@@ -5169,6 +5245,11 @@ namespace('OUI.Views', function (window)
 		this.getContainer().remove();
 	};
 
+	ModalView.prototype.hideContainer = function ()
+	{		
+		this.getContainer().addClass('hiding');
+	};
+
 	ModalView.prototype.onCloseClick = function (callback)
 	{
 		this._onCloseClick.add(callback);
@@ -5923,15 +6004,32 @@ namespace('OUI.Components', function (window)
 		this._onBeforeClose 	= new Event('modal.beforeClose');
 		this._onAfterClose 		= new Event('modal.afterClose');
 		this._onUnderlayClick 	= new Event('modal.onUnderlayClick');
+		this._onEscapeClick		= new Event('modal.onEscapeClick');
 
 		this._view.onCloseClick(this.close);
-		this._view.onEscape(this.close);
+		this._view.onEscape(this._onEscapeClicked);
 		this._view.onUnderlayClick(this._onUnderlayClick.trigger);
 
 		this.onUnderlayClick(this.close);
+		
+		this._preventClose = false;
+		this._delayRemove = 500;
+	}
+
+	
+	Modal.prototype._onEscapeClicked = function () 
+	{
+		var params = { abort: false };
+		
+		this._onEscapeClick.trigger(params);
+		
+		if (params.abort === false)
+		{
+			this.close();
+		}
 	};
 
-
+	
 	Modal.prototype.getId = function ()
 	{
 		return this._id;
@@ -5961,6 +6059,11 @@ namespace('OUI.Components', function (window)
 	{
 		this._onUnderlayClick.add(callback);
 	};
+	
+	Modal.prototype.onEscapeClick = function (item, callback)
+	{
+		return this._onEscapeClick.listener(item, callback);
+	};
 
 	Modal.prototype.clearUnderlayClick = function ()
 	{
@@ -5981,9 +6084,39 @@ namespace('OUI.Components', function (window)
 
 	Modal.prototype.close = function() 
 	{
+		var id = this._id;
+		var view = this._view;
+		var onAfterClose = this._onAfterClose;
+
+		this._preventClose = false;
 		this._onBeforeClose.trigger(this._view.getContainer());
-		this._view.remove();
-		this._onAfterClose.trigger(this._id);
+		
+		if (this._preventClose)
+		{
+			return;
+		}
+
+		if (this._delayRemove > 0)
+		{
+			view.hideContainer();
+		}
+
+		setTimeout(function ()
+		{
+			view.remove();
+			onAfterClose.trigger(id);
+		}, 
+		this._delayRemove);
+	};
+
+	Modal.prototype.preventClose = function ()
+	{
+		this._preventClose = true;
+	};
+
+	Modal.prototype.setRemoveDelay = function (delay)
+	{
+		this._delayRemove = delay;
 	};
 
 

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>OUI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <link href="font/entypo.css" media="screen" rel="stylesheet" type="text/css">
     <link href="dist/okto-ui.css" media="screen" rel="stylesheet" type="text/css">
 </head>
@@ -13,5 +14,13 @@
     <script src="dist/okto-ui-templates.js"></script>
     <script src="dist/okto-ui.js"></script>
 
+	<script>
+		var modal = new window.OUI.Components.Modal('dsds<a href="#" data-oui-modal-close>x</a>', 'from-bottom', 30000);
+
+		modal.onBeforeClose(console.log.bind(this, 'onBeforeClose'));
+		modal.onAfterClose(console.log.bind(this, 'onAfterClose'));
+
+		modal.open();
+	</script>
 </body>
 </html>

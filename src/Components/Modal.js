@@ -30,7 +30,8 @@ namespace('OUI.Components', function (window)
 
 		this.onUnderlayClick(this.close);
 		
-		this._mustKeepOpen = false;
+		this._preventClose = false;
+		this._delayRemove = 500;
 	}
 
 	
@@ -45,7 +46,7 @@ namespace('OUI.Components', function (window)
 			this.close();
 		}
 	};
-	
+
 	
 	Modal.prototype.getId = function ()
 	{
@@ -101,20 +102,41 @@ namespace('OUI.Components', function (window)
 
 	Modal.prototype.close = function() 
 	{
-		this._mustKeepOpen = false;
+		var id = this._id;
+		var view = this._view;
+		var onAfterClose = this._onAfterClose;
+
+		this._preventClose = false;
 		this._onBeforeClose.trigger(this._view.getContainer());
 		
-		if (this._mustKeepOpen)
+		if (this._preventClose)
+		{
 			return;
-		
-		this._view.remove();
-		this._onAfterClose.trigger(this._id);
+		}
+
+		if (this._delayRemove > 0)
+		{
+			view.hideContainer();
+		}
+
+		setTimeout(function ()
+		{
+			view.remove();
+			onAfterClose.trigger(id);
+		}, 
+		this._delayRemove);
 	};
 
 	Modal.prototype.preventClose = function ()
 	{
-		this._mustKeepOpen = true;
+		this._preventClose = true;
 	};
+
+	Modal.prototype.setRemoveDelay = function (delay)
+	{
+		this._delayRemove = delay;
+	};
+
 
 	this.Modal = Modal;
 });

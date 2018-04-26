@@ -10,20 +10,21 @@ Use this component to render modal windows.
 
 ### Basic
 ```JavaScript
-var modal = new OUI.Components.Modal(contents, 'big');
+var Modal = window.OUI.Components.Modal;
+var myModal = new Modal(myModalContent);
 
-modal.open();
+myModal.open();
 ```
 
 ### Nested Windows
 ```JavaScript
 var Modal = window.OUI.Components.Modal;
 
-var firstModal = new Modal(contents, 'big');
+var firstModal = new Modal(firstModalContent);
 
 firstModal.onAfterOpen(function (container) {
     container.find('div.body a').on('click', function (e) {
-        var secondModal = new Modal('', 'small');
+        var secondModal = new Modal(secondModalContent);
 
         secondModal.open();
     });
@@ -38,7 +39,7 @@ firstModal.open();
 var Modal 	= window.OUI.Components.Modal;
 var Dialog 	= window.OUI.Components.Dialog;
 
-var myModal = new Modal('asasas');
+var myModal = new Modal(myModalContent);
 
 myModal.onAfterOpen(myModal.clearUnderlayClick);
 myModal.onAfterOpen(function ()
@@ -63,6 +64,26 @@ myModal.open();
 1. Using *modal.close()*
 2. Using an element with the following attribute: data-oui-modal-close
 3. By clicking the *Esc* key (will close all open windows)
+
+Note that by default the modal container will be removed from the window in *500ms*. To change that, you can use the *setRemoveDelay* method.
+
+```JavaScript
+var modal = new Modal(modalContent);
+modal.setRemoveDelay(200);
+``` 
+
+
+### Styling
+The modal component also accepts a second parameter to determine the container classname.
+
+```JavaScript
+new Modal(modalContent, modalClassname);
+``` 
+
+You can use the following pre-set classnames to determine the size and animation styles:
+
+1. from-right 
+2. from-bottom
 
 ## Events
 1. onBeforeOpen

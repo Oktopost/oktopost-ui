@@ -15,6 +15,7 @@ div.oui-modal {
 	div.oui-modal-underlay {
 		@include fixed-layer(90);
 		
+		transition: opacity 0.2s;
 		background-color: rgba(0, 31, 45, 0.6);
 	}
 
@@ -31,6 +32,7 @@ div.oui-modal {
 		overflow-y: auto;
 		min-width: 480px;
 		max-width: 720px;
+		transition: transform 0.3s, opacity 0.3s;
 
 		div.head {
 			background-color: $colorLightGrey;
@@ -54,17 +56,19 @@ div.oui-modal {
 		}
 	}
 	
-	&.big {
+	&.from-right, &.big {
 		justify-content: flex-end;
 
 		div.wrapper {
 			display: flex;
 			flex-direction: column;
-			height: 100%;
-			animation: fadeInRight 0.5s;
+			height: 100%;			
 			border-radius: 0;
 			min-width: 640px;
 			max-width: 900px;
+			animation: fadeInRight 0.5s;
+			transition-duration: 0.5s;
+
 
 			div.head {
 				min-height: 55px;
@@ -78,8 +82,29 @@ div.oui-modal {
 		}
 	}
 
-	&.removing {
-		opacity: 0;
+	&.from-bottom {
+		div.wrapper {
+			animation: fadeInBottom 0.5s;
+		}
+	}
+
+	&.hiding {
+		div.wrapper {
+			opacity: 0;
+			transform: scale(0.25);
+		}
+
+		&.from-right div.wrapper, &.big div.wrapper {
+			transform: translate(100%, 0);
+		}
+
+		&.from-bottom div.wrapper {
+			transform: translate(0, 100%);
+		}
+
+		div.oui-modal-underlay {
+			opacity: 0;
+		}
 	}
 
 	a.close {
@@ -104,8 +129,7 @@ div.oui-modal {
 		align-items: initial;
 		justify-content: flex-start;
 
-		div.wrapper,
-		&.big div.wrapper {
+		div.wrapper, &.big div.wrapper, &.from-right div.wrapper {
 			box-shadow: none;
 			width: 100%;
 			min-width: 100%;
@@ -115,10 +139,21 @@ div.oui-modal {
 		div.wrapper {
 			flex-direction: column;
 			border-radius: 0;
+			animation: fadeInRight 0.5s;
 
 			div.body {
 				max-height: none;
 				flex-grow: 2;
+			}
+		}
+
+		&.hiding {
+			div.wrapper {
+				transform: translate(100%, 0);
+			}
+
+			&.from-bottom div.wrapper {
+				transform: translate(0, 100%);
 			}
 		}
 	}

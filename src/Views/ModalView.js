@@ -69,6 +69,11 @@ namespace('OUI.Views', function (window)
 		this.getContainer().remove();
 	};
 
+	ModalView.prototype.hideContainer = function ()
+	{		
+		this.getContainer().addClass('hiding');
+	};
+
 	ModalView.prototype.onCloseClick = function (callback)
 	{
 		this._onCloseClick.add(callback);
