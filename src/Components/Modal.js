@@ -17,12 +17,13 @@ namespace('OUI.Components', function (window)
 		this._id 	= idGenerator('oui-modal');
 		this._view  = new ModalView(this._id, contents, className);
 
-		this._onBeforeOpen 		= new Event('modal.beforeOpen');
-		this._onAfterOpen 		= new Event('modal.afterOpen');
-		this._onBeforeClose 	= new Event('modal.beforeClose');
-		this._onAfterClose 		= new Event('modal.afterClose');
-		this._onUnderlayClick 	= new Event('modal.onUnderlayClick');
-		this._onEscapeClick		= new Event('modal.onEscapeClick');
+		this._onBeforeOpen 			= new Event('modal.beforeOpen');
+		this._onAfterOpen 			= new Event('modal.afterOpen');
+		this._onAfterOpenComplete	= new Event('modal.afterOpenComplete');
+		this._onBeforeClose 		= new Event('modal.beforeClose');
+		this._onAfterClose 			= new Event('modal.afterClose');
+		this._onUnderlayClick 		= new Event('modal.onUnderlayClick');
+		this._onEscapeClick			= new Event('modal.onEscapeClick');
 
 		this._view.onCloseClick(this.close);
 		this._view.onEscape(this._onEscapeClicked);
@@ -31,7 +32,7 @@ namespace('OUI.Components', function (window)
 		this.onUnderlayClick(this.close);
 		
 		this._preventClose = false;
-		this._delayRemove = 500;
+		this._animationDelay = 500;
 	}
 
 	
@@ -61,6 +62,11 @@ namespace('OUI.Components', function (window)
 	Modal.prototype.onAfterOpen = function (callback)
 	{
 		this._onAfterOpen.add(callback);
+	};
+	
+	Modal.prototype.onAfterOpenComplete = function(callback)
+	{
+		this._onAfterOpenComplete.add(callback);
 	};
 
 	Modal.prototype.onBeforeClose = function (callback)
@@ -98,14 +104,16 @@ namespace('OUI.Components', function (window)
 		this._onBeforeOpen.trigger(this._id);
 		this._view.show();
 		this._onAfterOpen.trigger(this._view.getContainer());
+		
+		setTimeout(function ()
+		{
+			this._onAfterOpenComplete.trigger(this._view.getContainer());
+		}.bind(this), 
+		this._animationDelay);
 	};
 
 	Modal.prototype.close = function() 
 	{
-		var id = this._id;
-		var view = this._view;
-		var onAfterClose = this._onAfterClose;
-
 		this._preventClose = false;
 		this._onBeforeClose.trigger(this._view.getContainer());
 		
@@ -114,17 +122,17 @@ namespace('OUI.Components', function (window)
 			return;
 		}
 
-		if (this._delayRemove > 0)
+		if (this._animationDelay > 0)
 		{
-			view.hideContainer();
+			this._view.hideContainer();
 		}
 
 		setTimeout(function ()
 		{
-			view.remove();
-			onAfterClose.trigger(id);
-		}, 
-		this._delayRemove);
+			this._view.remove();
+			this._onAfterClose.trigger(this._id);
+		}.bind(this), 
+		this._animationDelay);
 	};
 
 	Modal.prototype.preventClose = function ()
@@ -132,9 +140,9 @@ namespace('OUI.Components', function (window)
 		this._preventClose = true;
 	};
 
-	Modal.prototype.setRemoveDelay = function (delay)
+	Modal.prototype.setAnimationDelay = function (delay)
 	{
-		this._delayRemove = delay;
+		this._animationDelay = delay;
 	};
 
 
