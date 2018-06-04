@@ -1,7 +1,5 @@
 namespace('OUI.Components', function (window)
 {
-	var md5 		= window.md5;
-	
 	var foreach		= window.Plankton.foreach;
 	var classify 	= window.Classy.classify;
 	
