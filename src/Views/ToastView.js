@@ -4,6 +4,8 @@ namespace('OUI.Views', function (window)
 	var fadeRemove 	= window.OUI.Core.View.fadeRemove;
 	var classify 	= window.Classy.classify;
 	var Event 		= window.Duct.Event;
+	
+	var Controller	= window.OUI.Views.Toast.ToastController;
 
 
 	/**
@@ -34,17 +36,22 @@ namespace('OUI.Views', function (window)
 
 	ToastView.prototype.show = function (message, cta)
 	{
-		$('body').append(hbs('toast', 
+		var toRender = $(hbs('toast',
 		{
 			message: message,
 			cta: cta || '',
 			id: this._id
 		}));
+		
+		$('body').append(toRender);
 
-		setTimeout(this.remove, this._delay);
+		if (this._delay > 0) 
+			setTimeout(this.remove, this._delay);
 
 		this.getContainer().on('click', this._dismissButton, this._onDismiss.trigger);
 		this.getContainer().on('click', this._ctaLink, this._onCtaClick.trigger);
+		
+		return new Controller(toRender);
 	};
 
 	ToastView.prototype.remove = function ()

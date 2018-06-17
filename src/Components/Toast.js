@@ -49,8 +49,10 @@ namespace('OUI.Components', function (window)
 
 	Toast.prototype.add = function (message, cta)
 	{
-		this._view.show(message, cta);
+		var result = this._view.show(message, cta);
 		this._onAdd.trigger(this._id);
+		
+		return result;
 	};
 
 	Toast.prototype.dismiss = function ()
