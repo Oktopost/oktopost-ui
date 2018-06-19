@@ -1466,7 +1466,7 @@ namespace('OUI.Views', function (window)
 
 	this.TabsView = TabsView;
 });
-namespace('OUI.Views.Toast', function (window) 
+namespace('OUI.Views.Toast', function (window)
 {
 	var is		 = window.Plankton.is;
 	var classify = window.Classy.classify;
@@ -1494,10 +1494,16 @@ namespace('OUI.Views.Toast', function (window)
 	
 	ToastController.prototype.setCtaText = function (text)
 	{
-		if (!is.string(text))
+		if (!is(text))
+		{
+			text = '';
+		}
+		else if (!is.string(text))
+		{
 			text = text.toString();
+		}
 		
-		return this.getCta().text(text.trim());
+		this.getCta().text(text.trim());
 	};
 	
 	
@@ -5447,6 +5453,9 @@ namespace('OUI.Views', function (window)
 		this._delay 		= delay;
 		this._dismissButton = 'a[data-oui-dismiss]';
 		this._ctaLink 		= '.cta-link';
+		
+		this._ctrl			= null;
+		this._timer			= null;
 
 		this._onDismiss 	= new Event('ToastView.onDismiss');
 		this._onCtaClick 	= new Event('ToastView.onCtaClick');
@@ -5459,6 +5468,17 @@ namespace('OUI.Views', function (window)
 	{
 		return $('#' + this._id);
 	};
+	
+	ToastView.prototype.resetDelay = function()
+	{
+		if (this._delay <= 0)
+			return;
+		
+		if (is(this._timer))
+			clearTimeout(this._timer);
+		
+		this._timer = setTimeout(this.remove, this._delay);
+	}
 
 	ToastView.prototype.show = function (message, cta)
 	{
@@ -5470,14 +5490,25 @@ namespace('OUI.Views', function (window)
 		}));
 		
 		$('body').append(toRender);
-
-		if (this._delay > 0) 
-			setTimeout(this.remove, this._delay);
+		
+		this.resetDelay();
 
 		this.getContainer().on('click', this._dismissButton, this._onDismiss.trigger);
 		this.getContainer().on('click', this._ctaLink, this._onCtaClick.trigger);
 		
-		return new Controller(toRender);
+		this._ctrl = new Controller(toRender);
+		
+		return this._ctrl;
+	};
+	
+	ToastView.prototype.hasToast = function()
+	{
+		return this.getContainer().length !== 0;
+	};
+	
+	ToastView.prototype.getCtrl = function()
+	{
+		return this._ctrl;
 	};
 
 	ToastView.prototype.remove = function ()
@@ -6241,6 +6272,24 @@ namespace('OUI.Components', function (window)
 		this._view.onDismiss(this._onDismiss.trigger);
 		this._view.onCtaClick(this._onCtaClick.trigger);
 	}
+	
+	
+	Toast.prototype._updateView = function(message, cta)
+	{
+		this._view.getCtrl().setText(message);
+		this._view.getCtrl().setCtaText(cta);
+		this._view.resetDelay();
+		
+		return this._view.getCtrl();
+	};
+	
+	Toast.prototype._newToast = function(message, cta)
+	{
+		var result = this._view.show(message, cta);
+		this._onAdd.trigger(this._id);
+		
+		return result;
+	};
 
 
 	Toast.prototype.getId = function ()
@@ -6250,25 +6299,30 @@ namespace('OUI.Components', function (window)
 
 	Toast.prototype.onAdd = function (callback)
 	{
-		this._onAdd.add(callback);
+		return this._onAdd.listener(callback);
 	};
 
 	Toast.prototype.onDismiss = function (callback)
 	{
-		this._onDismiss.add(callback);
+		return this._onDismiss.listener(callback);
 	};
 
 	Toast.prototype.onCtaClick = function (callback)
 	{
-		this._onCtaClick.add(callback);
+		return this._onCtaClick.listener(callback);
 	};
-
+	
 	Toast.prototype.add = function (message, cta)
 	{
-		var result = this._view.show(message, cta);
-		this._onAdd.trigger(this._id);
+		if (this.has())
+			return this._updateView(message, cta);
 		
-		return result;
+		return this._newToast(message, cta);
+	};
+	
+	Toast.prototype.has = function()
+	{
+		return this._view.hasToast();
 	};
 
 	Toast.prototype.dismiss = function ()

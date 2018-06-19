@@ -1,4 +1,4 @@
-namespace('OUI.Views.Toast', function (window) 
+namespace('OUI.Views.Toast', function (window)
 {
 	var is		 = window.Plankton.is;
 	var classify = window.Classy.classify;
@@ -26,10 +26,16 @@ namespace('OUI.Views.Toast', function (window)
 	
 	ToastController.prototype.setCtaText = function (text)
 	{
-		if (!is.string(text))
+		if (!is(text))
+		{
+			text = '';
+		}
+		else if (!is.string(text))
+		{
 			text = text.toString();
+		}
 		
-		return this.getCta().text(text.trim());
+		this.getCta().text(text.trim());
 	};
 	
 	

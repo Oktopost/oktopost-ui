@@ -25,6 +25,24 @@ namespace('OUI.Components', function (window)
 		this._view.onDismiss(this._onDismiss.trigger);
 		this._view.onCtaClick(this._onCtaClick.trigger);
 	}
+	
+	
+	Toast.prototype._updateView = function(message, cta)
+	{
+		this._view.getCtrl().setText(message);
+		this._view.getCtrl().setCtaText(cta);
+		this._view.resetDelay();
+		
+		return this._view.getCtrl();
+	};
+	
+	Toast.prototype._newToast = function(message, cta)
+	{
+		var result = this._view.show(message, cta);
+		this._onAdd.trigger(this._id);
+		
+		return result;
+	};
 
 
 	Toast.prototype.getId = function ()
@@ -34,25 +52,30 @@ namespace('OUI.Components', function (window)
 
 	Toast.prototype.onAdd = function (callback)
 	{
-		this._onAdd.add(callback);
+		return this._onAdd.listener(callback);
 	};
 
 	Toast.prototype.onDismiss = function (callback)
 	{
-		this._onDismiss.add(callback);
+		return this._onDismiss.listener(callback);
 	};
 
 	Toast.prototype.onCtaClick = function (callback)
 	{
-		this._onCtaClick.add(callback);
+		return this._onCtaClick.listener(callback);
 	};
-
+	
 	Toast.prototype.add = function (message, cta)
 	{
-		var result = this._view.show(message, cta);
-		this._onAdd.trigger(this._id);
+		if (this.has())
+			return this._updateView(message, cta);
 		
-		return result;
+		return this._newToast(message, cta);
+	};
+	
+	Toast.prototype.has = function()
+	{
+		return this._view.hasToast();
 	};
 
 	Toast.prototype.dismiss = function ()
