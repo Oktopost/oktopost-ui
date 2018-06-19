@@ -52,6 +52,7 @@ div.oui-modal.oui-dialog {
 			box-shadow: $basicShadow;
 			min-width: auto;
 			max-width: none;
+			animation: animateGrow 0.5s;
 		}
 	}
 }
