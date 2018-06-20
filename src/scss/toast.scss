@@ -1,22 +1,24 @@
 @import 'animations';
+@import 'vars';
 
 
 div.oui-toast {
+	display: flex;
+	justify-content: center;
 	position: fixed;
-	display: inline-block;
 	bottom: 0;
 	left: 50%;
 	transform: translate(-50%, -30px);
-	padding: 1rem 1.2rem;
-	border-radius: 3px;
-	z-index: 100;	
-	justify-content: space-between;
-	background-color: rgba(0, 31, 45, 0.8);
+	z-index: 100;
 	max-width: 50vw;
 	animation: toastFadeIn 0.35s;
 
 	div {
-		display: flex;
+		display: inline-flex;
+		padding: 1rem 1.2rem;
+		border-radius: 3px;
+		justify-content: space-between;
+		background-color: rgba(0, 31, 45, 0.8);
 	}
 
 	p {
@@ -40,5 +42,20 @@ div.oui-toast {
 
 	&.removing {
 		animation: toastFadeOut 0.35s;
+	}
+}
+
+
+@media only screen and (max-width: $minScreenWidth) {
+	div.oui-toast {
+		max-width: initial;
+    	width: 66%;
+	}
+}
+
+@media only screen and (max-width: $tabletWidth) {
+	div.oui-toast {
+		max-width: initial;
+    	width: 80%;
 	}
 }
