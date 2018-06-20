@@ -1,6 +1,6 @@
 <div class="oui-toast" id="{{id}}">
 	<div>
 		<p>{{message}}</p>
-		<a href="" class="cta-link">{{cta}}</a>
+		<a href="" class="cta-link"{{#unless cta}} style="display:none;"{{/unless}}>{{cta}}</a>
 	</div>
 </div>

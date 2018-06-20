@@ -85,14 +85,18 @@ this["OUI"]["templates"]["search-form"]["hbs"] = Handlebars.template({"compiler"
     + "\" class=\"search-input\">\n	<i class=\"toggle-button icon-search\"></i>\n</form>";
 },"useData":true});
 this["OUI"]["templates"]["toast"] = this["OUI"]["templates"]["toast"] || {};
-this["OUI"]["templates"]["toast"]["hbs"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-    var helper, alias1=helpers.helperMissing, alias2="function", alias3=this.escapeExpression;
+this["OUI"]["templates"]["toast"]["hbs"] = Handlebars.template({"1":function(depth0,helpers,partials,data) {
+    return " style=\"display:none;\"";
+},"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+    var stack1, helper, alias1=helpers.helperMissing, alias2="function", alias3=this.escapeExpression;
 
   return "<div class=\"oui-toast\" id=\""
     + alias3(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"id","hash":{},"data":data}) : helper)))
     + "\">\n	<div>\n		<p>"
     + alias3(((helper = (helper = helpers.message || (depth0 != null ? depth0.message : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"message","hash":{},"data":data}) : helper)))
-    + "</p>\n		<a href=\"\" class=\"cta-link\">"
+    + "</p>\n		<a href=\"\" class=\"cta-link\""
+    + ((stack1 = helpers.unless.call(depth0,(depth0 != null ? depth0.cta : depth0),{"name":"unless","hash":{},"fn":this.program(1, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
+    + ">"
     + alias3(((helper = (helper = helpers.cta || (depth0 != null ? depth0.cta : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"cta","hash":{},"data":data}) : helper)))
     + "</a>\n	</div>\n</div>";
 },"useData":true});

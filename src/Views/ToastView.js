@@ -46,7 +46,7 @@ namespace('OUI.Views', function (window)
 			clearTimeout(this._timer);
 		
 		this._timer = setTimeout(this.remove, this._delay);
-	}
+	};
 
 	ToastView.prototype.show = function (message, cta)
 	{

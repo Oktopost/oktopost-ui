@@ -21,7 +21,7 @@ namespace('OUI.Views.Toast', function (window)
 		if (!is.string(text))
 			text = text.toString();
 		
-		this._toast.find('p').text(text.trim());
+		this._toast.find('p').text(text);
 	};
 	
 	ToastController.prototype.setCtaText = function (text)
@@ -35,7 +35,16 @@ namespace('OUI.Views.Toast', function (window)
 			text = text.toString();
 		}
 		
-		this.getCta().text(text.trim());
+		if (!is(text))
+		{
+			this.getCta().hide();
+		}
+		else
+		{
+			this.getCta().show();
+		}
+		
+		this.getCta().text(text);
 	};
 	
 	

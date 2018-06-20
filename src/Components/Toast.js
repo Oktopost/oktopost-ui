@@ -27,7 +27,7 @@ namespace('OUI.Components', function (window)
 	}
 	
 	
-	Toast.prototype._updateView = function(message, cta)
+	Toast.prototype._update = function(message, cta)
 	{
 		this._view.getCtrl().setText(message);
 		this._view.getCtrl().setCtaText(cta);
@@ -36,12 +36,12 @@ namespace('OUI.Components', function (window)
 		return this._view.getCtrl();
 	};
 	
-	Toast.prototype._newToast = function(message, cta)
+	Toast.prototype._create = function(message, cta)
 	{
-		var result = this._view.show(message, cta);
+		this._view.show(message, cta);
 		this._onAdd.trigger(this._id);
 		
-		return result;
+		return this._view.getCtrl();
 	};
 
 
@@ -68,9 +68,9 @@ namespace('OUI.Components', function (window)
 	Toast.prototype.add = function (message, cta)
 	{
 		if (this.has())
-			return this._updateView(message, cta);
+			return this._update(message, cta);
 		
-		return this._newToast(message, cta);
+		return this._create(message, cta);
 	};
 	
 	Toast.prototype.has = function()
