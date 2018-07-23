@@ -52,6 +52,11 @@ namespace('OUI.Components', function (window)
 		this._view.show(message);
 		this._onOpen.trigger(this._id);
 	};
+	
+	Dialog.prototype.close = function()
+	{
+		this._view.remove();
+	};
 
 	Dialog.prototype.confirm = function () 
 	{
