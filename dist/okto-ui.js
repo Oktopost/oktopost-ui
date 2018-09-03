@@ -1402,7 +1402,7 @@ namespace('OUI.Views', function (window)
 
 		if (value.length)
 		{
-			this._container.find(this._clearButton).addClass(this._animationClass);
+			this.transformIcon();
 		}
 	};
 
