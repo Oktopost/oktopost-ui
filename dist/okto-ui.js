@@ -1336,6 +1336,7 @@ namespace('OUI.Views', function (window)
 {
 	var hbs 		= window.OUI.Core.View.hbs;
 	var classify 	= window.Classy.classify;
+	var is			= window.Plankton.is;
 
 
 	function SearchFormView(form, container, value, param, placeholder)
@@ -1380,10 +1381,18 @@ namespace('OUI.Views', function (window)
 		button.removeClass(this._cancelIcon).addClass(this._searchIcon);
 	};
 
-	SearchFormView.prototype.transformIcon = function ()
+	SearchFormView.prototype.transformIcon = function (e)
 	{
 		var button 	= this._container.find(this._clearButton);
-		button.removeClass(this._searchIcon).addClass(this._cancelIcon);
+		
+		if (!is.object(e) || !is(e.target) || !is(e.target.value))
+		{
+			button.removeClass(this._cancelIcon).addClass(this._searchIcon);
+		}
+		else
+		{
+			button.removeClass(this._searchIcon).addClass(this._cancelIcon);
+		}
 	};
 
 	SearchFormView.prototype.bindEvents = function ()
@@ -1400,10 +1409,7 @@ namespace('OUI.Views', function (window)
 			placeholder: placeholder			
 		}));
 
-		if (value.length)
-		{
-			this.transformIcon();
-		}
+		this.transformIcon();
 	};
 
 
