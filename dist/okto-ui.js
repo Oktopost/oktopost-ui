@@ -4120,31 +4120,32 @@ namespace('Duct', function (root)
 	
 	this.Event = Event;
 });
-namespace('OUI.Views', function (window) 
+namespace('OUI.Views', function (window)
 {
 	var hbs 			= window.OUI.Core.View.hbs;
 	var classify		= window.Classy.classify;
 	var obj 			= window.Plankton.obj;
+	var is				= window.Plankton.is;
 	
 	var ConfigurablePosition	= window.OUI.Core.Pos.Prepared.ConfigurablePosition;
 	var TargetPosition			= window.OUI.Core.Pos.Enum.TargetPosition;
 	var TargetSide				= window.OUI.Core.Pos.Enum.TargetSide;
-
-
+	
+	
 	function HoverMenuView(menu, $toggleElement, contents, canPersist, extraClass, positionConfig)
 	{
 		classify(this);
-
+		
 		extraClass = extraClass || '';
 		
-
+		
 		this._menu 				= menu;
 		this._toggleElement 	= $toggleElement;
 		this._contents 			= contents;
 		this._extraClass 		= extraClass;
 		this._underlay 			= 'div.oui-hover-menu-underlay';
 		this._dataAttr			= 'oui-hover-menu';
-		this._positionConfig	= positionConfig || {};
+		this._positionConfig	= is.false(positionConfig) ? null : positionConfig || {};
 		this._canPersist		= canPersist || false;
 		
 		if (this.isOpen())
@@ -4160,23 +4161,23 @@ namespace('OUI.Views', function (window)
 			this._bindPersistInit();
 		}
 	}
-
-
+	
+	
 	HoverMenuView.prototype._bindOpen = function ()
 	{
 		this._toggleElement.on('mouseenter.' + this._menu.getId(), this._menu.open);
 	};
-
+	
 	HoverMenuView.prototype._bindRemove = function ()
 	{
 		this._toggleElement.on('mouseleave.' + this._menu.getId() , this._menu.close);
 	};
 	
-	HoverMenuView.prototype._bindPersistInit = function () 
+	HoverMenuView.prototype._bindPersistInit = function ()
 	{
 		var self = this;
 		
-		this._toggleElement.on('click.' + this._menu.getId(), function () 
+		this._toggleElement.on('click.' + this._menu.getId(), function ()
 		{
 			if(self.isOpen() && self._menu.isPersist())
 			{
@@ -4186,69 +4187,69 @@ namespace('OUI.Views', function (window)
 				{
 					self.disablePersist();
 				}
-				else 
+				else
 				{
 					self.enablePersist();
 				}
 			}
-			else 
+			else
 			{
 				self._menu.togglePersist();
 			}
 		});
 	};
 	
-	HoverMenuView.prototype._unbindHover = function () 
+	HoverMenuView.prototype._unbindHover = function ()
 	{
 		this._toggleElement.off('mouseenter.' + this._menu.getId());
-		this._toggleElement.off('mouseleave.' + this._menu.getId());	
+		this._toggleElement.off('mouseleave.' + this._menu.getId());
 	};
 	
-	HoverMenuView.prototype._unbindPersistEvents = function () 
+	HoverMenuView.prototype._unbindPersistEvents = function ()
 	{
 		this._toggleElement.off('click.' + this._menu.getId());
-		this._unbindPersistClose();	
+		this._unbindPersistClose();
 	};
 	
 	HoverMenuView.prototype._bindPersistClose = function ()
-	{	
+	{
 		var self = this;
 		
-		$(document).on('click.' + self._menu.getId(), function (event) 
+		$(document).on('click.' + self._menu.getId(), function (event)
 		{
 			if (!$(event.target).closest(self._toggleElement).length &&
-				!$(event.target).closest('#' + self._menu.getId()).length)
+			!$(event.target).closest('#' + self._menu.getId()).length)
 			{
 				self._menu.close();
 			}
 		});
 	};
 	
-	HoverMenuView.prototype._unbindPersistClose = function () 
+	HoverMenuView.prototype._unbindPersistClose = function ()
 	{
 		$(document).off('click.' + this._menu.getId());
 	};
 	
-
-	HoverMenuView.prototype.enablePersist = function () 
+	
+	HoverMenuView.prototype.enablePersist = function ()
 	{
 		this._unbindHover();
 		this._bindPersistClose();
 	};
 	
-	HoverMenuView.prototype.disablePersist = function () 
+	HoverMenuView.prototype.disablePersist = function ()
 	{
 		this._bindOpen();
 		this._bindRemove();
-
+		
 		this._unbindPersistClose();
 	};
-
+	
 	HoverMenuView.prototype.getContainer = function ()
 	{
 		return $('#' + this._menu.getId());
 	};
-
+	
 	HoverMenuView.prototype.remove = function ()
 	{
 		this.getContainer().remove();
@@ -4257,54 +4258,57 @@ namespace('OUI.Views', function (window)
 		
 		this._toggleElement.removeData(this._dataAttr);
 	};
-
-	HoverMenuView.prototype.show = function ()
+	
+	HoverMenuView.prototype.show = function (container)
 	{
-		var menu = hbs('hover-menu', 
+		var menu = hbs('hover-menu',
 		{
 			id: this._menu.getId(),
 			contents: this._contents,
 			extraClass: this._extraClass
 		});
 		
-		var $container = $('body');
+		var $container = is(container) ? container : $('body');
 		
 		$container.append(menu);
 		
 		var $target 	= this.getContainer();
 		var $related 	= this._toggleElement;
 		
-		var baseConfig = {
-			container: $container,
-			containerOffset: 10,
-			relatedElement: $related,
-			targetElement: $target,
-			initialPosition: TargetPosition.center,
-			initialSide: TargetSide.right,
-			sides: [TargetSide.right, TargetSide.left]
-		};
-		
-		var config = obj.merge(baseConfig, this._positionConfig);
-
-		var pos = ConfigurablePosition.get(config, config.sides);
-
-		$target.offset(
+		if (is.object(this._positionConfig))
 		{
-			top: pos.coordinates.top,
-			left: pos.coordinates.left
-		});
-
-		$target.addClass(pos.name);
+			var baseConfig = {
+				container: $container,
+				containerOffset: 10,
+				relatedElement: $related,
+				targetElement: $target,
+				initialPosition: TargetPosition.center,
+				initialSide: TargetSide.right,
+				sides: [TargetSide.right, TargetSide.left]
+			};
+			
+			var config = obj.merge(baseConfig, this._positionConfig);
+			
+			var pos = ConfigurablePosition.get(config, config.sides);
+			
+			$target.offset(
+			{
+				top: pos.coordinates.top,
+				left: pos.coordinates.left
+			});
+			
+			$target.addClass(pos.name);
+		}
 		
 		this._toggleElement.data(this._dataAttr, this._menu.getId());
 	};
 	
-	HoverMenuView.prototype.isOpen = function () 
+	HoverMenuView.prototype.isOpen = function ()
 	{
-		return this._toggleElement.data(this._dataAttr) !== undefined;	
+		return this._toggleElement.data(this._dataAttr) !== undefined;
 	};
-
-
+	
+	
 	this.HoverMenuView = HoverMenuView;
 });
 namespace('OUI.Components', function (window) 
@@ -4380,22 +4384,22 @@ namespace('OUI.Components', function (window)
 
 	this.FileUpload = FileUpload;
 });
-namespace('OUI.Components', function (window) 
+namespace('OUI.Components', function (window)
 {
 	var Event 			= window.Duct.Event;
 	var HoverMenuView 	= window.OUI.Views.HoverMenuView;
-
+	
 	var classify 		= window.Classy.classify;
 	var idGenerator 	= window.OUI.Core.View.idGenerator;
-
-
+	
+	
 	/**
 	 * @class OUI.Components.HoverMenu
 	 */
 	function HoverMenu($toggleElement, contents, canPersist, extraClass, positionConfig)
 	{
 		classify(this);
-
+		
 		this._id 				= idGenerator('oui-hover-menu');
 		
 		this._view 				= new HoverMenuView(this, $toggleElement, contents, canPersist, extraClass, positionConfig);
@@ -4409,34 +4413,36 @@ namespace('OUI.Components', function (window)
 		this._onAfterPersist	= new Event('hoverMenu.onAfterPersist');
 		
 		this._isPersist	= false;
+		
+		this._container = null;
 	}
-
-
+	
+	
 	HoverMenu.prototype.getId = function ()
 	{
 		return this._id;
 	};
 	
-	HoverMenu.prototype.getContainer = function () 
+	HoverMenu.prototype.getContainer = function ()
 	{
-		return this._view.getContainer();	
+		return this._view.getContainer();
 	};
-
+	
 	HoverMenu.prototype.onBeforeOpen = function (callback)
 	{
 		this._onBeforeOpen.add(callback);
 	};
-
+	
 	HoverMenu.prototype.onAfterOpen = function (callback)
 	{
 		this._onAfterOpen.add(callback);
 	};
-
+	
 	HoverMenu.prototype.onBeforeClose = function (callback)
 	{
 		this._onBeforeClose.add(callback);
 	};
-
+	
 	HoverMenu.prototype.onAfterClose = function (callback)
 	{
 		this._onAfterClose.add(callback);
@@ -4449,8 +4455,13 @@ namespace('OUI.Components', function (window)
 	
 	HoverMenu.prototype.onAfterPersist = function (callback)
 	{
-		this._onAfterPersist.add(callback);	
+		this._onAfterPersist.add(callback);
 	};
+	
+	HoverMenu.prototype.setContainer = function(container)
+	{
+		this._container = container;
+	}
 	
 	HoverMenu.prototype.open = function ()
 	{
@@ -4460,10 +4471,10 @@ namespace('OUI.Components', function (window)
 		}
 		
 		this._onBeforeOpen.trigger(this.getId());
-		this._view.show();
+		this._view.show(this._container);
 		this._onAfterOpen.trigger(this._view.getContainer());
 	};
-
+	
 	HoverMenu.prototype.close = function ()
 	{
 		if (this._isPersist)
@@ -4491,16 +4502,16 @@ namespace('OUI.Components', function (window)
 		this._onAfterPersist.trigger(this._view.getContainer());
 	};
 	
-	HoverMenu.prototype.isOpen = function () 
+	HoverMenu.prototype.isOpen = function ()
 	{
-		return this._view.isOpen();	
+		return this._view.isOpen();
 	};
 	
-	HoverMenu.prototype.isPersist = function () 
+	HoverMenu.prototype.isPersist = function ()
 	{
-		return this._isPersist;	
+		return this._isPersist;
 	};
-
+	
 	
 	this.HoverMenu = HoverMenu;
 });
