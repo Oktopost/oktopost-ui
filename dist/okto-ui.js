@@ -3639,6 +3639,60 @@ namespace('OUI.Core.Pos.Prepared', function (window)
 
 	this.BasePreparedWithOffsets = BasePreparedWithOffsets;
 });
+namespace('OUI.Views.Tip', function (window)
+{
+	var classify			= window.Classy.classify;
+	var foreach				= window.Plankton.foreach;
+	
+	
+	/**
+	 * @class OUI.Views.Tip.DefaultSanitizer
+	 */
+	function DefaultSanitizer()
+	{
+		classify(this);
+		
+		this._transformationMap = {
+			'[b]':  '<b>', '[/b]': '</b>',
+			'[i]':  '<i>', '[/i]': '</i>',
+			'[s]':  '<s>', '[/s]': '</s>',
+			'[br]': '<br>'
+		};
+		
+		this._compiledMap = [];
+		this._compileMap();
+	}
+	
+	
+	DefaultSanitizer.prototype._codeToRegex = function (code)
+	{
+		return new RegExp(code.replace(/\[/g, '\\['), 'g');
+	};
+	
+	DefaultSanitizer.prototype._compileMap = function ()
+	{
+		foreach.pair(this._transformationMap, this, function (code, tag)
+		{
+			this._compiledMap.push({regex: this._codeToRegex(code), tag: tag})
+		})
+	};
+	
+	
+	DefaultSanitizer.prototype.sanitize = function (string)
+	{
+		string = string.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		
+		foreach(this._compiledMap, function (map)
+		{
+			string = string.replace(map.regex, map.tag);
+		});
+		
+		return string;
+	};
+	
+	
+	this.DefaultSanitizer = DefaultSanitizer;
+});
 namespace('Duct.LT', function (root)
 {
 	var is			= root.Plankton.is;
@@ -5380,16 +5434,19 @@ namespace('OUI.Views', function (window)
 	
 	this.ModalView = ModalView;
 });
-namespace('OUI.Views', function (window) 
+namespace('OUI.Views.Tip', function (window) 
 {
 	var Event 			= window.Duct.Event;
 
 	var RoundPosition 	= window.OUI.Core.Pos.Prepared.RoundPosition;
     var TargetPosition 	= window.OUI.Core.Pos.Enum.TargetPosition;
     var TargetSide 		= window.OUI.Core.Pos.Enum.TargetSide;
+	
+	var DefaultSanitizer	= window.OUI.Views.Tip.DefaultSanitizer;
 
     var classify		= window.Classy.classify;
-    var obj 			= window.Plankton.obj;
+	var is				= window.Plankton.is;
+	var obj 			= window.Plankton.obj;
 
 
 	/**
@@ -5405,6 +5462,8 @@ namespace('OUI.Views', function (window)
 		this._selector 			= '*[data-' + baseName + ']';
 		this._contentAttr 		= 'title';
 		this._invisibleClass 	= 'invisible';
+		
+		this._sanitizer			= null;
 
 		this._positionConfig	= positionConfig || {};
 
@@ -5415,16 +5474,20 @@ namespace('OUI.Views', function (window)
 		this._bindEvents();
 	};
 
+	
+	TipView.prototype._getSanitizer = function()
+	{
+		if (!is(this._sanitizer))
+		{
+			this._sanitizer = new DefaultSanitizer();
+		}
+		
+		return this._sanitizer;
+	};
 
 	TipView.prototype._getContent = function ($element)
 	{
-		var content = $element.data(this._baseName).toString();
-		
-		content = content.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-		content = content.replace(/\[/g, '<');
-		content = content.replace(/\]/g, '>');
-
-		return content;
+		return  this._getSanitizer().sanitize($element.data(this._baseName).toString());
 	};
 
 	TipView.prototype._getPosition = function ($related, $target)
@@ -5476,6 +5539,11 @@ namespace('OUI.Views', function (window)
 				left: position.coordinates.left, 
 				top: position.coordinates.top 
 			});
+	};
+	
+	TipView.prototype.setSanitizer = function(sanitizer)
+	{
+		this._sanitizer = sanitizer;
 	};
 
 	TipView.prototype.remove = function ()
@@ -6281,7 +6349,7 @@ namespace('OUI.Components', function (window)
 });
 namespace('OUI.Components', function (window) 
 {
-	var TipView 	= window.OUI.Views.TipView;
+	var TipView 	= window.OUI.Views.Tip.TipView;
 
 	var classify	= window.Classy.classify;
 	var idGenerator = window.OUI.Core.View.idGenerator;
@@ -6306,6 +6374,11 @@ namespace('OUI.Components', function (window)
 	Tip.prototype.getId = function ()
 	{
 		return this._id;
+	};
+	
+	Tip.prototype.setSanitizer = function(sanitizerInstance)
+	{
+		this._view.setSanitizer(sanitizerInstance);
 	};
 
 	Tip.prototype.add = function (event)

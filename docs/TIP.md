@@ -25,6 +25,9 @@ This will result in:
 ```HTML
 <b>Title</b>Lorem ipsum dolor sit amet
 ```
+List of allowed tags is limited by sanitizer. By default only few tags are allowed.
+You can set your own sanitizer at any moment with `myTip.setSanitizer(mySanitizer)`. 
+Sanitizer is supposed to have `sanitize(string)` method and return string.
 
 ### With Positioning
 The Tip component uses the [RoundPosition](POS.md) object for positioning. To override the default options, you can pass your own configurations, like so:

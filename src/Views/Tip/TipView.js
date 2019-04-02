@@ -1,13 +1,16 @@
-namespace('OUI.Views', function (window) 
+namespace('OUI.Views.Tip', function (window) 
 {
 	var Event 			= window.Duct.Event;
 
 	var RoundPosition 	= window.OUI.Core.Pos.Prepared.RoundPosition;
     var TargetPosition 	= window.OUI.Core.Pos.Enum.TargetPosition;
     var TargetSide 		= window.OUI.Core.Pos.Enum.TargetSide;
+	
+	var DefaultSanitizer	= window.OUI.Views.Tip.DefaultSanitizer;
 
     var classify		= window.Classy.classify;
-    var obj 			= window.Plankton.obj;
+	var is				= window.Plankton.is;
+	var obj 			= window.Plankton.obj;
 
 
 	/**
@@ -23,6 +26,8 @@ namespace('OUI.Views', function (window)
 		this._selector 			= '*[data-' + baseName + ']';
 		this._contentAttr 		= 'title';
 		this._invisibleClass 	= 'invisible';
+		
+		this._sanitizer			= null;
 
 		this._positionConfig	= positionConfig || {};
 
@@ -33,16 +38,20 @@ namespace('OUI.Views', function (window)
 		this._bindEvents();
 	};
 
+	
+	TipView.prototype._getSanitizer = function()
+	{
+		if (!is(this._sanitizer))
+		{
+			this._sanitizer = new DefaultSanitizer();
+		}
+		
+		return this._sanitizer;
+	};
 
 	TipView.prototype._getContent = function ($element)
 	{
-		var content = $element.data(this._baseName).toString();
-		
-		content = content.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-		content = content.replace(/\[/g, '<');
-		content = content.replace(/\]/g, '>');
-
-		return content;
+		return  this._getSanitizer().sanitize($element.data(this._baseName).toString());
 	};
 
 	TipView.prototype._getPosition = function ($related, $target)
@@ -94,6 +103,11 @@ namespace('OUI.Views', function (window)
 				left: position.coordinates.left, 
 				top: position.coordinates.top 
 			});
+	};
+	
+	TipView.prototype.setSanitizer = function(sanitizer)
+	{
+		this._sanitizer = sanitizer;
 	};
 
 	TipView.prototype.remove = function ()

@@ -1,6 +1,6 @@
 namespace('OUI.Components', function (window) 
 {
-	var TipView 	= window.OUI.Views.TipView;
+	var TipView 	= window.OUI.Views.Tip.TipView;
 
 	var classify	= window.Classy.classify;
 	var idGenerator = window.OUI.Core.View.idGenerator;
@@ -25,6 +25,11 @@ namespace('OUI.Components', function (window)
 	Tip.prototype.getId = function ()
 	{
 		return this._id;
+	};
+	
+	Tip.prototype.setSanitizer = function(sanitizerInstance)
+	{
+		this._view.setSanitizer(sanitizerInstance);
 	};
 
 	Tip.prototype.add = function (event)
