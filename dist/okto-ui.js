@@ -5419,7 +5419,8 @@ namespace('OUI.Views', function (window)
 	TipView.prototype._getContent = function ($element)
 	{
 		var content = $element.data(this._baseName).toString();
-
+		
+		content = content.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 		content = content.replace(/\[/g, '<');
 		content = content.replace(/\]/g, '>');
 
