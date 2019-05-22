@@ -64,14 +64,14 @@ namespace('OUI.Views', function (window)
 	{
 		videoWrapper = $(videoWrapper);
 
-		var settings 	= obj.merge(videoWrapper.data(), defaults);
+		var settings 	= obj.merge(defaults, videoWrapper.data());
 		var videoView 	= this;
 		
 		videoWrapper.append(hbs('video', settings));
 		
 		videoWrapper.find('video').on('canplay', function ()
 		{
-			videoView._onCanPlay(videoWrapper, settings.autoPlay);			
+			videoView._onCanPlay(videoWrapper, settings);
 		});
 
 		videoWrapper.find('video').on('loadedmetadata', function ()
