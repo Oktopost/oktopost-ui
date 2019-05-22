@@ -60,7 +60,7 @@ namespace('OUI.Views.Tip', function (window)
 		{	
 			relatedElement:  	$related,
 		    targetElement: 		$target,
-		    relatedOffset: 		10,
+		    relatedOffset: 		13,
 		    initialPosition: 	TargetPosition.center,
 		    initialSide: 		TargetSide.bottom
 		};
