@@ -63,13 +63,13 @@ namespace('OUI.Views.List', function (window)
 
 		var data = 
 		{
-			showingFrom: 	showingFrom,
-			showingTo: 		showingTo,
+			showingFrom: 	showingFrom.toLocaleString(),
+			showingTo: 		showingTo.toLocaleString(),
 			prevPageLink: 	this._getPrevPageLink(page, total, count),
 			nextPageLink: 	this._getNextPageLink(page, total, count),
 			hasNextPage: 	(page + 1) * count < total,
 			hasPrevPage: 	page > 0,
-			total: total
+			total: total.toLocaleString()
 		};
 
 		return data;
