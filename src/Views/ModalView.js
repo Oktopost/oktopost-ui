@@ -19,6 +19,9 @@ namespace('OUI.Views', function (window)
 		this._underlay 		= 'div.oui-modal-underlay';
 		this._closeButton 	= 'a[data-oui-modal-close]';
 		
+		if (!is(window.OUI.Views.ModalViewIds))
+			window.OUI.Views.ModalViewIds = [];
+		
 		this._escapeEvent 	= 'keyup.' + id;
 
 		this._className		= className;
@@ -29,6 +32,23 @@ namespace('OUI.Views', function (window)
 		this._onEscape 			= new Event('ModalView.onEscape');
 	};
 	
+	
+	ModalView.prototype._triggerOnEscape = function()
+	{
+		if (window.OUI.Views.ModalViewIds.length === 0)
+		{
+			this._onEscape.trigger();
+			return;
+		}
+		
+		var lastId = window.OUI.Views.ModalViewIds[window.OUI.Views.ModalViewIds.length - 1];
+		
+		if (lastId !== this._id)
+			return;
+		
+		this._onEscape.trigger();
+	};
+	
 
 	ModalView.prototype.getContainer = function ()
 	{
@@ -37,13 +57,13 @@ namespace('OUI.Views', function (window)
 
 	ModalView.prototype.bindEvents = function ()
 	{
-		var onEscape = this._onEscape;
+		var triggerOnEscape = this._triggerOnEscape;
 
 		$(document).on(this._escapeEvent, function (e) 
 		{
 			if (e.keyCode === 27)
 			{
-				onEscape.trigger();
+				triggerOnEscape();
 			}
 		});
 
@@ -58,6 +78,8 @@ namespace('OUI.Views', function (window)
 			contents: this._contents,
 			extraClass: this._className
 		}));
+		
+		window.OUI.Views.ModalViewIds.push(this._id);
 
 		this.bindEvents();
 		this.getContainer().focus();
@@ -65,6 +87,13 @@ namespace('OUI.Views', function (window)
 
 	ModalView.prototype.remove = function ()
 	{
+		var currentId = this._id;
+		
+		window.OUI.Views.ModalViewIds = window.OUI.Views.ModalViewIds.filter(function (id)
+		{
+			return id !== currentId
+		});
+		
 		$(document).off(this._escapeEvent);
 		this.getContainer().remove();
 	};
