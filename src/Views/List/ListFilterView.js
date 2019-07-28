@@ -51,6 +51,7 @@ namespace('OUI.Views.List', function (window)
 		if (!this._el.hasClass("select2-hidden-accessible"))
 		{
 			this._el.val('');
+			this._value = '';
 		}
 		else
 		{
