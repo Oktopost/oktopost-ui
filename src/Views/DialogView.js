@@ -16,8 +16,8 @@ namespace('OUI.Views', function (window)
 		this._id 				= id;
 		this._okButtonText 		= okButtonText || 'OK';
 		this._cancelButtonText 	= cancelButtonText || 'Cancel';
-		this._okButton 			= 'a.ok-button';
-		this._cancelButton 		= 'a.cancel-button';
+		this._okButton 			= '.ok-button';
+		this._cancelButton 		= '.cancel-button';
 
 		this._confirmEvent 		= 'keyup.' + id;
 

@@ -1,14 +1,14 @@
 @import 'vars';
 
 
-div.oui-modal.oui-dialog {
+.oui-modal.oui-dialog {
 
-	div.wrapper {
+	.wrapper {
 		width: 280px;
 		min-width: auto;
 		max-width: none;
 
-		div.body {
+		.body {
 			padding: 20px;
 
 			p {
@@ -16,24 +16,27 @@ div.oui-modal.oui-dialog {
 			}
 		}
 
-		div.footer {
+		.footer {
 			display: flex;
 			justify-content: flex-end;
 			padding: 0 20px 20px 20px;
 			border-top: 0;
 
-			a {
-				&:link,
+			a,
+			button {
+				color: $colorBlue;
+				text-transform: uppercase;
+				margin-left: 1rem;
+				font-weight: bold;
+				display: inline-block;
+				padding: 0 5px;
+
 				&:visited {
 					color: $colorBlue;
-					text-transform: uppercase;
-					margin-left: 1rem;
-					font-weight: bold;
-					display: inline-block;
-    				padding: 0 5px;
 				}
 
-				&:hover {
+				&:hover,
+				&:focus {
 					color: lighten($colorBlue, 15%);
 				}
 			}
@@ -42,11 +45,11 @@ div.oui-modal.oui-dialog {
 }
 
 @media only screen and (max-width: $tabletWidth) {
-	div.oui-modal.oui-dialog {
+	.oui-modal.oui-dialog {
 		align-items: center;
 		justify-content: center;
 
-		div.wrapper {
+		.wrapper {
 			width: 280px;
 			border-radius: 3px;
 			box-shadow: $basicShadow;

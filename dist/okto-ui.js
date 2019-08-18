@@ -1174,7 +1174,7 @@ namespace('OUI.Views.List', function (window)
 
 		this._sorting = sorting;
 
-		this._sortColumns = $('a.sortable');
+		this._sortColumns = $('.sortable');
 		this._sortColumns.on('click', this.updateLink);
 		
 		this._setInitialSorting();
@@ -1190,7 +1190,7 @@ namespace('OUI.Views.List', function (window)
 		
 		var orderData = order.split(',');
 		
-		var elem = $("a.sortable[data-order-by='" + orderData[0] +"']");
+		var elem = $(".sortable[data-order-by='" + orderData[0] +"']");
 		
 		if (elem.length > 0)
 		{
@@ -1266,7 +1266,7 @@ namespace('OUI.Views', function (window)
 		this._container 	= $(container);
 
 		this._input 		= 'input[type="text"]';
-		this._clearButton 	= 'i.toggle-button';
+		this._clearButton 	= '.toggle-button';
 		
 		this._cancelIcon 	= 'icon-cancel-squared';
 		this._searchIcon	= 'icon-search';
@@ -2455,8 +2455,8 @@ namespace('OUI.Views.List', function (window)
 		this._pagination 	= listPagination;
 		this._container 	= $(container);
 
-		this._nextSelector	= 'a[data-next]';
-		this._prevSelector 	= 'a[data-prev]';
+		this._nextSelector	= '[data-next]';
+		this._prevSelector 	= '[data-prev]';
 
 		this._bindEvents();
 		this.render();
@@ -4263,7 +4263,7 @@ namespace('OUI.Views', function (window)
 		this._toggleElement 	= $toggleElement;
 		this._contents 			= contents;
 		this._extraClass 		= extraClass;
-		this._underlay 			= 'div.oui-hover-menu-underlay';
+		this._underlay 			= '.oui-hover-menu-underlay';
 		this._dataAttr			= 'oui-hover-menu';
 		this._positionConfig	= is.false(positionConfig) ? null : positionConfig || {};
 		this._canPersist		= canPersist || false;
@@ -5112,8 +5112,8 @@ namespace('OUI.Views', function (window)
 		this._id 				= id;
 		this._okButtonText 		= okButtonText || 'OK';
 		this._cancelButtonText 	= cancelButtonText || 'Cancel';
-		this._okButton 			= 'a.ok-button';
-		this._cancelButton 		= 'a.cancel-button';
+		this._okButton 			= '.ok-button';
+		this._cancelButton 		= '.cancel-button';
 
 		this._confirmEvent 		= 'keyup.' + id;
 
@@ -5306,7 +5306,7 @@ namespace('OUI.Views', function (window)
 		this._toggleElement 	= toggleElement;
 		this._contents 			= contents;
 		this._extraClass 		= extraClass;
-		this._underlay 			= 'div.oui-menu-underlay';
+		this._underlay 			= '.oui-menu-underlay';
 		this._positionConfig	= positionConfig || {};
 		this._positionClass 	= null;
 
@@ -5325,7 +5325,7 @@ namespace('OUI.Views', function (window)
 	MenuView.prototype._putInPosition = function ()
 	{
 		var $container 	= this.getContainer();
-		var $target 	= $container.find('div.wrapper');
+		var $target 	= $container.find('.wrapper');
 		var $related 	= this._toggleElement;
 		
 		var baseConfig = {
@@ -5405,7 +5405,7 @@ namespace('OUI.Views', function (window)
 
 	this.MenuView = MenuView;
 });
-namespace('OUI.Views', function (window) 
+namespace('OUI.Views', function (window)
 {
 	var is  		= window.Plankton.is;
 	var hbs 		= window.OUI.Core.View.hbs;
@@ -5416,15 +5416,15 @@ namespace('OUI.Views', function (window)
 	/**
 	 * @class OUI.Views.ModalView
 	 */
-	function ModalView(id, contents, className) 
+	function ModalView(id, contents, className)
 	{
 		classify(this);
 
 		className = className || '';
 
 		this._id 			= id;
-		this._underlay 		= 'div.oui-modal-underlay';
-		this._closeButton 	= 'a[data-oui-modal-close]';
+		this._underlay 		= '.oui-modal-underlay';
+		this._closeButton 	= '[data-oui-modal-close]';
 		
 		if (!is(window.OUI.Views.ModalViewIds))
 			window.OUI.Views.ModalViewIds = [];
@@ -5466,7 +5466,7 @@ namespace('OUI.Views', function (window)
 	{
 		var triggerOnEscape = this._triggerOnEscape;
 
-		$(document).on(this._escapeEvent, function (e) 
+		$(document).on(this._escapeEvent, function (e)
 		{
 			if (e.keyCode === 27)
 			{
@@ -5478,13 +5478,13 @@ namespace('OUI.Views', function (window)
 		this.getContainer().on('click', this._underlay, this._onUnderlayClick.trigger);
 	};
 
-	ModalView.prototype.show = function () 
+	ModalView.prototype.show = function ()
 	{
 		$('body').append(hbs('modal', {
 			id: this._id,
 			contents: this._contents,
 			extraClass: this._className
-		}));
+		})).addClass('no-scroll');
 		
 		window.OUI.Views.ModalViewIds.push(this._id);
 
@@ -5501,12 +5501,17 @@ namespace('OUI.Views', function (window)
 			return id !== currentId
 		});
 		
+		if (window.OUI.Views.ModalViewIds.length === 0)
+		{
+			$('body').removeClass('no-scroll');
+		}
+		
 		$(document).off(this._escapeEvent);
 		this.getContainer().remove();
 	};
 
 	ModalView.prototype.hideContainer = function ()
-	{		
+	{
 		this.getContainer().addClass('hiding');
 	};
 
@@ -5685,7 +5690,7 @@ namespace('OUI.Views', function (window)
 
 		this._id 			= toastId;
 		this._delay 		= delay;
-		this._dismissButton = 'a[data-oui-dismiss]';
+		this._dismissButton = '[data-oui-dismiss]';
 		this._ctaLink 		= '.cta-link';
 		
 		this._ctrl			= null;
@@ -5785,7 +5790,7 @@ namespace('OUI.Views', function (window)
 		this._contents 			= contents;
 		this._extraClass 		= extraClass || '';
 
-		this._underlay 			= 'div.oui-tour-tip-underlay';
+		this._underlay 			= '.oui-tour-tip-underlay';
 		this._positionConfig	= positionConfig || {};
 
 		this._onUnderlayClick 	= new Event('TourTipView.onUnderlayClick');
@@ -5795,7 +5800,7 @@ namespace('OUI.Views', function (window)
 	TourTipView.prototype._positionTip = function ()
 	{
 		var $container 	= this.getContainer();
-		var $target 	= $container.find('div.wrapper');
+		var $target 	= $container.find('.wrapper');
 		
 		var baseConfig = {
 			container: 			$container,

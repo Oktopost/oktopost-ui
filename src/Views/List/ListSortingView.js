@@ -13,7 +13,7 @@ namespace('OUI.Views.List', function (window)
 
 		this._sorting = sorting;
 
-		this._sortColumns = $('a.sortable');
+		this._sortColumns = $('.sortable');
 		this._sortColumns.on('click', this.updateLink);
 		
 		this._setInitialSorting();
@@ -29,7 +29,7 @@ namespace('OUI.Views.List', function (window)
 		
 		var orderData = order.split(',');
 		
-		var elem = $("a.sortable[data-order-by='" + orderData[0] +"']");
+		var elem = $(".sortable[data-order-by='" + orderData[0] +"']");
 		
 		if (elem.length > 0)
 		{

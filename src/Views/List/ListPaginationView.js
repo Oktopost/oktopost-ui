@@ -15,8 +15,8 @@ namespace('OUI.Views.List', function (window)
 		this._pagination 	= listPagination;
 		this._container 	= $(container);
 
-		this._nextSelector	= 'a[data-next]';
-		this._prevSelector 	= 'a[data-prev]';
+		this._nextSelector	= '[data-next]';
+		this._prevSelector 	= '[data-prev]';
 
 		this._bindEvents();
 		this.render();

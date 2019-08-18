@@ -13,7 +13,7 @@ namespace('OUI.Views', function (window)
 		this._container 	= $(container);
 
 		this._input 		= 'input[type="text"]';
-		this._clearButton 	= 'i.toggle-button';
+		this._clearButton 	= '.toggle-button';
 		
 		this._cancelIcon 	= 'icon-cancel-squared';
 		this._searchIcon	= 'icon-search';

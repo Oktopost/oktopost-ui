@@ -21,7 +21,7 @@ namespace('OUI.Views', function (window)
 		this._toggleElement 	= $toggleElement;
 		this._contents 			= contents;
 		this._extraClass 		= extraClass;
-		this._underlay 			= 'div.oui-hover-menu-underlay';
+		this._underlay 			= '.oui-hover-menu-underlay';
 		this._dataAttr			= 'oui-hover-menu';
 		this._positionConfig	= is.false(positionConfig) ? null : positionConfig || {};
 		this._canPersist		= canPersist || false;

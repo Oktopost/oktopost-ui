@@ -19,7 +19,7 @@ namespace('OUI.Views', function (window)
 
 		this._id 			= toastId;
 		this._delay 		= delay;
-		this._dismissButton = 'a[data-oui-dismiss]';
+		this._dismissButton = '[data-oui-dismiss]';
 		this._ctaLink 		= '.cta-link';
 		
 		this._ctrl			= null;

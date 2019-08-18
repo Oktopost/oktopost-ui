@@ -1,4 +1,4 @@
-namespace('OUI.Views', function (window) 
+namespace('OUI.Views', function (window)
 {
 	var is  		= window.Plankton.is;
 	var hbs 		= window.OUI.Core.View.hbs;
@@ -9,15 +9,15 @@ namespace('OUI.Views', function (window)
 	/**
 	 * @class OUI.Views.ModalView
 	 */
-	function ModalView(id, contents, className) 
+	function ModalView(id, contents, className)
 	{
 		classify(this);
 
 		className = className || '';
 
 		this._id 			= id;
-		this._underlay 		= 'div.oui-modal-underlay';
-		this._closeButton 	= 'a[data-oui-modal-close]';
+		this._underlay 		= '.oui-modal-underlay';
+		this._closeButton 	= '[data-oui-modal-close]';
 		
 		if (!is(window.OUI.Views.ModalViewIds))
 			window.OUI.Views.ModalViewIds = [];
@@ -59,7 +59,7 @@ namespace('OUI.Views', function (window)
 	{
 		var triggerOnEscape = this._triggerOnEscape;
 
-		$(document).on(this._escapeEvent, function (e) 
+		$(document).on(this._escapeEvent, function (e)
 		{
 			if (e.keyCode === 27)
 			{
@@ -71,13 +71,13 @@ namespace('OUI.Views', function (window)
 		this.getContainer().on('click', this._underlay, this._onUnderlayClick.trigger);
 	};
 
-	ModalView.prototype.show = function () 
+	ModalView.prototype.show = function ()
 	{
 		$('body').append(hbs('modal', {
 			id: this._id,
 			contents: this._contents,
 			extraClass: this._className
-		}));
+		})).addClass('no-scroll');
 		
 		window.OUI.Views.ModalViewIds.push(this._id);
 
@@ -94,12 +94,17 @@ namespace('OUI.Views', function (window)
 			return id !== currentId
 		});
 		
+		if (window.OUI.Views.ModalViewIds.length === 0)
+		{
+			$('body').removeClass('no-scroll');
+		}
+		
 		$(document).off(this._escapeEvent);
 		this.getContainer().remove();
 	};
 
 	ModalView.prototype.hideContainer = function ()
-	{		
+	{
 		this.getContainer().addClass('hiding');
 	};
 

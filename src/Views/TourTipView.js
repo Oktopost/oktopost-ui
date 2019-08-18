@@ -20,7 +20,7 @@ namespace('OUI.Views', function (window)
 		this._contents 			= contents;
 		this._extraClass 		= extraClass || '';
 
-		this._underlay 			= 'div.oui-tour-tip-underlay';
+		this._underlay 			= '.oui-tour-tip-underlay';
 		this._positionConfig	= positionConfig || {};
 
 		this._onUnderlayClick 	= new Event('TourTipView.onUnderlayClick');
@@ -30,7 +30,7 @@ namespace('OUI.Views', function (window)
 	TourTipView.prototype._positionTip = function ()
 	{
 		var $container 	= this.getContainer();
-		var $target 	= $container.find('div.wrapper');
+		var $target 	= $container.find('.wrapper');
 		
 		var baseConfig = {
 			container: 			$container,

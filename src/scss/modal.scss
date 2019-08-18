@@ -3,7 +3,7 @@
 @import 'mixin';
 
 
-div.oui-modal {
+.oui-modal {
 	@include fixed-layer(100);
 
 	display: flex;
@@ -12,14 +12,14 @@ div.oui-modal {
 	overflow-y: auto;
 	transition: opacity 0.2s;
 
-	div.oui-modal-underlay {
+	.oui-modal-underlay {
 		@include fixed-layer(90);
 		
 		transition: opacity 0.2s;
 		background-color: rgba(0, 31, 45, 0.6);
 	}
 
-	div.wrapper {
+	.wrapper {
 		position: relative;
 		box-sizing: border-box;
 		width: 50%;
@@ -34,7 +34,7 @@ div.oui-modal {
 		max-width: 720px;
 		transition: transform 0.3s, opacity 0.3s;
 
-		div.head {
+		.head {
 			background-color: $colorLightGrey;
 			padding: 15px 25px;
 			display: flex;
@@ -42,13 +42,13 @@ div.oui-modal {
 			align-items: center;
 		}
 
-		div.body {
+		.body {
 			padding: 25px;
 			max-height: 50vh;
 			overflow-y: auto;
 		}
 
-		div.footer {
+		.footer {
 			padding: 15px 25px;
 			border-top: 1px solid #eee;
 			display: flex;
@@ -59,7 +59,7 @@ div.oui-modal {
 	&.from-right, &.big {
 		justify-content: flex-end;
 
-		div.wrapper {
+		.wrapper {
 			display: flex;
 			flex-direction: column;
 			height: 100%;			
@@ -70,12 +70,12 @@ div.oui-modal {
 			transition-duration: 0.5s;
 
 
-			div.head {
+			.head {
 				min-height: 55px;
 				box-sizing: border-box;
 			}
 			
-			div.body {
+			.body {
 				max-height: none;
 				flex-grow: 2;
 			}
@@ -83,31 +83,31 @@ div.oui-modal {
 	}
 
 	&.from-bottom {
-		div.wrapper {
+		.wrapper {
 			animation: fadeInBottom 0.5s;
 		}
 	}
 
 	&.hiding {
-		div.wrapper {
+		.wrapper {
 			opacity: 0;
 			transform: scale(0.25);
 		}
 
-		&.from-right div.wrapper, &.big div.wrapper {
+		&.from-right .wrapper, &.big .wrapper {
 			transform: translate(100%, 0);
 		}
 
-		&.from-bottom div.wrapper {
+		&.from-bottom .wrapper {
 			transform: translate(0, 100%);
 		}
 
-		div.oui-modal-underlay {
+		.oui-modal-underlay {
 			opacity: 0;
 		}
 	}
 
-	a.close {
+	.close {
 		&:link,
 		&:visited {
 		    color: $colorDarkGrey;
@@ -125,34 +125,34 @@ div.oui-modal {
 }
 
 @media only screen and (max-width: $tabletWidth) {
-	div.oui-modal {
+	.oui-modal {
 		align-items: initial;
 		justify-content: flex-start;
 
-		div.wrapper, &.big div.wrapper, &.from-right div.wrapper {
+		.wrapper, &.big .wrapper, &.from-right .wrapper {
 			box-shadow: none;
 			width: 100%;
 			min-width: 100%;
 			max-width: 100%;
 		}
 
-		div.wrapper {
+		.wrapper {
 			flex-direction: column;
 			border-radius: 0;
 			animation: fadeInRight 0.5s;
 
-			div.body {
+			.body {
 				max-height: none;
 				flex-grow: 2;
 			}
 		}
 
 		&.hiding {
-			div.wrapper {
+			.wrapper {
 				transform: translate(100%, 0);
 			}
 
-			&.from-bottom div.wrapper {
+			&.from-bottom .wrapper {
 				transform: translate(0, 100%);
 			}
 		}

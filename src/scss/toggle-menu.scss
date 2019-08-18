@@ -2,14 +2,14 @@
 @import 'mixin';
 
 
-div.oui-toggle-menu {
+.oui-toggle-menu {
 	@include fixed-layer(100);
 
-	div.oui-toggle-menu-underlay {
+	.oui-toggle-menu-underlay {
 		@include fixed-layer(90);
 	}
 
-	div.wrapper {
+	.wrapper {
 		position: absolute;
 	    background-color: white;
 	    border-radius: 3px;

@@ -2,7 +2,7 @@
 @import 'vars';
 
 
-div.oui-toast {
+.oui-toast {
 	display: flex;
 	justify-content: center;
 	position: fixed;
@@ -26,7 +26,7 @@ div.oui-toast {
 		color: white;
 	}
 
-	a.cta-link:not(:empty) {
+	.cta-link:not(:empty) {
 		&:link,
 		&:visited {
 			margin-left: 15px;
@@ -47,14 +47,14 @@ div.oui-toast {
 
 
 @media only screen and (max-width: $minScreenWidth) {
-	div.oui-toast {
+	.oui-toast {
 		max-width: initial;
     	width: 66%;
 	}
 }
 
 @media only screen and (max-width: $tabletWidth) {
-	div.oui-toast {
+	.oui-toast {
 		max-width: initial;
     	width: 80%;
 	}

@@ -21,7 +21,7 @@ namespace('OUI.Views', function (window)
 		this._toggleElement 	= toggleElement;
 		this._contents 			= contents;
 		this._extraClass 		= extraClass;
-		this._underlay 			= 'div.oui-toggle-menu-underlay';
+		this._underlay 			= '.oui-toggle-menu-underlay';
 		this._positionConfig	= positionConfig || {};
 		this._positionClass 	= null;
 		
@@ -40,7 +40,7 @@ namespace('OUI.Views', function (window)
 	ToggleMenuView.prototype._putInPosition = function ()
 	{
 		var $container 	= this.getContainer();
-		var $target 	= $container.find('div.wrapper');
+		var $target 	= $container.find('.wrapper');
 		var $related 	= this._toggleElement;
 		
 		var baseConfig = {
