@@ -49,6 +49,20 @@ namespace('OUI.Views', function (window)
 		this._onEscape.trigger();
 	};
 	
+	ModalView.prototype._switchBodyScroll = function ()
+	{
+		var modals = $('.oui-modal-underlay').length;
+		
+		if (modals === 0)
+		{
+			$('body').removeClass('no-scroll');
+		}
+		else
+		{
+			$('body').addClass('no-scroll');
+		}
+	};
+	
 
 	ModalView.prototype.getContainer = function ()
 	{
@@ -77,12 +91,13 @@ namespace('OUI.Views', function (window)
 			id: this._id,
 			contents: this._contents,
 			extraClass: this._className
-		})).addClass('no-scroll');
+		}));
 		
 		window.OUI.Views.ModalViewIds.push(this._id);
 
 		this.bindEvents();
 		this.getContainer().focus();
+		this._switchBodyScroll();
 	};
 
 	ModalView.prototype.remove = function ()
@@ -93,14 +108,10 @@ namespace('OUI.Views', function (window)
 		{
 			return id !== currentId
 		});
-		
-		if (window.OUI.Views.ModalViewIds.length === 0)
-		{
-			$('body').removeClass('no-scroll');
-		}
-		
+
 		$(document).off(this._escapeEvent);
 		this.getContainer().remove();
+		this._switchBodyScroll();
 	};
 
 	ModalView.prototype.hideContainer = function ()
