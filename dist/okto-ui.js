@@ -5503,8 +5503,12 @@ namespace('OUI.Views', function (window)
 		window.OUI.Views.ModalViewIds.push(this._id);
 
 		this.bindEvents();
-		this.getContainer().focus();
 		this._switchBodyScroll();
+	};
+	
+	ModalView.prototype.focus = function()
+	{
+		this.getContainer().focus();
 	};
 
 	ModalView.prototype.remove = function ()
@@ -6445,6 +6449,7 @@ namespace('OUI.Components', function (window)
 		
 		setTimeout(function ()
 		{
+			this._view.focus();
 			this._onAfterOpenComplete.trigger(this._view.getContainer());
 		}.bind(this), 
 		this._animationDelay);

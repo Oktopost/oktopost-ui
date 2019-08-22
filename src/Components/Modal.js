@@ -107,6 +107,7 @@ namespace('OUI.Components', function (window)
 		
 		setTimeout(function ()
 		{
+			this._view.focus();
 			this._onAfterOpenComplete.trigger(this._view.getContainer());
 		}.bind(this), 
 		this._animationDelay);
