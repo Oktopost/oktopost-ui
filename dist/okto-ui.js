@@ -5408,6 +5408,7 @@ namespace('OUI.Views', function (window)
 namespace('OUI.Views', function (window)
 {
 	var is  		= window.Plankton.is;
+	var foreach		= window.Plankton.foreach;
 	var hbs 		= window.OUI.Core.View.hbs;
 	var classify 	= window.Classy.classify;
 	var Event 		= window.Duct.Event;
@@ -5470,6 +5471,38 @@ namespace('OUI.Views', function (window)
 		}
 	};
 	
+	ModalView.prototype._getHTML = function()
+	{
+		var options = {
+			id: this._id,
+			contents: '',
+			extraClass: this._className
+		};
+		
+		if (is.string(this._contents))
+		{
+			options.contents = this._contents;
+			return hbs('modal', options);
+		}
+		
+		var parentWrapper = document.createElement('div');
+		parentWrapper.innerHTML = hbs('modal', options);
+		
+		if (is.array(this._contents))
+		{
+			foreach(this._contents, function (child)
+			{
+				parentWrapper.querySelector('.wrapper').appendChild(child);
+			})
+		}
+		else
+		{
+			parentWrapper.querySelector('.wrapper').appendChild(this._contents);
+		}
+		
+		return parentWrapper.children[0];
+	};
+	
 
 	ModalView.prototype.getContainer = function ()
 	{
@@ -5494,11 +5527,7 @@ namespace('OUI.Views', function (window)
 
 	ModalView.prototype.show = function ()
 	{
-		$('body').append(hbs('modal', {
-			id: this._id,
-			contents: this._contents,
-			extraClass: this._className
-		}));
+		$('body').append(this._getHTML());
 		
 		window.OUI.Views.ModalViewIds.push(this._id);
 
