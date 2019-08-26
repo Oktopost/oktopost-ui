@@ -72,6 +72,11 @@ namespace('OUI.Views', function (window)
 			extraClass: this._className
 		};
 		
+		if (!is(this._contents))
+		{
+			return hbs('modal', options);
+		}
+		
 		if (is.string(this._contents))
 		{
 			options.contents = this._contents;
