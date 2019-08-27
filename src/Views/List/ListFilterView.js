@@ -17,6 +17,11 @@ namespace('OUI.Views.List', function (window)
 		
 		this._el.val(value);
 		
+		if (this._el.hasClass("select2-hidden-accessible"))
+		{
+			this._el.trigger('change');
+		}
+		
 		var self = this;
 		
 		this._el.on('change', function ()
