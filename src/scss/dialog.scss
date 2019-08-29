@@ -22,23 +22,12 @@
 			padding: 0 20px 20px 20px;
 			border-top: 0;
 
-			a,
 			button {
-				color: $colorBlue;
 				text-transform: uppercase;
 				margin-left: 1rem;
 				font-weight: bold;
 				display: inline-block;
 				padding: 0 5px;
-
-				&:visited {
-					color: $colorBlue;
-				}
-
-				&:hover,
-				&:focus {
-					color: lighten($colorBlue, 15%);
-				}
 			}
 		}
 	}

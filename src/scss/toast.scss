@@ -27,15 +27,17 @@
 	}
 
 	.cta-link:not(:empty) {
-		&:link,
+		margin-left: 15px;
+		font-weight: bold;
+		color: #96ceff;
+		white-space: nowrap;
+
 		&:visited {
-			margin-left: 15px;
-			font-weight: bold;
 			color: #96ceff;
-			white-space: nowrap;
 		}
 
-		&:hover {
+		&:hover,
+		&:focus {
 			text-decoration: underline;
 		}
 	}

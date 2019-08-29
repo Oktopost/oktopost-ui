@@ -9,7 +9,7 @@
 	}
 
 	.video-spinner {
-		margin: 20px auto;
+		margin: auto;
 
 		&.hidden {
 			display: none;
@@ -25,6 +25,7 @@
 
 		svg {
 			width: 20%;
+			fill: white;
 		}
 
 		&.hidden {

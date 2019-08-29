@@ -108,13 +108,14 @@
 	}
 
 	.close {
-		&:link,
+		color: $colorDarkGrey;
+		cursor: pointer;
+		transition: 0.2s ease-in-out;
+		font-size: 1.1333rem;
+		line-height: 1.1333rem;
+
 		&:visited {
-		    color: $colorDarkGrey;
-		    cursor: pointer;
-		    transition: 0.2s ease-in-out;
-		    font-size: 1.1333rem;
-		    line-height: 1.1333rem;
+			color: $colorDarkGrey;
 		}
 
 		&:hover {

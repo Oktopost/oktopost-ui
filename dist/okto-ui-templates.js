@@ -8,11 +8,11 @@ this["OUI"]["templates"]["dialog"]["hbs"] = Handlebars.template({"compiler":[6,"
     + alias3(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"id","hash":{},"data":data}) : helper)))
     + "\" tabindex=\"1\">\n	<div class=\"wrapper\">\n		<div class=\"body\">\n			<p>"
     + alias3(((helper = (helper = helpers.message || (depth0 != null ? depth0.message : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"message","hash":{},"data":data}) : helper)))
-    + "</p>\n		</div>\n		<div class=\"footer\">\n			<a href=\"\" class=\"ok-button\">"
+    + "</p>\n		</div>\n		<div class=\"footer\">\n			<button type=\"button\" class=\"ok-button\">"
     + alias3(((helper = (helper = helpers.okButtonText || (depth0 != null ? depth0.okButtonText : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"okButtonText","hash":{},"data":data}) : helper)))
-    + "</a>\n			<a href=\"\" class=\"cancel-button\">"
+    + "</button>\n			<button type=\"button\" class=\"cancel-button\">"
     + alias3(((helper = (helper = helpers.cancelButtonText || (depth0 != null ? depth0.cancelButtonText : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"cancelButtonText","hash":{},"data":data}) : helper)))
-    + "</a>\n		</div>\n	</div>\n	<div class=\"oui-modal-underlay\"></div>\n</div>";
+    + "</button>\n		</div>\n	</div>\n	<div class=\"oui-modal-underlay\"></div>\n</div>";
 },"useData":true});
 this["OUI"]["templates"]["hover-menu"] = this["OUI"]["templates"]["hover-menu"] || {};
 this["OUI"]["templates"]["hover-menu"]["hbs"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
@@ -64,13 +64,13 @@ this["OUI"]["templates"]["pagination"]["hbs"] = Handlebars.template({"1":functio
     + alias3(((helper = (helper = helpers.total || (depth0 != null ? depth0.total : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"total","hash":{},"data":data}) : helper)))
     + "</b>\n</div>\n<a \n	href=\""
     + alias3(((helper = (helper = helpers.prevPageLink || (depth0 != null ? depth0.prevPageLink : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"prevPageLink","hash":{},"data":data}) : helper)))
-    + "\" \n	class=\"button paginate "
+    + "\" \n	class=\"button "
     + ((stack1 = helpers.unless.call(depth0,(depth0 != null ? depth0.hasPrevPage : depth0),{"name":"unless","hash":{},"fn":this.program(1, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
-    + "\" \n	data-prev>\n	<i class=\"icon-left-open\"></i>\n</a>\n<a \n	href=\""
+    + "\"\n	data-prev>\n	<i class=\"icon-left-open\"></i>\n</a>\n<a \n	href=\""
     + alias3(((helper = (helper = helpers.nextPageLink || (depth0 != null ? depth0.nextPageLink : depth0)) != null ? helper : alias1),(typeof helper === alias2 ? helper.call(depth0,{"name":"nextPageLink","hash":{},"data":data}) : helper)))
-    + "\" \n	class=\"button paginate "
+    + "\" \n	class=\"button "
     + ((stack1 = helpers.unless.call(depth0,(depth0 != null ? depth0.hasNextPage : depth0),{"name":"unless","hash":{},"fn":this.program(1, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
-    + "\" \n	data-next>\n	<i class=\"icon-right-open\"></i>\n</a>";
+    + "\"\n	data-next>\n	<i class=\"icon-right-open\"></i>\n</a>";
 },"useData":true});
 this["OUI"]["templates"]["search-form"] = this["OUI"]["templates"]["search-form"] || {};
 this["OUI"]["templates"]["search-form"]["hbs"] = Handlebars.template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
@@ -152,5 +152,5 @@ this["OUI"]["templates"]["video"]["hbs"] = Handlebars.template({"1":function(dep
     + ((stack1 = helpers['if'].call(depth0,(depth0 != null ? depth0.sources : depth0),{"name":"if","hash":{},"fn":this.program(1, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
     + "\n	<div class=\"video-spinner\"></div>\n	<div class=\"video-error hidden\"><span>Unable to play video</span></div>\n\n	<div \n"
     + ((stack1 = helpers['if'].call(depth0,(depth0 != null ? depth0.preview : depth0),{"name":"if","hash":{},"fn":this.program(6, data, 0),"inverse":this.noop,"data":data})) != null ? stack1 : "")
-    + "		class=\"video-preview hidden\">\n			<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 60 72\"><path opacity=\".8\" fill=\"#1DA1F2\" d=\"M30 12C16.768 12 6 22.765 6 36s10.766 23.998 24 23.998 24-10.765 24-24S43.235 12 30 12z\"/><path fill=\"#FFF\" d=\"M39.2 34.34l-12-9c-.606-.455-1.418-.528-2.094-.19-.677.34-1.106 1.032-1.106 1.79v18c0 .758.428 1.45 1.106 1.79.283.14.59.21.894.21.425 0 .847-.136 1.2-.4l12-9c.503-.377.8-.97.8-1.6 0-.63-.295-1.223-.8-1.6z\"/><path fill=\"#FFF\" d=\"M30 15c11.598 0 21 9.402 21 21s-9.4 20.998-21 20.998-21-9.402-21-21S18.4 15 30 15m0-6C15.112 9 3 21.11 3 36s12.112 26.998 27 26.998 27-12.11 27-27S44.888 9 30 9z\"/></svg>\n	</div>	\n</div>";
+    + "		class=\"video-preview hidden\">\n		<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"><path d=\"M8 5v14l11-7z\"/><path d=\"M0 0h24v24H0z\" fill=\"none\"/></svg>\n	</div>	\n</div>";
 },"useData":true});
