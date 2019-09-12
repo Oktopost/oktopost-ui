@@ -47,9 +47,9 @@ namespace('OUI.Components.List', function (window)
 		this._onClick.add(callback);
 	};
 
-	ListItems.prototype.render = function (items, template) 
+	ListItems.prototype.render = function (items, template, extraKey, extraParams) 
 	{		
-		this._view.render(items, template);
+		this._view.render(items, template, extraKey, extraParams);
 		this._onRender.trigger(this.getContainer());
 	};
 

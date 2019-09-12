@@ -35,6 +35,8 @@ namespace('OUI.Components.List', function (window)
 		this._nullstate 	= null;
 		this._sorting 		= null;
 		this._filter		= null;
+		this._extraKey		= null;
+		this._extraParams	= null;
 		this._container		= new ListItemsContainer();
 		
 		this._nullstateParams = {};
@@ -188,6 +190,12 @@ namespace('OUI.Components.List', function (window)
 		this._template = template;
 	};
 	
+	ListMediator.prototype.setItemsExtraParams = function (key, params)
+	{
+		this._extraKey		= key;
+		this._extraParams 	= params;
+	};
+	
 	/**
 	 * @return {ListItemsContainer}
 	 */
@@ -213,10 +221,11 @@ namespace('OUI.Components.List', function (window)
 		this._items.setContainer(container);
 	};
 
-	ListMediator.prototype.setItems = function (container, template)
+	ListMediator.prototype.setItems = function (container, template, extraKey, extraParams)
 	{
 		this._items = new ListItems(container);
 		this.setItemsTemplate(template);
+		this.setItemsExtraParams(extraKey, extraParams);
 	};
 
 	ListMediator.prototype.setNullstate = function (container, template, params)
@@ -351,7 +360,7 @@ namespace('OUI.Components.List', function (window)
 		else
 		{
 			this._isNullstate = false;
-			this._items.render(this.getItems(), this._template);	
+			this._items.render(this.getItems(), this._template, this._extraKey, this._extraParams);	
 		}
 
 		this._onAfterRender.trigger(this.getData());

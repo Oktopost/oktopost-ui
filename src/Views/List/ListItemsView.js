@@ -48,7 +48,7 @@ namespace('OUI.Views.List', function (window)
 		return this._container;
 	};
 
-	ListItemsView.prototype.render = function (items, template)
+	ListItemsView.prototype.render = function (items, template, extraKey, extraParams)
 	{
 		var container = this._container;
 
@@ -57,6 +57,11 @@ namespace('OUI.Views.List', function (window)
 		
 		foreach(items, function (item) 
 		{
+			if (is.string.notEmpty(extraKey))
+			{
+				item[extraKey] = extraParams;
+			}
+			
 			container.append(template.hbs(item));
 		});
 		

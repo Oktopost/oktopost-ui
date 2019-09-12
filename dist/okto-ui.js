@@ -5230,7 +5230,7 @@ namespace('OUI.Views.List', function (window)
 		return this._container;
 	};
 
-	ListItemsView.prototype.render = function (items, template)
+	ListItemsView.prototype.render = function (items, template, extraKey, extraParams)
 	{
 		var container = this._container;
 
@@ -5239,6 +5239,11 @@ namespace('OUI.Views.List', function (window)
 		
 		foreach(items, function (item) 
 		{
+			if (is.string.notEmpty(extraKey))
+			{
+				item[extraKey] = extraParams;
+			}
+			
 			container.append(template.hbs(item));
 		});
 		
@@ -6174,9 +6179,9 @@ namespace('OUI.Components.List', function (window)
 		this._onClick.add(callback);
 	};
 
-	ListItems.prototype.render = function (items, template) 
+	ListItems.prototype.render = function (items, template, extraKey, extraParams) 
 	{		
-		this._view.render(items, template);
+		this._view.render(items, template, extraKey, extraParams);
 		this._onRender.trigger(this.getContainer());
 	};
 
@@ -6776,6 +6781,8 @@ namespace('OUI.Components.List', function (window)
 		this._nullstate 	= null;
 		this._sorting 		= null;
 		this._filter		= null;
+		this._extraKey		= null;
+		this._extraParams	= null;
 		this._container		= new ListItemsContainer();
 		
 		this._nullstateParams = {};
@@ -6929,6 +6936,12 @@ namespace('OUI.Components.List', function (window)
 		this._template = template;
 	};
 	
+	ListMediator.prototype.setItemsExtraParams = function (key, params)
+	{
+		this._extraKey		= key;
+		this._extraParams 	= params;
+	};
+	
 	/**
 	 * @return {ListItemsContainer}
 	 */
@@ -6954,10 +6967,11 @@ namespace('OUI.Components.List', function (window)
 		this._items.setContainer(container);
 	};
 
-	ListMediator.prototype.setItems = function (container, template)
+	ListMediator.prototype.setItems = function (container, template, extraKey, extraParams)
 	{
 		this._items = new ListItems(container);
 		this.setItemsTemplate(template);
+		this.setItemsExtraParams(extraKey, extraParams);
 	};
 
 	ListMediator.prototype.setNullstate = function (container, template, params)
@@ -7092,7 +7106,7 @@ namespace('OUI.Components.List', function (window)
 		else
 		{
 			this._isNullstate = false;
-			this._items.render(this.getItems(), this._template);	
+			this._items.render(this.getItems(), this._template, this._extraKey, this._extraParams);	
 		}
 
 		this._onAfterRender.trigger(this.getData());
