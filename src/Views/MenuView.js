@@ -70,6 +70,53 @@ namespace('OUI.Views', function (window)
 		this._positionClass = pos.name;
 		$target.addClass(pos.name);
 	};
+	
+	MenuView.prototype._getHTML = function()
+	{
+		var options = {
+			id: this._id,
+			contents: '',
+			extraClass: this._extraClass
+		};
+		
+		if (!is(this._contents))
+		{
+			return hbs('menu', options);
+		}
+		
+		if (is.string(this._contents))
+		{
+			options.contents = this._contents;
+			return hbs('menu', options);
+		}
+		
+		var parentWrapper = document.createElement('div');
+		parentWrapper.innerHTML = hbs('menu', options);
+		
+		if (is.array(this._contents))
+		{
+			foreach(this._contents, function (child)
+			{
+				parentWrapper.querySelector('.wrapper').appendChild(child);
+			})
+		}
+		else if (is.object(this._contents) && is.defined(this._contents.length))
+		{
+			foreach.pair(this._contents, function (idx, child)
+			{
+				if (idx === 'length')
+					return true;
+				
+				parentWrapper.querySelector('.wrapper').appendChild(child);
+			})
+		}
+		else
+		{
+			parentWrapper.querySelector('.wrapper').appendChild(this._contents);
+		}
+		
+		return parentWrapper.children[0];
+	};
 
 
 	MenuView.prototype.getContainer = function ()
@@ -89,12 +136,7 @@ namespace('OUI.Views', function (window)
 
 	MenuView.prototype.show = function ()
 	{
-		$('body').append(hbs('menu', 
-		{
-			id: this._id,
-			contents: this._contents,
-			extraClass: this._extraClass
-		}));
+		$('body').append(this._getHTML());
 	
 		this._putInPosition();
 

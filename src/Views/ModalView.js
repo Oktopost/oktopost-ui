@@ -93,6 +93,16 @@ namespace('OUI.Views', function (window)
 				parentWrapper.querySelector('.wrapper').appendChild(child);
 			})
 		}
+		else if (is.object(this._contents) && is.defined(this._contents.length))
+		{
+			foreach.pair(this._contents, function (idx, child)
+			{
+				if (idx === 'length')
+					return true;
+				
+				parentWrapper.querySelector('.wrapper').appendChild(child);
+			})
+		}
 		else
 		{
 			parentWrapper.querySelector('.wrapper').appendChild(this._contents);
