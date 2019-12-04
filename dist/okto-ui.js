@@ -1054,6 +1054,46 @@ namespace('OUI.Core.Pos', function (window)
 	
 	this.Point = Point;
 });
+namespace('OUI.Views', function (window)
+{
+	var classify = window.Classy.classify;
+	
+	
+	var EscapeEventContainer = function()
+	{
+		classify(this);
+		
+		if (!is(window.OUI.Views.EscapeContainer))
+			window.OUI.Views.EscapeContainer = [];
+	};
+	
+	
+	EscapeEventContainer.prototype.add = function (id)
+	{
+		window.OUI.Views.EscapeContainer.push(id);
+	};
+	
+	EscapeEventContainer.prototype.isLastId = function (id)
+	{
+		return id === window.OUI.Views.EscapeContainer[window.OUI.Views.EscapeContainer.length - 1];
+	};
+	
+	EscapeEventContainer.prototype.remove = function (currentId)
+	{
+		window.OUI.Views.EscapeContainer = window.OUI.Views.EscapeContainer.filter(function (id)
+		{
+			return id !== currentId
+		});
+	};
+	
+	EscapeEventContainer.prototype.isEmpty = function()
+	{
+		return window.OUI.Views.EscapeContainer.length === 0;
+	};
+	
+	
+	this.EscapeEventContainer = EscapeEventContainer;
+});
 namespace('OUI.Views', function (window) 
 {
 	var classify = window.Classy.classify;
@@ -5299,6 +5339,8 @@ namespace('OUI.Views', function (window)
 	var ConfigurablePosition	= window.OUI.Core.Pos.Prepared.ConfigurablePosition;
 	var TargetPosition			= window.OUI.Core.Pos.Enum.TargetPosition;
 	var TargetSide				= window.OUI.Core.Pos.Enum.TargetSide;
+	
+	var EscapeEventContainer	= window.OUI.Views.EscapeEventContainer;
 
 
 	function MenuView(id, toggleElement, contents, extraClass, positionConfig)
@@ -5314,13 +5356,33 @@ namespace('OUI.Views', function (window)
 		this._underlay 			= '.oui-menu-underlay';
 		this._positionConfig	= positionConfig || {};
 		this._positionClass 	= null;
-
+		
+		this._escapeContainer = new EscapeEventContainer();
+		
+		this._escapeEvent	 	= 'keyup.' + id;
+		
 		this._onOpenClick 	= new Event('MenuView.onOpenClick');
 		this._onCloseClick 	= new Event('MenuView.onCloseClick');
 
 		this._toggleElement.on('click.' + id, this._onOpenClick.trigger);
 	}
-
+	
+	
+	MenuView.prototype._triggerOnEscape = function()
+	{
+		if (this._escapeContainer.isEmpty())
+		{
+			this._onCloseClick.trigger();
+			return;
+		}
+		
+		if (!this._escapeContainer.isLastId(this._id))
+		{
+			return;
+		}
+		
+		this._onCloseClick.trigger();
+	};
 	
 	MenuView.prototype._unbindOpen = function () 
 	{
@@ -5417,7 +5479,10 @@ namespace('OUI.Views', function (window)
 	MenuView.prototype.remove = function (unbindEvent)
 	{
 		this.getContainer().remove();
-
+		
+		this._escapeContainer.remove(this._id);
+		$(document).off(this._escapeEvent);
+		
 		if (unbindEvent)
 		{
 			this._unbindOpen();
@@ -5429,9 +5494,21 @@ namespace('OUI.Views', function (window)
 		$('body').append(this._getHTML());
 	
 		this._putInPosition();
-
+		
+		this._escapeContainer.add(this._id);
+		
 		this.getContainer().on('click.' + this._id, this._underlay, this._onCloseClick.trigger);
 		this.getContainer().focus();
+		
+		var triggerOnEscape = this._triggerOnEscape;
+		
+		$(document).on(this._escapeEvent, function (e)
+		{
+			if (e.keyCode === 27)
+			{
+				triggerOnEscape();
+			}
+		});
 	};
 	
 	MenuView.prototype.refreshPosition = function ()
@@ -5460,6 +5537,8 @@ namespace('OUI.Views', function (window)
 	var classify 	= window.Classy.classify;
 	var Event 		= window.Duct.Event;
 
+	var EscapeEventContainer	= window.OUI.Views.EscapeEventContainer;
+
 
 	/**
 	 * @class OUI.Views.ModalView
@@ -5474,8 +5553,7 @@ namespace('OUI.Views', function (window)
 		this._underlay 		= '.oui-modal-underlay';
 		this._closeButton 	= '[data-oui-modal-close]';
 		
-		if (!is(window.OUI.Views.ModalViewIds))
-			window.OUI.Views.ModalViewIds = [];
+		this._escapeContainer = new EscapeEventContainer();
 		
 		this._escapeEvent 	= 'keyup.' + id;
 
@@ -5490,15 +5568,13 @@ namespace('OUI.Views', function (window)
 	
 	ModalView.prototype._triggerOnEscape = function()
 	{
-		if (window.OUI.Views.ModalViewIds.length === 0)
+		if (this._escapeContainer.isEmpty())
 		{
 			this._onEscape.trigger();
 			return;
 		}
 		
-		var lastId = window.OUI.Views.ModalViewIds[window.OUI.Views.ModalViewIds.length - 1];
-		
-		if (lastId !== this._id)
+		if (!this._escapeContainer.isLastId(this._id))
 			return;
 		
 		this._onEscape.trigger();
@@ -5591,7 +5667,7 @@ namespace('OUI.Views', function (window)
 	{
 		$('body').append(this._getHTML());
 		
-		window.OUI.Views.ModalViewIds.push(this._id);
+		this._escapeContainer.add(this._id);
 
 		this.bindEvents();
 		this._switchBodyScroll();
@@ -5604,12 +5680,7 @@ namespace('OUI.Views', function (window)
 
 	ModalView.prototype.remove = function ()
 	{
-		var currentId = this._id;
-		
-		window.OUI.Views.ModalViewIds = window.OUI.Views.ModalViewIds.filter(function (id)
-		{
-			return id !== currentId
-		});
+		this._escapeContainer.remove(this._id);
 
 		$(document).off(this._escapeEvent);
 		this.getContainer().remove();

@@ -9,6 +9,8 @@ namespace('OUI.Views', function (window)
 	var ConfigurablePosition	= window.OUI.Core.Pos.Prepared.ConfigurablePosition;
 	var TargetPosition			= window.OUI.Core.Pos.Enum.TargetPosition;
 	var TargetSide				= window.OUI.Core.Pos.Enum.TargetSide;
+	
+	var EscapeEventContainer	= window.OUI.Views.EscapeEventContainer;
 
 
 	function MenuView(id, toggleElement, contents, extraClass, positionConfig)
@@ -24,13 +26,33 @@ namespace('OUI.Views', function (window)
 		this._underlay 			= '.oui-menu-underlay';
 		this._positionConfig	= positionConfig || {};
 		this._positionClass 	= null;
-
+		
+		this._escapeContainer = new EscapeEventContainer();
+		
+		this._escapeEvent	 	= 'keyup.' + id;
+		
 		this._onOpenClick 	= new Event('MenuView.onOpenClick');
 		this._onCloseClick 	= new Event('MenuView.onCloseClick');
 
 		this._toggleElement.on('click.' + id, this._onOpenClick.trigger);
 	}
-
+	
+	
+	MenuView.prototype._triggerOnEscape = function()
+	{
+		if (this._escapeContainer.isEmpty())
+		{
+			this._onCloseClick.trigger();
+			return;
+		}
+		
+		if (!this._escapeContainer.isLastId(this._id))
+		{
+			return;
+		}
+		
+		this._onCloseClick.trigger();
+	};
 	
 	MenuView.prototype._unbindOpen = function () 
 	{
@@ -127,7 +149,10 @@ namespace('OUI.Views', function (window)
 	MenuView.prototype.remove = function (unbindEvent)
 	{
 		this.getContainer().remove();
-
+		
+		this._escapeContainer.remove(this._id);
+		$(document).off(this._escapeEvent);
+		
 		if (unbindEvent)
 		{
 			this._unbindOpen();
@@ -139,9 +164,21 @@ namespace('OUI.Views', function (window)
 		$('body').append(this._getHTML());
 	
 		this._putInPosition();
-
+		
+		this._escapeContainer.add(this._id);
+		
 		this.getContainer().on('click.' + this._id, this._underlay, this._onCloseClick.trigger);
 		this.getContainer().focus();
+		
+		var triggerOnEscape = this._triggerOnEscape;
+		
+		$(document).on(this._escapeEvent, function (e)
+		{
+			if (e.keyCode === 27)
+			{
+				triggerOnEscape();
+			}
+		});
 	};
 	
 	MenuView.prototype.refreshPosition = function ()
