@@ -17,6 +17,7 @@ namespace('OUI.Core.Pos', function (window)
 		this.related = data.related;
 		this.target = data.target;
 		this.areas = data.areas;
+		this.fallbackPosition = data.fallbackPosition || 'any';
 		
 		this.absolutePosition = null;
 		this.relativePosition = null;
@@ -186,13 +187,26 @@ namespace('OUI.Core.Pos', function (window)
 			
 			this.areas[0].positionName = 'nonpositioned';
 			
-			return {
-				name: null,
-				coordinates: {
-					x: this.areas[0].box.x(),
-					y:  this.areas[0].box.y()
+			if (this.fallbackPosition === 'center')
+			{
+				return {
+					name: null,
+					coordinates: {
+						x: (this.container.w() - this.target.w()) / 2, 
+						y: (this.container.h() - this.target.h()) / 2
+					}
 				}
-			};
+			}
+			else 
+			{
+				return {
+					name: null,
+					coordinates: {
+						x: this.areas[0].box.x(),
+						y:  this.areas[0].box.y()
+					}
+				};
+			}
 		}
 		
 		var x = this.absolutePosition.x;

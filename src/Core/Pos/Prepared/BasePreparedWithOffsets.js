@@ -19,7 +19,8 @@ namespace('OUI.Core.Pos.Prepared', function (window)
 		targetOffset: 0,
 		isRelative: false,
 		initialSide: null,
-		initialPosition: null
+		initialPosition: null,
+		fallbackPosition: 'any'
 	};
 	
 	
@@ -415,7 +416,8 @@ namespace('OUI.Core.Pos.Prepared', function (window)
 			container: containerBox,
 			related: relatedBox,
 			target: targetBox,
-			areas : this._getAreas(relatedBox, targetBox)
+			areas : this._getAreas(relatedBox, targetBox),
+			fallbackPosition: this.settings.fallbackPosition
 		}
 	};
 	
