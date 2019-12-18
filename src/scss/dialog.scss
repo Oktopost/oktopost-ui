@@ -3,7 +3,7 @@
 
 .oui-modal.oui-dialog {
 
-	.wrapper {
+	& > .wrapper {
 		width: 280px;
 		min-width: auto;
 		max-width: none;
@@ -38,7 +38,7 @@
 		align-items: center;
 		justify-content: center;
 
-		.wrapper {
+		& > .wrapper {
 			width: 280px;
 			border-radius: 3px;
 			box-shadow: $basicShadow;

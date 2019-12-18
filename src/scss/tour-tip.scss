@@ -10,7 +10,7 @@
 		background-color: rgba(0, 31, 45, 0.6);
 	}
 
-	.wrapper {
+	& > .wrapper {
 		position: absolute;
 	    background-color: white;
 	    border-radius: 3px;

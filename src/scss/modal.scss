@@ -19,7 +19,7 @@
 		background-color: rgba(0, 31, 45, 0.6);
 	}
 
-	.wrapper {
+	& > .wrapper {
 		position: relative;
 		box-sizing: border-box;
 		width: 50%;
@@ -59,7 +59,7 @@
 	&.from-right, &.big {
 		justify-content: flex-end;
 
-		.wrapper {
+		& > .wrapper {
 			display: flex;
 			flex-direction: column;
 			height: 100%;			
@@ -83,22 +83,22 @@
 	}
 
 	&.from-bottom {
-		.wrapper {
+		& > .wrapper {
 			animation: fadeInBottom 0.5s;
 		}
 	}
 
 	&.hiding {
-		.wrapper {
+		& > .wrapper {
 			opacity: 0;
 			transform: scale(0.25);
 		}
 
-		&.from-right .wrapper, &.big .wrapper {
+		&.from-right > .wrapper, &.big > .wrapper {
 			transform: translate(100%, 0);
 		}
 
-		&.from-bottom .wrapper {
+		&.from-bottom > .wrapper {
 			transform: translate(0, 100%);
 		}
 
@@ -130,14 +130,14 @@
 		align-items: initial;
 		justify-content: flex-start;
 
-		.wrapper, &.big .wrapper, &.from-right .wrapper {
+		& > .wrapper, &.big > .wrapper, &.from-right > .wrapper {
 			box-shadow: none;
 			width: 100%;
 			min-width: 100%;
 			max-width: 100%;
 		}
 
-		.wrapper {
+		& > .wrapper {
 			flex-direction: column;
 			border-radius: 0;
 			animation: fadeInRight 0.5s;
@@ -149,11 +149,11 @@
 		}
 
 		&.hiding {
-			.wrapper {
+			& > .wrapper {
 				transform: translate(100%, 0);
 			}
 
-			&.from-bottom .wrapper {
+			&.from-bottom > .wrapper {
 				transform: translate(0, 100%);
 			}
 		}

@@ -9,7 +9,7 @@
 		@include fixed-layer(90);
 	}
 
-	.wrapper {
+	& > .wrapper {
 		position: absolute;
 	    background-color: white;
 	    border-radius: 3px;
