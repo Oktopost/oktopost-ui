@@ -1,66 +1,66 @@
-namespace('OUI.Components', function (window) 
+namespace('OUI.Components', function (window)
 {
 	var Event 		= window.Duct.Event;
 	var MenuView 	= window.OUI.Views.MenuView;
-
+	
 	var classify 	= window.Classy.classify;
 	var idGenerator = window.OUI.Core.View.idGenerator;
-
-
+	
+	
 	/**
 	 * @class OUI.Components.Menu
 	 */
 	function Menu(toggleElement, contents, extraClass, positionConfig)
 	{
 		classify(this);
-
+		
 		this._unbindEvent 	= true;
-
+		
 		this._id 			= idGenerator('oui-menu');
-
+		
 		this._view 			= new MenuView(this._id, toggleElement, contents, extraClass, positionConfig);
 		this._onBeforeOpen 	= new Event('menu.onBeforeOpen');
 		this._onAfterOpen 	= new Event('menu.onAfterOpen');
 		this._onBeforeClose = new Event('menu.onBeforeClose');
 		this._onAfterClose 	= new Event('menu.onAfterClose');
-
+		
 		this._view.onOpenClick(this.open);
 		this._view.onCloseClick(this.close);
 	}
-
+	
 	
 	Menu.prototype.getId = function ()
 	{
 		return this._id;
 	};
-
+	
 	Menu.prototype.onAfterOpen = function (callback)
 	{
 		this._onAfterOpen.add(callback);
 	};
-
+	
 	Menu.prototype.onAfterClose = function (callback)
 	{
 		this._onAfterClose.add(callback);
 	};
-
+	
 	Menu.prototype.onBeforeClose = function (callback)
 	{
 		this._onBeforeClose.add(callback);
 	};
-
+	
 	Menu.prototype.onBeforeOpen = function (callback)
 	{
 		this._onBeforeOpen.add(callback);
 	};
-
+	
 	Menu.prototype.open = function ()
 	{
 		this._onBeforeOpen.trigger(this._id);
 		this._view.show();
 		this._onAfterOpen.trigger(this._view.getContainer());
 	};
-
+	
 	Menu.prototype.close = function ()
 	{
 		this._onBeforeClose.trigger(this._view.getContainer());
@@ -80,9 +80,14 @@ namespace('OUI.Components', function (window)
 	
 	Menu.prototype.refreshPosition = function ()
 	{
-		this._view.refreshPosition();	
+		this._view.refreshPosition();
 	};
-
-
+	
+	Menu.prototype.setParentSelector = function (selector)
+	{
+		this._view.setParentSelector(selector);
+	};
+	
+	
 	this.Menu = Menu;
 });

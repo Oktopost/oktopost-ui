@@ -1,4 +1,4 @@
-namespace('OUI.Views', function (window) 
+namespace('OUI.Views', function (window)
 {
 	var hbs 		= window.OUI.Core.View.hbs;
 	var classify	= window.Classy.classify;
@@ -11,14 +11,14 @@ namespace('OUI.Views', function (window)
 	var TargetSide				= window.OUI.Core.Pos.Enum.TargetSide;
 	
 	var EscapeEventContainer	= window.OUI.Views.EscapeEventContainer;
-
-
+	
+	
 	function MenuView(id, toggleElement, contents, extraClass, positionConfig)
 	{
 		classify(this);
-
+		
 		extraClass = extraClass || '';
-
+		
 		this._id 				= id;
 		this._toggleElement 	= toggleElement;
 		this._contents 			= contents;
@@ -26,6 +26,7 @@ namespace('OUI.Views', function (window)
 		this._underlay 			= '.oui-menu-underlay';
 		this._positionConfig	= positionConfig || {};
 		this._positionClass 	= null;
+		this._parentSelector	= 'body';
 		
 		this._escapeContainer = new EscapeEventContainer();
 		
@@ -33,7 +34,7 @@ namespace('OUI.Views', function (window)
 		
 		this._onOpenClick 	= new Event('MenuView.onOpenClick');
 		this._onCloseClick 	= new Event('MenuView.onCloseClick');
-
+		
 		this._toggleElement.on('click.' + id, this._onOpenClick.trigger);
 	}
 	
@@ -54,9 +55,9 @@ namespace('OUI.Views', function (window)
 		this._onCloseClick.trigger();
 	};
 	
-	MenuView.prototype._unbindOpen = function () 
+	MenuView.prototype._unbindOpen = function ()
 	{
-		this._toggleElement.off('click.' + this._id);	
+		this._toggleElement.off('click.' + this._id);
 	};
 	
 	MenuView.prototype._putInPosition = function ()
@@ -75,20 +76,20 @@ namespace('OUI.Views', function (window)
 		};
 		
 		var config = obj.merge(baseConfig, this._positionConfig);
-
+		
 		var pos = ConfigurablePosition.get(config, config.sides);
-
+		
 		$target.offset(
-		{
-			top: pos.coordinates.top,
-			left: pos.coordinates.left
-		});
+			{
+				top: pos.coordinates.top,
+				left: pos.coordinates.left
+			});
 		
 		if (!is.null(this._positionClass))
 		{
 			$target.removeClass(this._positionClass);
 		}
-
+		
 		this._positionClass = pos.name;
 		$target.addClass(pos.name);
 	};
@@ -139,13 +140,13 @@ namespace('OUI.Views', function (window)
 		
 		return parentWrapper.children[0];
 	};
-
-
+	
+	
 	MenuView.prototype.getContainer = function ()
 	{
 		return $('#' + this._id);
 	};
-
+	
 	MenuView.prototype.remove = function (unbindEvent)
 	{
 		this.getContainer().remove();
@@ -158,11 +159,11 @@ namespace('OUI.Views', function (window)
 			this._unbindOpen();
 		}
 	};
-
+	
 	MenuView.prototype.show = function ()
 	{
-		$('body').append(this._getHTML());
-	
+		$(this._parentSelector).append(this._getHTML());
+		
 		this._putInPosition();
 		
 		this._escapeContainer.add(this._id);
@@ -185,17 +186,22 @@ namespace('OUI.Views', function (window)
 	{
 		this._putInPosition();
 	};
-
+	
+	MenuView.prototype.setParentSelector = function(selector)
+	{
+		this._parentSelector = selector;
+	};
+	
 	MenuView.prototype.onOpenClick = function (callback)
 	{
 		this._onOpenClick.add(callback);
 	};
-
+	
 	MenuView.prototype.onCloseClick = function (callback)
 	{
 		this._onCloseClick.add(callback);
 	};
-
-
+	
+	
 	this.MenuView = MenuView;
 });
