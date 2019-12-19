@@ -2454,8 +2454,8 @@ namespace('OUI.Core.Pos', function (window)
 				return {
 					name: null,
 					coordinates: {
-						x: (this.container.w() - this.target.w()) / 2, 
-						y: (this.container.h() - this.target.h()) / 2
+						x: this.container.x() + (this.container.w() - this.target.w()) / 2,
+						y: this.container.y() + (this.container.h() - this.target.h()) / 2
 					}
 				}
 			}
