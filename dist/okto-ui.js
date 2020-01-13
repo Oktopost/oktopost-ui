@@ -1276,12 +1276,12 @@ namespace('OUI.Views.List', function (window)
 	ListSortingView.prototype.setActive = function (e)
 	{
 		this._sortColumns.removeClass('active');
-		$(e.target).addClass('active');
+		$(e.currentTarget).addClass('active');
 	};
 
 	ListSortingView.prototype.updateLink = function (e)
 	{
-		var elem = $(e.target);
+		var elem = $(e.currentTarget);
 		
 		this._setOrder(elem);
 		this._updateLink(elem);
