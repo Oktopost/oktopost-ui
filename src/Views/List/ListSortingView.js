@@ -13,12 +13,30 @@ namespace('OUI.Views.List', function (window)
 
 		this._sorting = sorting;
 
-		this._sortColumns = $('.sortable');
+		if (is(selector))
+		{
+			this._sortColumns = $(selector).find('.sortable');
+		}
+		else
+		{
+			this._sortColumns = $('.sortable');
+		}
+
 		this._sortColumns.on('click', this.updateLink);
-		
+
+		this._initSortingOptions();
 		this._setInitialSorting();
 	}
 
+
+	ListSortingView.prototype._initSortingOptions = function ()
+	{
+		this._sortColumns.each(function ()
+		{
+			var header = $(this);
+			header.data('order-init', header.data('order-way'));
+		});
+	};
 	
 	ListSortingView.prototype._setInitialSorting = function ()
 	{
@@ -33,34 +51,52 @@ namespace('OUI.Views.List', function (window)
 		
 		if (elem.length > 0)
 		{
-			var orderWay = orderData[1] === "0" ? 1 : 0;
+			var orderWay = orderData[1] === "0" ? 0 : 1;
 			elem.data('order-way', orderWay);
 			
-			this._setOrder(elem);
+			this._updateOrder(elem);
 			this._updateLink(elem);
 			
 			elem.addClass('active');
 		}
 	};
 
-	ListSortingView.prototype._setOrder = function (elem)
+	ListSortingView.prototype._toggleOrder = function (elem)
 	{
-		var order 		= elem.data();
-		var orderWay 	= order.orderWay === 1 ? 0 : 1;
+		var orderBy 	= elem.data('order-by');
+		var orderWay 	= elem.data('order-way') === 1 ? 0 : 1;
+
+		elem.data('order-way', orderWay);
+
+		this._updateOrder(elem);
+	};
+
+	ListSortingView.prototype._updateOrder = function (elem)
+	{
+		var orderBy 	= elem.data('order-by');
+		var orderWay 	= elem.data('order-way');
 
 		this._sorting.setParam('_page', 0);
-		this._sorting.setParam('_order', order.orderBy + ',' + orderWay);
+		this._sorting.setParam('_order', orderBy + ',' + orderWay);
 
 		if (orderWay === 1)
 		{
 			elem.addClass('asc');
 		}
-		else 
+		else
 		{
 			elem.removeClass('asc');
 		}
 
-		elem.data('order-way', orderWay);
+		this._sortColumns.each(function ()
+		{
+			var header = $(this);
+
+			if (header.data('order-by') === orderBy)
+				return;
+
+			header.data('order-way', header.data('order-init'));
+		});
 	};
 
 	ListSortingView.prototype._updateLink = function (elem)
@@ -81,8 +117,16 @@ namespace('OUI.Views.List', function (window)
 	ListSortingView.prototype.updateLink = function (e)
 	{
 		var elem = $(e.currentTarget);
-		
-		this._setOrder(elem);
+
+		if (elem.hasClass('active'))
+		{
+			this._toggleOrder(elem);
+		}
+		else
+		{
+			this._updateOrder(elem);
+		}
+
 		this._updateLink(elem);
 		this._sorting.sort(e);
 	};
