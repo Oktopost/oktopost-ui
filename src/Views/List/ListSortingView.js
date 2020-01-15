@@ -35,6 +35,17 @@ namespace('OUI.Views.List', function (window)
 		{
 			var header = $(this);
 			header.data('order-init', header.data('order-way'));
+
+			if (header.data('order-way') === 1)
+			{
+				header.addClass('asc');
+				header.removeClass('desc');
+			}
+			else
+			{
+				header.addClass('desc');
+				header.removeClass('asc');
+			}
 		});
 	};
 	
@@ -82,9 +93,11 @@ namespace('OUI.Views.List', function (window)
 		if (orderWay === 1)
 		{
 			elem.addClass('asc');
+			elem.removeClass('desc');
 		}
 		else
 		{
+			elem.addClass('desc');
 			elem.removeClass('asc');
 		}
 
