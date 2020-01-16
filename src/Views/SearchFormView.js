@@ -1,17 +1,17 @@
-namespace('OUI.Views', function (window) 
+namespace('OUI.Views', function (window)
 {
 	var hbs 		= window.OUI.Core.View.hbs;
 	var classify 	= window.Classy.classify;
 	var is			= window.Plankton.is;
-
-
+	
+	
 	function SearchFormView(form, container, value, param, placeholder)
 	{
 		classify(this);
-
+		
 		this._form 			= form;
 		this._container 	= $(container);
-
+		
 		this._input 		= 'input[type="text"]';
 		this._clearButton 	= '.toggle-button';
 		
@@ -19,7 +19,7 @@ namespace('OUI.Views', function (window)
 		this._searchIcon	= 'icon-search';
 		
 		this._inputEl		= null;
-
+		
 		this.render(value, param, placeholder);
 		this.bindEvents();
 	}
@@ -46,11 +46,13 @@ namespace('OUI.Views', function (window)
 	SearchFormView.prototype._toggleIconSearch = function(button)
 	{
 		button.removeClass(this._cancelIcon).addClass(this._searchIcon);
+		this._container.find('.search-form').removeClass('not-empty');
 	};
 	
 	SearchFormView.prototype._toggleIconCancel = function(button)
 	{
 		button.removeClass(this._searchIcon).addClass(this._cancelIcon);
+		this._container.find('.search-form').addClass('not-empty');
 	};
 	
 	SearchFormView.prototype._transformIconByEvent = function(e, button)
@@ -76,21 +78,22 @@ namespace('OUI.Views', function (window)
 			this._toggleIconCancel(button);
 		}
 	};
-
-
+	
+	
 	SearchFormView.prototype.getValue = function ()
 	{
 		return this._container.find(this._input).val();
 	};
-
+	
 	SearchFormView.prototype.clearInput = function ()
 	{
 		var button = this._container.find(this._clearButton);
-
+		
 		this._getInputEl().val('');
 		button.removeClass(this._cancelIcon).addClass(this._searchIcon);
+		this._container.find('.search-form').removeClass('not-empty');
 	};
-
+	
 	SearchFormView.prototype.transformIcon = function (e)
 	{
 		var button 	= this._container.find(this._clearButton);
@@ -104,24 +107,24 @@ namespace('OUI.Views', function (window)
 			this._transformIconByValue(button);
 		}
 	};
-
+	
 	SearchFormView.prototype.bindEvents = function ()
 	{
 		this._container.on('input', this._input, this._form.input);
 		this._container.on('click', this._clearButton, this._onClearButtonClick);
 	};
-
+	
 	SearchFormView.prototype.render = function (value, param, placeholder)
 	{
 		this._container.append(hbs('search-form', {
 			value: value,
 			param: param,
-			placeholder: placeholder			
+			placeholder: placeholder
 		}));
-
+		
 		this.transformIcon();
 	};
-
-
+	
+	
 	this.SearchFormView = SearchFormView;
 });
