@@ -33,12 +33,13 @@ namespace('OUI.Views.List', function (window)
 	
 	ListFilterView.prototype.value = function ()
 	{
-		if (is.defined(this._value) && !is.null(this._value))
-		{
-			return this._value;
-		}
-		
-		return '';
+		if (!is(this._value))
+			return '';
+
+		if (is.array(this._value))
+			return this._value.join(',');
+
+		return this._value;
 	};
 	
 	ListFilterView.prototype.name = function ()
@@ -48,7 +49,7 @@ namespace('OUI.Views.List', function (window)
 	
 	ListFilterView.prototype.isActive = function ()
 	{
-		return is.string.notEmpty(this._value);	
+		return is.string.notEmpty(this.value());
 	};
 	
 	ListFilterView.prototype.reset = function ()
