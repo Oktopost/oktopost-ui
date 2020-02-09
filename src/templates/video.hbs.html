@@ -1,23 +1,26 @@
 <div class="video-container">
 	{{#if sources}}
-	<video controls {{#if autoRepeat}}loop{{/if}} class="hidden">
-		{{#each sources}}
-		<source src="{{this}}"></source>
-		{{/each}}
-	</video>
+		<video controls
+				{{#if autoRepeat}} loop{{/if}}
+				{{#if autoPlay}} autoplay muted{{/if}}
+				class="hidden">
+			{{#each sources}}
+				<source src="{{this}}"></source>
+			{{/each}}
+		</video>
 	{{/if}}
 
 	<div class="video-spinner"></div>
 	<div class="video-error hidden"><span>Unable to play video</span></div>
 
-	<div 
+	<div
 		{{#if preview}}
-		style="background: 
-			linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
-				url({{preview}}) no-repeat center/contain;  
-	    	background-color: #001f2d;"
+		style="background:
+				linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+				url({{preview}}) no-repeat center/contain;
+				background-color: #001f2d;"
 		{{/if}}
 		class="video-preview hidden">
 		<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
-	</div>	
+	</div>
 </div>
