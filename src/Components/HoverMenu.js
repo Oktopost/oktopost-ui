@@ -126,6 +126,11 @@ namespace('OUI.Components', function (window)
 		return this._isPersist;
 	};
 	
+	HoverMenu.prototype.refreshPosition = function()
+	{
+		this._view.refreshPosition();
+	};
+	
 	
 	this.HoverMenu = HoverMenu;
 });

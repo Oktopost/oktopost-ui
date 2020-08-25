@@ -25,6 +25,7 @@ namespace('OUI.Views', function (window)
 		this._dataAttr			= 'oui-hover-menu';
 		this._positionConfig	= is.false(positionConfig) ? null : positionConfig || {};
 		this._canPersist		= canPersist || false;
+		this._container			= null;
 		
 		if (this.isOpen())
 		{
@@ -108,6 +109,37 @@ namespace('OUI.Views', function (window)
 		$(document).off('click.' + this._menu.getId());
 	};
 	
+	HoverMenuView.prototype._putInPosition = function ()
+	{
+		var $target 	= this.getContainer();
+		var $related 	= this._toggleElement;
+		
+		if (!is.object(this._positionConfig))
+			return;
+		
+		var baseConfig = {
+			container: this._container,
+			containerOffset: 10,
+			relatedElement: $related,
+			targetElement: $target,
+			initialPosition: TargetPosition.center,
+			initialSide: TargetSide.right,
+			sides: [TargetSide.right, TargetSide.left]
+		};
+		
+		var config = obj.merge(baseConfig, this._positionConfig);
+		
+		var pos = ConfigurablePosition.get(config, config.sides);
+		
+		$target.offset(
+			{
+				top: pos.coordinates.top,
+				left: pos.coordinates.left
+			});
+		
+		$target.addClass(pos.name);
+	};
+	
 	
 	HoverMenuView.prototype.enablePersist = function ()
 	{
@@ -140,45 +172,25 @@ namespace('OUI.Views', function (window)
 	HoverMenuView.prototype.show = function (container)
 	{
 		var menu = hbs('hover-menu',
-		{
-			id: this._menu.getId(),
-			contents: this._contents,
-			extraClass: this._extraClass
-		});
+			{
+				id: this._menu.getId(),
+				contents: this._contents,
+				extraClass: this._extraClass
+			});
 		
 		var $container = is(container) ? container : $('body');
-		
 		$container.append(menu);
 		
-		var $target 	= this.getContainer();
-		var $related 	= this._toggleElement;
+		this._container = $container;
 		
-		if (is.object(this._positionConfig))
-		{
-			var baseConfig = {
-				container: $container,
-				containerOffset: 10,
-				relatedElement: $related,
-				targetElement: $target,
-				initialPosition: TargetPosition.center,
-				initialSide: TargetSide.right,
-				sides: [TargetSide.right, TargetSide.left]
-			};
-			
-			var config = obj.merge(baseConfig, this._positionConfig);
-			
-			var pos = ConfigurablePosition.get(config, config.sides);
-			
-			$target.offset(
-			{
-				top: pos.coordinates.top,
-				left: pos.coordinates.left
-			});
-			
-			$target.addClass(pos.name);
-		}
+		this._putInPosition();
 		
 		this._toggleElement.data(this._dataAttr, this._menu.getId());
+	};
+	
+	HoverMenuView.prototype.refreshPosition = function()
+	{
+		this._putInPosition();
 	};
 	
 	HoverMenuView.prototype.isOpen = function ()
