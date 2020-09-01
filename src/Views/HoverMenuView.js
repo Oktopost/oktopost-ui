@@ -114,7 +114,7 @@ namespace('OUI.Views', function (window)
 		var $target 	= this.getContainer();
 		var $related 	= this._toggleElement;
 		
-		if (!is.object(this._positionConfig))
+		if ($target.length === 0 || !is.object(this._positionConfig))
 			return;
 		
 		var baseConfig = {
