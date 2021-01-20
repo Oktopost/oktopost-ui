@@ -156,10 +156,20 @@ namespace('OUI.Components.List', function (window)
 			this._params[param] = value;
 		}
 	};
+	
+	ListPagination.prototype.setParams = function (params)
+	{
+		this._params = params;
+	};
 
 	ListPagination.prototype.getParams = function ()
 	{
 		return this._params;
+	};
+
+	ListPagination.prototype.removeParam = function (param)
+	{
+		delete this._params[param];
 	};
 
 	ListPagination.prototype.getPage = function ()

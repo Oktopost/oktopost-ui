@@ -42,6 +42,8 @@ namespace('OUI.Components.List', function (window)
 		this._nullstateParams = {};
 
 		this._onUpdateParam 	= new Event('ListMediator.onUpdateParam');
+		this._onRemoveParam 	= new Event('ListMediator.onUpdateParam');
+		this._onSetParams	 	= new Event('ListMediator.onUpdateParam');
 		this._onBeforeRender 	= new Event('ListMediator.onBeforeRender');
 		this._onAfterRender 	= new Event('ListMediator.onAfterRender');
 		
@@ -87,11 +89,18 @@ namespace('OUI.Components.List', function (window)
 		this._onUpdateParam.trigger(key, value);
 	};
 	
+	ListMediator.prototype.setParams = function (params)
+	{
+		this._params = params;
+		this._onSetParams.trigger(params);
+	};
+	
 	ListMediator.prototype.removeParam = function (key)
 	{
 		delete this._params[key];
+		this._onRemoveParam.trigger(key);
 	};
-
+	
 	ListMediator.prototype.setExcludeParams = function (keys)
 	{
 		this._excludeParams = keys;
@@ -113,6 +122,18 @@ namespace('OUI.Components.List', function (window)
 		{
 			sorting.setParam(key, value);
 		});
+		
+		this._onSetParams.add(function (params)
+		{
+			sorting.setParams(params);
+		});
+		
+		this._onRemoveParam.add(function (key)
+		{
+			sorting.removeParam(key);
+		});
+		
+		
 
 		this._sorting = sorting;
 	};
@@ -128,6 +149,20 @@ namespace('OUI.Components.List', function (window)
 			pagination.setParam(key, value);
 			pagination.render();
 		});
+		
+		this._onSetParams.add(function (params) 
+		{
+			pagination.setParams(params);
+			pagination.render();
+		});
+		
+		this._onRemoveParam.add(function (key) 
+		{
+			pagination.removeParam(key);
+			pagination.render();
+		});
+		
+		
 
 		this._onBeforeRender.add(function (data)
 		{

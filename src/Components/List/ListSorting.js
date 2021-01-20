@@ -31,10 +31,20 @@ namespace('OUI.Components.List', function (window)
 	{
 		this._params[key] = value;
 	};
+	
+	ListSorting.prototype.setParams = function (params)
+	{
+		this._params = params;
+	};
 
 	ListSorting.prototype.getParams = function ()
 	{
 		return this._params;
+	};
+
+	ListSorting.prototype.removeParam = function (param)
+	{
+		delete this._params[param];
 	};
 
 	ListSorting.prototype.onSort = function (callback) 
