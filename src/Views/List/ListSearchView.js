@@ -37,14 +37,25 @@ namespace('OUI.Views.List', function (window)
 	{
 		this._itemsWrapper.removeClass('hidden');
 		this._nullstateContainer.empty().addClass('hidden');
+		this.hideLoading();
 	};
 
 	ListSearchView.prototype.showNullstate = function ()
 	{
 		this._itemsWrapper.addClass('hidden');
 		this._nullstateContainer.removeClass('hidden');
+		this.hideLoading();
 	};
-
+	
+	ListSearchView.prototype.showLoading = function ()
+	{
+		this._nullstateContainer.addClass('loading');
+	}
+	
+	ListSearchView.prototype.hideLoading = function ()
+	{
+		this._nullstateContainer.removeClass('loading');
+	}
 	
 	this.ListSearchView = ListSearchView;
 });

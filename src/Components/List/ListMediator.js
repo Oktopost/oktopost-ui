@@ -394,6 +394,16 @@ namespace('OUI.Components.List', function (window)
 		}
 		else
 		{
+			if (is(this._search))
+			{
+				this._search.hideNullstate();
+			}
+			
+			if (is(this._filter))
+			{
+				this._filter.hideNullstate();
+			}
+			
 			this._isNullstate = false;
 			this._items.render(this.getItems(), this._template, this._extraKey, this._extraParams);	
 		}

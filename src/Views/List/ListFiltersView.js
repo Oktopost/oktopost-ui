@@ -62,12 +62,24 @@ namespace('OUI.Views.List', function (window)
 	{
 		this._itemsWrapper.removeClass('hidden');
 		this._nullstateContainer.empty().addClass('hidden');
+		this.hideLoading();
 	};
 
 	ListFiltersView.prototype.showNullstate = function ()
 	{
 		this._itemsWrapper.addClass('hidden');
 		this._nullstateContainer.removeClass('hidden');
+		this.hideLoading();
+	};
+	
+	ListFiltersView.prototype.showLoading = function ()
+	{
+		this._nullstateContainer.addClass('loading');
+	};
+	
+	ListFiltersView.prototype.hideLoading = function ()
+	{
+		this._nullstateContainer.removeClass('loading');
 	};
 	
 	ListFiltersView.prototype.onApply = function (callback)

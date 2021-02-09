@@ -106,12 +106,17 @@ namespace('OUI.Components.List', function (window)
 
 		this._view.setNullstate(container);
 
-		this.onFilter(this._view.hideNullstate);
+		this.onFilter(this._view.showLoading);
 	};
 	
 	ListFilters.prototype.showNullstate = function ()
 	{
 		this._nullstate.render();
+	};
+	
+	ListFilters.prototype.hideNullstate = function ()
+	{
+		this._view.hideNullstate();
 	};
 	
 	ListFilters.prototype.isActive = function ()

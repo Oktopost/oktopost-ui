@@ -61,7 +61,7 @@ namespace('OUI.Components.List', function (window)
 
 		this._view.setNullstate(container);
 
-		this.onSearch(this._view.hideNullstate);
+		this.onSearch(this._view.showLoading);
 	};
 
 	ListSearch.prototype.onSearch = function (callback)
@@ -76,6 +76,11 @@ namespace('OUI.Components.List', function (window)
 	{
 		this._nullstate.render({ value: this.getValue() });
 	};
+
+	ListSearch.prototype.hideNullstate = function ()
+	{
+		this._view.hideNullstate();
+	}
 
 
 	this.ListSearch = ListSearch;
