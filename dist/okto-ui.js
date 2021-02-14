@@ -1268,13 +1268,16 @@ namespace('OUI.Views.List', function (window)
 		if (!is.defined(order))
 			return;
 		
-		var orderData = order.split(',');
+		if (typeof order === 'string')
+		{
+			order = order.split(',');
+		}
 		
-		var elem = $(".sortable[data-order-by='" + orderData[0] +"']");
+		var elem = $(".sortable[data-order-by='" + order[0] +"']");
 		
 		if (elem.length > 0)
 		{
-			var orderWay = orderData[1] === "0" ? 0 : 1;
+			var orderWay = order[1] === "0" ? 0 : 1;
 			elem.data('order-way', orderWay);
 			
 			this._updateOrder(elem);
